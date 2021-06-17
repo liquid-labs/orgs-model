@@ -14,6 +14,8 @@ const AttachedRole = class extends Role {
 
   getManager() { return this.manager }
 
+  getManagerRole() { return this.managerRole }
+
   getQualifier() { return this.qualifier ? this.qualifier : null }
 
   getQualifiedName() { return `${this.getQualifier()} ${this.getName()}` }

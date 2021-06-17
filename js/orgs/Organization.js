@@ -125,15 +125,24 @@ const Organization = class {
       const data = {}
       const childNodes = []
 
-      // build out the full tree with each titual role being it's own thing
-      seedData.forEach((item, index) => {
+      // build out the full tree with each titualar role being it's own thing
+      let item = undefined
+      while ((item = seedData.shift()) !== undefined) {
         if (!item.parent_id) {
           Object.assign(data, item)
         }
         else {
           const jsonloop = new JSONLoop(data, 'id', 'children')
           jsonloop.findNodeById(data, item.parent_id, function(err, node) {
-            if (err) throw new Error(`Error finding '${item.parent_id}'; ${err}`)
+            if (err) { // try deferring the processing till the needed node is defined...
+              if (item['_deferredMarker'] === true) {
+                throw new Error(`Error finding '${item.parent_id}'; ${err}`)
+              }
+              else {
+                item['_deferredMarker'] = true
+                seedData.push(item)
+              }
+            }
             else {
               childNodes.push(item)
               if (node.children) {
@@ -145,7 +154,7 @@ const Organization = class {
             }
           })
         }
-      })
+      }
 
       const mergeNodes = (target, source) => {
         target.titles.push(...source.titles)

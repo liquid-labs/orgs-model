@@ -187,7 +187,8 @@ foreach my $items (split /\n/, `find -L node_modules/\@liquid-labs -path "*/poli
 }
 
 my $roles_ref = "${OUT_DIR}".'/staff/Company\ Jobs\ and\ Roles\ Reference.md';
-print "${roles_ref}:\n";
+# TODO: move gen-data to tooling and add option to spit out file inputs so we can build proper dependencies for the generated data and put into makefile
+print "${roles_ref}: \$(STAFF_FILE) # \$(ROLES_DATA)\n";
 print "\t@[[ '\$(STAFF_FILE)' != '' ]] || { echo \"'STAFF_FILE' var not set. Try calling 'STAFF_FILE=/foo/bar make'\"; exit 1; }\n";
 print "\t".'mkdir -p $(shell dirname "$@")'."\n";
 print "\t\$(BIN)/liq-gen-roles-ref \$(PWD)/data \$(STAFF_FILE) > \"\$@\"\n";
