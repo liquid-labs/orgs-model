@@ -70,7 +70,7 @@ const Staff = class {
             errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
           })
 
-        roles.push(convertRoleToAttached({ staff: s, rec, role, org: this.org }))
+        roles.push(convertRoleToAttached({ staff : s, rec, role, org : this.org }))
         processImpliedRoles(roles, s, rec, role, this.org)
         return roles
       }, []) // StaffMember roles reduce
@@ -90,7 +90,7 @@ const Staff = class {
               managerRole = roleManager.getAttachedRole(node.primMngrName)
             }
             else {
-              node.possibleMngrNames.some((name) => { managerRole = roleManager.getAttachedRole(name) })
+              node.possibleMngrNames.some((name) => (managerRole = roleManager.getAttachedRole(name)))
             }
           }
           attachedRole.managerRole = managerRole
@@ -182,7 +182,7 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
         ? rec.manager
         : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
     const impliedRec = { name : impliedRoleName, manager }
-    roles.push(convertRoleToAttached({ staff: s, rec: impliedRec, role: impliedRole, org, impliedBy: role }))
+    roles.push(convertRoleToAttached({ staff : s, rec : impliedRec, role : impliedRole, org, impliedBy : role }))
     processImpliedRoles(roles, s, impliedRec, impliedRole, org)
   }
 }
