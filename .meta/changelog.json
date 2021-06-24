@@ -1,0 +1,19 @@
+[
+  {
+    "issues": [
+      "https://github.com/mocafinancial/moca-financial-policy/issues/6"
+    ],
+    "branch": "2021.06.23-zane@liquid-labs.com-update_roles_according_review",
+    "startTimestampLocal": "2021-06-23-2143 UTC",
+    "branchFrom": "2368c5bfb4a92ea6e843b5e0fc783a4b476dbcea",
+    "description": "Update roles according review",
+    "workInitiator": "zane@liquid-labs.com",
+    "branchInitiator": "zane@liquid-labs.com",
+    "involvedProjects": [
+      "@moca/moca-financial-policy",
+      "@liquid-labs/policy-core",
+      "@moca/moca-financial",
+      "@liquid-labs/orgs-model"
+    ]
+  }
+]
