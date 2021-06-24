@@ -111,6 +111,7 @@ const Organization = class {
 
           const staffMember = this.getStaff().get(email)
           const acting = staffMember.getAttachedRole(roleName).acting
+          const tbd = staffMember.getAttachedRole(roleName).tbd
           return {
             id        : row[0],
             ids       : [row[0]],
@@ -119,7 +120,8 @@ const Organization = class {
             name      : staffMember.getFullName(),
             titles    : [title],
             roles     : [role],
-            acting
+            acting,
+            tbd
           }
         })
       const data = {}
