@@ -131,7 +131,7 @@ const Staff = class {
   }
 }
 
-const convertRoleToAttached = ({ staff, rec, role, org, impliedBy }) => {
+const convertRoleToAttached = ({ staff, rec, role, org, impliedBy, display }) => {
   if (role.isTitular()) {
     // notice we check 'rec', not 'role'; role may be implied.
     const orgNode = org.orgStructure.getNodeByRoleName(rec.name)
@@ -161,13 +161,14 @@ const convertRoleToAttached = ({ staff, rec, role, org, impliedBy }) => {
 
   // TODO: have constructor take an object and include 'impliedBy'
   const attachedRole = new AttachedRole(role, rec, roleManager, staff)
+  attachedRole.display = display
   if (impliedBy !== undefined) { attachedRole.impliedBy = impliedBy }
   staff.attachedRolesByName[role.name] = attachedRole
   return attachedRole
 }
 
 const processImpliedRoles = (roles, s, rec, role, org) => {
-  for (const { name: impliedRoleName, mngrProtocol } of role.implies || []) {
+  for (const { name: impliedRoleName, mngrProtocol, display } of role.implies || []) {
     const impliedRole = org.getRoles().get(impliedRoleName,
       {
         required  : true,
@@ -182,7 +183,7 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
         ? rec.manager
         : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
     const impliedRec = { name : impliedRoleName, manager }
-    roles.push(convertRoleToAttached({ staff : s, rec : impliedRec, role : impliedRole, org, impliedBy : role }))
+    roles.push(convertRoleToAttached({ staff : s, rec : impliedRec, role : impliedRole, org, impliedBy : role, display }))
     processImpliedRoles(roles, s, impliedRec, impliedRole, org)
   }
 }
