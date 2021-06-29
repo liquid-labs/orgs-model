@@ -184,10 +184,10 @@ const Organization = class {
               */
               const sibblingsRoleNamesToMerge =
                 role.implies && role.implies.filter(impSpec =>
-                  impSpec.display !== false &&
-                  impSpec.mngrProtocol === 'same'
+                  impSpec.display !== false
+                  && impSpec.mngrProtocol === 'same'
                     && node.ids.indexOf(`${node.email}/${impSpec.mergeWith}`) >= 0)
-                .map(i => i.name)
+                  .map(i => i.name)
 
               // const trimRoles = (n) => { const { roles, ...rest } = n; return rest; } // DEBUG
 
