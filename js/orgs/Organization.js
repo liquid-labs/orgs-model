@@ -67,7 +67,7 @@ const Organization = class {
       // transform
       Object.values(this.getStaff().getAll()).forEach(s => {
         s.getAttachedRoles().forEach(r => {
-          if (r.isTitular()) {
+          if (r.isTitular() && r.display !== false) {
             const myKey = `${s.getEmail()}/${r.getName()}`
             const manager = s.getAttachedRole(r.getName()).getManager()
             if (!manager) result.push([myKey, '', r.getQualifier()])
@@ -182,8 +182,11 @@ const Organization = class {
               Tried updating eslint and babel components 2021-03-28 with no success.
               TODO: look into this and report bug if nothing found.
               */
-              const sibblingsRoleNamesToMerge = role.implies && role.implies.filter(impSpec =>
-                impSpec.mngrProtocol === 'same' && node.ids.indexOf(`${node.email}/${impSpec.mergeWith}`) >= 0)
+              const sibblingsRoleNamesToMerge =
+                role.implies && role.implies.filter(impSpec =>
+                  impSpec.display !== false &&
+                  impSpec.mngrProtocol === 'same'
+                    && node.ids.indexOf(`${node.email}/${impSpec.mergeWith}`) >= 0)
                 .map(i => i.name)
 
               // const trimRoles = (n) => { const { roles, ...rest } = n; return rest; } // DEBUG
