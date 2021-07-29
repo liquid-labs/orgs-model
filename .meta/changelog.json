@@ -32,5 +32,20 @@
       "@liquid-labs/policy-core",
       "@liquid-labs/orgs-model"
     ]
+  },
+  {
+    "issues": [
+      "https://github.com/Liquid-Labs/liq-ext-hr/issues/13"
+    ],
+    "branch": "2021.07.27-zane@liquid-labs.com-generate_roles_by_manager",
+    "startTimestampLocal": "2021-07-27-2309 UTC",
+    "branchFrom": "61751ed3352106f066e0c66366f97b7d0803dc75",
+    "description": "Generate \"roles by manager\" report",
+    "workInitiator": "zane@liquid-labs.com",
+    "branchInitiator": "zane@liquid-labs.com",
+    "involvedProjects": [
+      "@liquid-labs/liq-ext-hr",
+      "@liquid-labs/orgs-model"
+    ]
   }
 ]

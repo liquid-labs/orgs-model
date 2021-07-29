@@ -9,7 +9,32 @@ const StaffMember = class {
   getEmail() { return this.email }
   setEmail(v) { this.email = v }
 
-  getFullName() { return `${this.getGivenName()} ${this.getFamilyName()}` } // TODO: i18n...
+  /**
+  * Combines the given and family name (if any) to produce the full name. The default is to display using 'common
+  * format'. Supports option field 'officialFormat'. The function does NOT currently support i18n variations, so for
+  * now 'common format' is '<first> <last>' and 'officialFormat' is '<last>, <first>'.
+  */
+  getFullName(options = {}) { // TODO: i18n the display order
+    const { officialFormat = false } = options
+
+    const givenName = this.getGivenName()
+    const familyName = this.getFamilyName()
+
+    if (familyName && givenName) {
+      if (officialFormat === true) {
+        return `${familyName}, ${givenName}`
+      }
+      else {
+        return `${givenName} ${familyName}`
+      }
+    }
+    else if (familyName) {
+      return familyName
+    }
+    else {
+      return givenName
+    }
+  }
 
   getFamilyName() { return this.familyName }
   setFamilyName(v) { this.familyName = v }

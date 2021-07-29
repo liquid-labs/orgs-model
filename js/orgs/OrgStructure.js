@@ -66,6 +66,7 @@ const OrgStructure = class {
           required  : true,
           errMsgGen : (name) => `Could not find ${node.implied ? 'implied ' : ''}role '${name}' while building org structure.`
         })
+      node.singular = role.singular
       for (const { name: impliedRoleName, mngrProtocol } of role.implies || []) {
         // implied roles are handled by inserting the implied roles as managed by the super-role. When the org chart is
         // generated, these will collapse into a single entry listing multiple roles and using the super role as the
@@ -93,7 +94,7 @@ const OrgStructure = class {
           processNode(new Node([impliedRoleName, managingRoleName, null], true))
         }
       }
-    }
+    } // end func processNode
 
     for (const node of nodes) {
       processNode(node)
