@@ -14,15 +14,18 @@ const StaffMember = class {
   * format'. Supports option field 'officialFormat'. The function does NOT currently support i18n variations, so for
   * now 'common format' is '<first> <last>' and 'officialFormat' is '<last>, <first>'.
   */
-  getFullName({ officialFormat = false }) { // TODO: i18n the display order
+  getFullName(options = {}) { // TODO: i18n the display order
+    const { officialFormat = false } = options
+
     const givenName = this.getGivenName()
     const familyName = this.getFamilyName()
+
     if (familyName && givenName) {
       if (officialFormat === true) {
         return `${familyName}, ${givenName}`
       }
       else {
-        return `${givenName} ${family}`
+        return `${givenName} ${familyName}`
       }
     }
     else if (familyName) {
