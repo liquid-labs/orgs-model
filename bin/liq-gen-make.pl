@@ -211,33 +211,39 @@ push(@all, $glossary);
 
 # Set up audit descriptions
 # TODO: in future, this kind of functionality will move to a dsitributed build spec wherein the liq-ext-audits defines a Makefile snippet generation tool which is then used by the policy projects to generate a dist/Makefile.snip or something
+my $audit_db = 'data/orgs/audits/audits.json';
+if (-e "${audit_db}") {
 
-my %audit_refs = (
-	'changes' => 'policy/change_control/Change\ Control\ Audits\ and\ Controls\ References.md',
-	'releases' => 'policy/change_control/Release\ Audits\ and\ Controls\ References.md'
-);
+	my %audit_refs = (
+		'changes' => 'policy/change_control/Change\ Control\ Audits\ and\ Controls\ References.md',
+		'releases' => 'policy/change_control/Release\ Audits\ and\ Controls\ References.md'
+	);
 
-foreach my $group (keys %audit_refs) {
-	my $safe_audit_ref = $audit_refs{$group};
+	foreach my $group (keys %audit_refs) {
+		my $safe_audit_ref = $audit_refs{$group};
 
-	print "\n${safe_audit_ref}: data/orgs/audits/audits.json\n";
-	print "\t".'echo "# $(basename $(notdir "$@"))\n\n" > "$@"'."\n";
-	print "\t".'liq orgs audits document '.${group}.' >> "$@"'."\n";
+		print "\n${safe_audit_ref}: ${audit_db}\n";
+		print "\t".'echo "# $(basename $(notdir "$@"))\n\n" > "$@"'."\n";
+		print "\t".'liq orgs audits document '.${group}.' >> "$@"'."\n";
 
-	push(@all, $safe_audit_ref);
+		push(@all, $safe_audit_ref);
+	}
 }
 
-# Copy over assets
-my $assets = `find src/assets -type f`;
-$assets =~ s|src/assets|policy|g;
-$assets =~ s/ /\\ /g;
-$assets =~ s/\n/ /g;
+# Copy over assets, if necessary
+my $asset_dir = 'src/assets';
+if (-d "${asset_dir}") {
+	my $assets = `find ${asset_dir} -type f`;
+	$assets =~ s|src/assets|policy|g;
+	$assets =~ s/ /\\ /g;
+	$assets =~ s/\n/ /g;
 
-print "\nASSETS:=$assets\n";
-print "\$(ASSETS): policy/%: src/assets/%\n";
-print "\tln \$< \$@\n";
+	print "\nASSETS:=$assets\n";
+	print "\$(ASSETS): policy/%: src/assets/%\n";
+	print "\tln \$< \$@\n";
 
-push(@all, $assets);
+	push(@all, $assets);
+}
 
 # dump the 'all' to target build
 print "\nall: ".join(" ", @all);
