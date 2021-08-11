@@ -76,7 +76,7 @@ sub process_line {
       $condition =~ s/(^|[^A-Z_])$k([^A-Z_]|$)/$1$v$2/g;
     }
 
-    $condition =~ /^[0-9<>=|&! ]+$/ or die "Invalid condition at line ${lineno}: $condition\nref: $uuid";
+    $condition =~ /^[0-9<>=|&! ]+$/ or die "Invalid condition at line ${lineno}: $condition\nref: $uuid\nfile: $input_file";
 
     eval "$condition" or $include = 0;
   }
