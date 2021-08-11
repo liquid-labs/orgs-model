@@ -209,4 +209,23 @@ print "\t".'cat "$<" | $(GUCCI) --vars-file .build/policy-refs.yaml > "$@" || { 
 
 push(@all, $glossary);
 
+# Set up audit descriptions
+# TODO: in future, this kind of functionality will move to a dsitributed build spec wherein the liq-ext-audits defines a Makefile snippet generation tool which is then used by the policy projects to generate a dist/Makefile.snip or something
+
+my %audit_refs = (
+	'changes' => 'policy/change_control/Change\ Control\ Audits\ and\ Controls\ References.md',
+	'releases' => 'policy/change_control/Release\ Audits\ and\ Controls\ References.md'
+);
+
+foreach my $group (keys %audit_refs) {
+	my $safe_audit_ref = $audit_refs{$group};
+
+	print "\n${safe_audit_ref}: data/orgs/audits/audits.json\n";
+	print "\t".'echo "# $(basename $(notdir "$@"))\n\n" > "$@"'."\n";
+	print "\t".'liq orgs audits document '.${group}.' >> "$@"'."\n";
+
+	push(@all, $safe_audit_ref);
+}
+
+# dump the 'all' to target build
 print "\nall: ".join(" ", @all);
