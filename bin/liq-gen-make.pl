@@ -227,5 +227,17 @@ foreach my $group (keys %audit_refs) {
 	push(@all, $safe_audit_ref);
 }
 
+# Copy over assets
+my $assets = `find src/assets -type f`;
+$assets =~ s|src/assets|policy|g;
+$assets =~ s/ /\\ /g;
+$assets =~ s/\n/ /g;
+
+print "\nASSETS:=$assets\n";
+print "\$(ASSETS): policy/%: src/assets/%\n";
+print "\tln \$< \$@\n";
+
+push(@all, $assets);
+
 # dump the 'all' to target build
 print "\nall: ".join(" ", @all);
