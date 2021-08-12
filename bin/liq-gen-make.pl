@@ -74,6 +74,8 @@ EOF
 
 print $common_make;
 
+my %project_versions = ();
+
 sub extract_context {
 	my $source = shift;
 
@@ -85,6 +87,7 @@ sub extract_context {
   }
 
   my $project = join("/", @bits[$pivot...$pivot + 1]);
+	my $project_path = join("/", @bits[0...$pivot + 1]);
 
   my $common_path = join("/", @bits[$pivot + 3...$#bits - 1]);
   $common_path ne 'policy' or $common_path = '';
@@ -93,7 +96,14 @@ sub extract_context {
 	(my $base_name = $raw_name) =~ s/\.(md|tsv)$//;
   (my $safe_name = $base_name) =~ s/ /\\ /g;
 
-	return ($project, $common_path, $raw_name, $safe_name)
+	my $version = $project_versions{$project};
+	if (!defined $version || length($version) == 0) {
+		$version = `jq -r '.version' "${project_path}/package.json"`;
+		chomp($version);
+		$project_versions{$project} = $version;
+	}
+
+	return ($project, $common_path, $raw_name, $safe_name, $version);
 }
 
 sub policy_refs_build {
@@ -112,7 +122,7 @@ sub policy_refs_build {
 
 foreach my $source (split /\n/, $sources) {
   (my $safe_source = $source) =~ s/ /\\ /g;
-	my ($project, $common_path, $raw_name, $safe_name) = extract_context($source);
+	my ($project, $common_path, $raw_name, $safe_name, $version) = extract_context($source);
 
 	# For each sourch path (which is a merge of the source paths), we generate a 'policy-refs.yaml' file that creates an
   # entry for each of the possible document paths and it's relative position to the current document. (This enables the # use of an absolute reference in the source which is translated into a relative URL in the generated document.)
@@ -146,7 +156,16 @@ foreach my $source (split /\n/, $sources) {
 	}
   print "$safe_target : $safe_source $tmpl $refs $SETTINGS_FILE $deps_string\n";
   print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play well spaces
-  print "\tcat $deps_string $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' -s IS_SUBMIT_AUDIT=0 -s IS_PR_AUDIT=0 > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; exit 1; }'."\n";
+	# We need to stream template files (if any) and also tage the page source.
+	my $gucci_input = '{ ';
+	if (${deps_string} ne "" || ${tmpl} ne "") {
+		$gucci_input .= "cat ${deps_string} ${tmpl}; ";
+	}
+	$gucci_input .= 'cat "$<"; '; # the actual target file
+	# Note, 'echo' is a builtin, an the sh version doesn't require the '-e' (which will just get printed if used).
+	$gucci_input .= 'echo "\n\n_primary source_: '."${project}:policy/${common_path}/${raw_name}".'\"; ';
+	$gucci_input .= 'echo "_version_: '."${version}".'"; }';
+  print "\t${gucci_input} ".'| $(GUCCI) --vars-file '.$refs.' -s IS_SUBMIT_AUDIT=0 -s IS_PR_AUDIT=0 > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; exit 1; }'."\n";
   print "\n";
 
   push(@all, $safe_target);
