@@ -145,7 +145,7 @@ foreach my $source (split /\n/, $sources) {
 		$deps_string = join(' ', @safe_deps);
 	}
   print "$safe_target : $safe_source $tmpl $refs $SETTINGS_FILE $deps_string\n";
-  print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play will spaces
+  print "\t".'mkdir -p $(shell dirname "$@")'."\n"; # $(dir...) does not play well spaces
   print "\tcat $deps_string $tmpl ".'"$<" | $(GUCCI) --vars-file '.$refs.' -s IS_SUBMIT_AUDIT=0 -s IS_PR_AUDIT=0 > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; exit 1; }'."\n";
   print "\n";
 
