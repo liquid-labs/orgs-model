@@ -163,7 +163,8 @@ foreach my $source (split /\n/, $sources) {
 	}
 	$gucci_input .= 'cat "$<"; '; # the actual target file
 	# Note, 'echo' is a builtin, an the sh version doesn't require the '-e' (which will just get printed if used).
-	$gucci_input .= 'echo "\n\n_primary source_: '."${project}:policy/${common_path}/${raw_name}".'\"; ';
+	# The '\\\\' at the end is to get a single '\' into the output MD, which is a line break.
+	$gucci_input .= 'echo "\n\n_primary source_: '."${project}:policy/${common_path}/${raw_name}".'\\\\"; ';
 	$gucci_input .= 'echo "_version_: '."${version}".'"; }';
   print "\t${gucci_input} ".'| $(GUCCI) --vars-file '.$refs.' -s IS_SUBMIT_AUDIT=0 -s IS_PR_AUDIT=0 > "$@" || { rm "$@"; echo "\nFailed to make\n$@\n"; exit 1; }'."\n";
   print "\n";
