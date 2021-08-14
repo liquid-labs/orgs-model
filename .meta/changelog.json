@@ -47,5 +47,28 @@
       "@liquid-labs/liq-ext-hr",
       "@liquid-labs/orgs-model"
     ]
+  },
+  {
+    "issues": [
+      "https://github.com/Liquid-Labs/policy-projects/issues/20"
+    ],
+    "branch": "2021.08.13-zane@liquid-labs.com-move_change_control_under",
+    "startTimestampLocal": "2021-08-14-0117 UTC",
+    "branchFrom": "7436fe502342dfbfe3d9b03770e3eaae6e07d4a4",
+    "description": "Move change control under projects.",
+    "workInitiator": "zane@liquid-labs.com",
+    "branchInitiator": "zane@liquid-labs.com",
+    "involvedProjects": [
+      "@liquid-labs/policy-projects",
+      "@moca/moca-financial-policy",
+      "@liquid-labs/policy-networks",
+      "@liquid-labs/policy-core",
+      "@liquid-labs/policy-cloud",
+      "@liquid-labs/policy-hosts",
+      "@liquid-labs/policy-devops",
+      "@liquid-labs/policy-security",
+      "@liquid-labs/policy-networks-aws",
+      "@liquid-labs/orgs-model"
+    ]
   }
 ]
