@@ -235,8 +235,8 @@ my $audit_db = 'data/orgs/audits/audits.json';
 if (-e "${audit_db}") {
 
 	my %audit_refs = (
-		'changes' => 'policy/change_control/Change\ Control\ Audits\ and\ Controls\ References.md',
-		'releases' => 'policy/change_control/Release\ Audits\ and\ Controls\ References.md'
+		'changes' => 'policy/projects/Change\ Control\ Audits\ and\ Controls\ References.md',
+		'releases' => 'policy/projects/Release\ Audits\ and\ Controls\ References.md'
 	);
 
 	foreach my $group (keys %audit_refs) {
