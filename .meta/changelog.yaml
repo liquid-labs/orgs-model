@@ -1,0 +1,92 @@
+- startTimestamp: 2021-08-27T20:07:55.445Z
+  startEpochMillis: 1630094875445
+  issues:
+    - https://github.com/Liquid-Labs/policy-projects/issues/22
+  branch: 2021.08.27-zane@liquid-labs.com-add_change_flow_and
+  branchFrom: 735bd4e0c81dcd23a577767c5c6452cc6488a5d3
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/policy-projects"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Add change flow and lifecycle diagrams
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- issues:
+    - https://github.com/Liquid-Labs/policy-projects/issues/20
+  branch: 2021.08.13-zane@liquid-labs.com-move_change_control_under
+  branchFrom: 7436fe502342dfbfe3d9b03770e3eaae6e07d4a4
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/policy-projects"
+    - "@moca/moca-financial-policy"
+    - "@liquid-labs/policy-networks"
+    - "@liquid-labs/policy-core"
+    - "@liquid-labs/policy-cloud"
+    - "@liquid-labs/policy-hosts"
+    - "@liquid-labs/policy-devops"
+    - "@liquid-labs/policy-security"
+    - "@liquid-labs/policy-networks-aws"
+    - "@liquid-labs/orgs-model"
+  startTimestamp: 2021-08-14T01:17:00.000Z
+  startEpochMillis: 1628903820000
+  changeNotes:
+    - Move change control under projects.
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- issues:
+    - https://github.com/Liquid-Labs/liq-ext-hr/issues/13
+  branch: 2021.07.27-zane@liquid-labs.com-generate_roles_by_manager
+  branchFrom: 61751ed3352106f066e0c66366f97b7d0803dc75
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-ext-hr"
+    - "@liquid-labs/orgs-model"
+  startTimestamp: 2021-07-27T23:09:00.000Z
+  startEpochMillis: 1627427340000
+  changeNotes:
+    - Generate "roles by manager" report
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- issues:
+    - https://github.com/mocafinancial/moca-financial-policy/issues/8
+  branch: 2021.06.24-zane@liquid-labs.com-org_chart_updates_2
+  branchFrom: 64efe0ddfa50a72fa1499c2d7d22d3d375229213
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@moca/moca-financial-policy"
+    - "@moca/moca-financial"
+    - "@liquid-labs/policy-core"
+    - "@liquid-labs/orgs-model"
+  startTimestamp: 2021-06-25T08:21:00.000Z
+  startEpochMillis: 1624609260000
+  changeNotes:
+    - "Org chart updates #2"
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- issues:
+    - https://github.com/mocafinancial/moca-financial-policy/issues/6
+  branch: 2021.06.23-zane@liquid-labs.com-update_roles_according_review
+  branchFrom: 2368c5bfb4a92ea6e843b5e0fc783a4b476dbcea
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@moca/moca-financial-policy"
+    - "@liquid-labs/policy-core"
+    - "@moca/moca-financial"
+    - "@liquid-labs/orgs-model"
+  startTimestamp: 2021-06-23T21:43:00.000Z
+  startEpochMillis: 1624484580000
+  changeNotes:
+    - Update roles according review
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
