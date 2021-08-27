@@ -9,11 +9,14 @@
   involvedProjects:
     - "@liquid-labs/policy-projects"
     - "@liquid-labs/orgs-model"
+    - "@moca/moca-financial-policy"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+  contributors:
+    - Zane Rockenbaugh <zane@liquid-labs.com>
 - issues:
     - https://github.com/Liquid-Labs/policy-projects/issues/20
   branch: 2021.08.13-zane@liquid-labs.com-move_change_control_under
