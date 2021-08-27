@@ -206,6 +206,30 @@ foreach my $items (split /\n/, `find -L node_modules/\@liquid-labs -path "*/poli
 	print "\n";
 }
 
+# generate diagrams
+foreach my $dia_src (split /\n/, `find -L node_modules/\@liquid-labs -path "*/policy-*/policy/*" -name "*.mmd" -not -path "node_modules/*/node_modules/*" -not -path "*/.yalc/*"`) {
+	chomp($dia_src);
+	(my $safe_source = $dia_src) =~ s/ /\\ /g;
+	my ($project, $common_path, $raw_name, $safe_name, $version) = extract_context($dia_src);
+	my $safe_target = "${OUT_DIR}/${common_path}/${safe_name}";
+	(my $safe_target_light = $safe_target) =~ s/\.mmd/-light.png/;
+	# (my $safe_target_dark = $safe_target) =~ s/\.mmd/-dark.png/;
+
+	print "${safe_target_light}: ${safe_source}\n";
+	print "\tmkdir -p \$(dir \$@)\n";
+	print "\tmmdc -i \$< -o \$@ -t neutral\n"; # documents don't actually support a 'light' theme, but it may work...
+	print "\n";
+
+	# print "${safe_target_dark}: ${safe_source}\n";
+	# print "\tmkdir -p \$(dir \$@)\n";
+	# print "\tmmdc -i \$< -o \$@ -t dark\n";
+	# print "\n";
+
+	push(@all, $safe_target_light);
+	# push(@all, $safe_target_dark);
+}
+
+
 my $roles_ref = "${OUT_DIR}".'/staff/Company\ Jobs\ and\ Roles\ Reference.md';
 # TODO: move gen-data to tooling and add option to spit out file inputs so we can build proper dependencies for the generated data and put into makefile
 print "${roles_ref}: \$(STAFF_FILE) # \$(ROLES_DATA)\n";
