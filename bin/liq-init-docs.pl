@@ -93,7 +93,7 @@ sub process_for_template_deps {
         $candidate && ($template_path = $candidate);
       }
 
-      !$template_path and die "Could not find template: ${template}.";
+      !$template_path and die "Could not find template '${template}' required by '${file}'.";
     }
     $deps_tracker->{$template_path} = 1;
 
