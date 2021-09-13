@@ -88,7 +88,7 @@ const printGlossary = () => {
   const domainKeys = Object.keys(domainTerms) || []
   domainKeys.sort(caseInsensitiveSort)
   for (const domain of domainKeys) {
-    const domainSectionName = `${domain.charAt(0).toUpperCase() + domain.slice(1)} Terms`
+    const domainSectionName = `${domain.charAt(0).toUpperCase() + domain.slice(1)} terms`
     
     console.log(`### ${domainSectionName}\n`)
     domainTerms[domain].sort(caseInsensitiveSort)
