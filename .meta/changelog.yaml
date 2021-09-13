@@ -93,3 +93,18 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2021-09-13T17:44:10.511Z
+  startEpochMillis: 1631555050511
+  issues:
+    - https://github.com/Liquid-Labs/orgs-model/issues/57
+  branch: 2021.09.13-zane@liquid-labs.com-improve_glossary_generation
+  branchFrom: 23fbbc22399543f5099c9a1c8998a0f69b43a2b0
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Improve glossary generation
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
