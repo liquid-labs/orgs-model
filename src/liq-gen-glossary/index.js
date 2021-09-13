@@ -10,11 +10,30 @@ const definitionFiles = [...process.argv.slice(2)]
 
 const allTerms = generateGlossary({ definitionFiles })
 
+const caseInsensitiveSort = function(a, b) {
+  a = a.toLowerCase()
+  b = b.toLowerCase()
+  if (a < b) {
+    return -1
+  }
+  else if (a > b) {
+    return 1
+  }
+  else { // names must be equal
+    return 0
+  }
+}
+
 // Note: 'console.log(...)' adds it's own newline, so the '\n' in the following creates a blank line.
 console.log('# Glossary\n')
 console.log('<dl>\n')
-for (const term of Object.keys(allTerms) || []) {
+
+const keys = Object.keys(allTerms) || []
+keys.sort(caseInsensitiveSort)
+
+for (const term of keys) {
   console.log(`<dt id="${dashCase(term)}">${term}</dt>`)
-  console.log(`<dd>${allTerms[term]}</dd>\n`)
+  console.log(`<dd>\n\n${allTerms[term]}\n\n</dd>\n\n`) // the blank line tells Markdown to process the contents.
 }
+
 console.log('</dl>')
