@@ -7,7 +7,6 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
-    - "@liquid-labs/policy-projects"
     - "@liquid-labs/orgs-model"
     - "@moca/moca-financial-policy"
   changeNotes:
