@@ -12,3 +12,4 @@
 ## Release 1.0.0-beta.47
 * Improve glossary generation _(zane@liquid-labs.com; 2021-09-13T17:44:10.511Z)_
 * _**hotfix**_: fix section title over-capitalization _(zane@liquid-labs.com; 2021-09-13T19:16:47.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-09-13T19:17:04.000Z)_
