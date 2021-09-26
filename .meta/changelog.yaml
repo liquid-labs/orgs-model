@@ -107,3 +107,18 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2021-09-26T00:41:54.685Z
+  startEpochMillis: 1632616914685
+  issues:
+    - https://github.com/Liquid-Labs/orgs-model/issues/59
+  branch: 2021.09.25-zane@liquid-labs.com-remove_primary_source_and
+  branchFrom: 7d3fb15df703e6745f411bcd65368642d9baa61c
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Remove primary source and version footer
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
