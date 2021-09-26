@@ -8,7 +8,6 @@
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
     - "@liquid-labs/orgs-model"
-    - "@moca/moca-financial-policy"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
