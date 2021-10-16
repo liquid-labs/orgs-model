@@ -78,7 +78,6 @@ foreach my $path (@paths) {
   $path_pivot += 3;
 
   foreach my $bit (@bits[$path_pivot...$#bits]) {
-    if ($bit eq "policy") { next; } # TODO: is this check still necessary?
     exists $tracker->{"dirs"}->{$bit} or $tracker->{"dirs"}->{$bit} = { "dirs" => {}, "files" => [] };
     $tracker = $tracker->{"dirs"}->{$bit};
   }
