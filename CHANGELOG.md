@@ -20,3 +20,7 @@
 ## Release 1.0.0-beta.49
 * _**hotfix**_: support 'include'-ing templates in docs _(zane@liquid-labs.com; 2021-10-16T01:39:23.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-16T01:40:07.000Z)_
+
+## Release 1.0.0-beta.51
+* _**hotfix**_: fix mishaandling of policy/policy _(zane@liquid-labs.com; 2021-10-16T19:44:42.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-16T19:44:51.000Z)_
