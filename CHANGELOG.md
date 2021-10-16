@@ -16,3 +16,6 @@
 
 ## Release 1.0.0-beta.48
 * Remove primary source and version footer _(zane@liquid-labs.com; 2021-09-26T00:41:54.685Z)_
+
+## Release 1.0.0-beta.49
+* _**hotfix**_: support 'include'-ing templates in docs _(zane@liquid-labs.com; 2021-10-16T01:39:23.000Z)_
