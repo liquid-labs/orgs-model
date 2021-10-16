@@ -65,9 +65,9 @@ sub process_for_template_deps {
 
   while (<$fd>) {
     # TODO: Using the '-' to indicate 'an external template dependency' was an early. This is mantained for compatibility, but once we clean up and use the '{{/* exttmpl */}}' marker everywhere, remove support for hte '-' special meaning.
-    /(\{\{\/\*\s*exttmpl\s*\*\/\}\}\s*\{\{|\{\{-)\s*template\s+"([^"]+)"/ or next;
+    /(\{\{\/\*\s*exttmpl\s*\*\/\}\}\s*\{\{|\{\{-)\s*(template|include)\s+"([^"]+)"/ or next;
     /#no-dep/ and next; # TODO: only necessary while supproting the '-' convention
-    my $template = $2;
+    my $template = $3;
     $template =~ s/^\s+|\s+$//g;
     my $template_path;
     # If the file is including it's own list, we don't need to recognize that as a dependency here. That's handled
