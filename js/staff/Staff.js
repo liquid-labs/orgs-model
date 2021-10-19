@@ -1,5 +1,7 @@
 import * as fs from 'fs'
 
+import pick from 'lodash/pick'
+
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import { StaffMember } from './StaffMember'
@@ -108,6 +110,34 @@ const Staff = class {
 
     return this
   }
+  
+  dehydrate() {
+    return this.members.reduce((membersCopy, member) => {
+      // console.log('reducing...') // DEBUG
+      member = Object.assign({}, member)// cloneDeep(member)
+      member.roles = member.roles.map((r) => {
+        const dehydratedRole = { name: r.name }
+        // we do it like this to leave 'manager' out when it's not appropriate or set
+        // console.log(r) // DEBUG
+        if (r.manager) dehydratedRole.manager = r.manager.email
+        return dehydratedRole
+      })
+      member = pick(member, [
+        'company',
+        'email',
+        'employmentStatus',
+        'familyName',
+        'givenName',
+        'parameters',
+        'roles',
+        'startDate'
+      ])
+      // console.log('member', member) // DEBUG
+      
+      membersCopy.push(member)
+      return membersCopy
+    }, [])
+  }
 
   /**
   * Returns the JSON string of the de-hydrated data structure.
@@ -152,7 +182,7 @@ const convertRoleToAttached = ({ staff, rec, role, org, impliedBy, display }) =>
 
   // TODO: this is only valid for titular roles, yeah? nest this if...
   let roleManager = null
-  if (rec.manager) {
+  if (rec.manager && typeof rec.manager === 'string') {
     // Then replace manager ID with manager object and add ourselves to their reports
     // console.error(`converting with manager: ${rec.manager}`) // DEBUG
     roleManager = org.getStaff().get(rec.manager)
