@@ -31,15 +31,16 @@ const Staff = class {
 
   getByRoleName(roleName) { return this.members.filter(s => s.hasRole(roleName)) }
 
-  addData(memberData) {
+  addData(memberData, { deferHydration = false }) {
     this.members.push(new StaffMember(memberData))
-    this.hydrate(this.org)
+    if (!deferHydration) this.hydrate(this.org)
   }
 
   remove(email) {
     email = email.toLowerCase()
     const matches = this.getAll().filter(member => member.email === email)
 
+    // TODO: also need to check if this person is a manager and refuse to remove until that's changed
     if (matches.length === 0) {
       throw new Error(`Could not find staff member with email ${email}.`)
     }
@@ -61,7 +62,14 @@ const Staff = class {
 
     this.members.forEach((s) => {
       s.roles = s.roles.reduce((roles, rec) => { // Yes, both maps AND has side effects. Suck it!
-        if (rec instanceof AttachedRole) return rec
+        if (rec instanceof AttachedRole) {
+          roles.push(rec)
+          return roles
+        }
+        
+        if (typeof rec === 'string') {
+          rec = { name: rec }
+        }
         // Verify rec references a good role. Note, we check the 'orgStructure' because there may be a role defined
         // globally that isn't in use in the org.
         const role = org.getRoles().get(rec.name,
