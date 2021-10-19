@@ -24,11 +24,31 @@ const Roles = class {
   list() { return this.items.slice() }
 
   get(name, opts) {
-    const { required, errMsgGen } = opts || {}
-    const result = this.map[name]
+    const { required, fuzzy, errMsgGen } = opts || {}
+    
+    // we always try an exact match first
+    let result = this.map[name]
+    // now fuzzy match if desired
+    if (result === undefined && fuzzy === true) {
+      const matchingRoles = this.items.filter((role) => {
+        if (name === 'Chief admin officer') console.log(`Testing ${role.name}: ${role.matcher?.pattern}`) // DEBUG
+        return role.matcher !== undefined
+          && name.match(new RegExp(role.matcher.pattern, 'i'))
+          && !(role.matcher.antiPattern && name.match(new RegExp(role.matcher.antiPattern, 'i')))
+        })
+          
+      if (matchingRoles.length === 1) {
+        result = matchingRoles[0]
+      }
+      else if (matchingRoles.length > 1) {
+        throw new Error(`Ambiguous role '${name}' matched to '${matchingRoles.map((r) => r.name).join("', '")}'`)
+      }
+    }
+    
     if (result === undefined && required) {
       throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
     }
+    
     return result
   }
 
