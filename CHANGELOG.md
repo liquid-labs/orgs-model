@@ -27,3 +27,6 @@
 
 ## Release 1.0.0-beta.52
 * Match roles and save refreshed employees _(zane@liquid-labs.com; 2021-10-18T22:37:54.389Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-20T20:45:31.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2021-10-20T20:47:13.000Z)_
+* _**hotfix**_: updated deps and auidt fixes _(zane@liquid-labs.com; 2021-10-20T20:53:31.000Z)_
