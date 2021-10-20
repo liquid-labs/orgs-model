@@ -13,7 +13,7 @@ describe('Staff', () => {
   })
 
   test('detects duplicate emails on init', () =>
-    expect(() => new Staff('./js/staff/test/dupe_email_staff.json').init())
+    expect(() => new Staff('./js/staff/test/dupe_email_staff.json'))
       .toThrow(/email.*ceo@foo.com/))
 
   test('filters header+blank lines', () => expect(testStaff.getAll()).toHaveLength(4))
