@@ -30,3 +30,5 @@
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-20T20:45:31.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2021-10-20T20:47:13.000Z)_
 * _**hotfix**_: updated deps and auidt fixes _(zane@liquid-labs.com; 2021-10-20T20:53:31.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-20T20:53:36.000Z)_
+* _**hotfix**_: update mount specs _(zane@liquid-labs.com; 2021-10-20T21:03:13.000Z)_
