@@ -32,3 +32,6 @@
 * _**hotfix**_: updated deps and auidt fixes _(zane@liquid-labs.com; 2021-10-20T20:53:31.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-20T20:53:36.000Z)_
 * _**hotfix**_: update mount specs _(zane@liquid-labs.com; 2021-10-20T21:03:13.000Z)_
+
+## Release 1.0.0-beta.53
+* _**hotfix**_: update federated-json version _(zane@liquid-labs.com; 2021-10-20T21:18:13.000Z)_
