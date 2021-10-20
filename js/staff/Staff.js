@@ -111,34 +111,6 @@ const Staff = class {
     return this
   }
   
-  dehydrate() {
-    return this.members.reduce((membersCopy, member) => {
-      // console.log('reducing...') // DEBUG
-      member = Object.assign({}, member)// cloneDeep(member)
-      member.roles = member.roles.map((r) => {
-        const dehydratedRole = { name: r.name }
-        // we do it like this to leave 'manager' out when it's not appropriate or set
-        // console.log(r) // DEBUG
-        if (r.manager) dehydratedRole.manager = r.manager.email
-        return dehydratedRole
-      })
-      member = pick(member, [
-        'company',
-        'email',
-        'employmentStatus',
-        'familyName',
-        'givenName',
-        'parameters',
-        'roles',
-        'startDate'
-      ])
-      // console.log('member', member) // DEBUG
-      
-      membersCopy.push(member)
-      return membersCopy
-    }, [])
-  }
-
   /**
   * Returns the JSON string of the de-hydrated data structure.
   */
@@ -151,15 +123,21 @@ const Staff = class {
         startDate        : s.getStartDate(),
         roles            : [],
         employmentStatus : s.getEmploymentStatus(),
-        parameters       : s.getParameters()
+        parameters       : s.getParameters(),
+        tbd : s.tbd
       }
       s.roles.forEach((attachedRole) => {
-        const roleData = { name : attachedRole.getName() }
-        if (attachedRole.getManager()) { roleData.manager = attachedRole.getManager().getEmail() }
-        if (attachedRole.getQualifier()) { roleData.qualifier = attachedRole.getQualifier() }
-        if (attachedRole.isActing()) { roleData.acting = attachedRole.isActing() }
+        if (attachedRole.impliedBy === undefined) {
+          const roleData = {
+            name : attachedRole.getName(),
+            manager : attachedRole.getManager()?.getEmail(),
+            qualifier : attachedRole.qualifier,
+            acting : attachedRole.acting,
+            layout : attachedRole.layout
+          }
 
-        data.roles.push(roleData)
+          data.roles.push(roleData)
+        }
       })
 
       return data
