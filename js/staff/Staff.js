@@ -207,23 +207,27 @@ const convertRoleToAttached = ({ staff, rec, role, org, impliedBy, display }) =>
 
 const processImpliedRoles = (roles, s, rec, role, org) => {
   for (const { name: impliedRoleName, mngrProtocol, display } of role.implies || []) {
-    const impliedRole = org.getRoles().get(impliedRoleName,
-      {
-        required  : true,
-        errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}' (by implication).`
-      })
+    // An implied role can come from multiple sources, so let's check if it's already in place
+    if (!roles.some((r) => r.name === impliedRoleName)) {
+      const impliedRole = org.getRoles().get(impliedRoleName,
+        {
+          required  : true,
+          errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}' (by implication).`
+        })
+      
+      // console.error(`Processing staff implied role: ${s.getEmail()}/${impliedRoleName}`) // DEBUG
 
-    // console.error(`Processing staff implied role: ${s.getEmail()}/${impliedRoleName}`) // DEBUG
-
-    const manager = mngrProtocol === 'self'
-      ? s.getEmail()
-      : mngrProtocol === 'same'
-        ? rec.manager
-        : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
-    const impliedRec = { name : impliedRoleName, manager }
-    roles.push(convertRoleToAttached({ staff : s, rec : impliedRec, role : impliedRole, org, impliedBy : role, display }))
-    processImpliedRoles(roles, s, impliedRec, impliedRole, org)
-  }
+      const manager = mngrProtocol === 'self'
+        ? s.getEmail()
+        : mngrProtocol === 'same'
+          ? rec.manager
+          : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
+      const impliedRec = { name : impliedRoleName, manager }
+      
+      roles.push(convertRoleToAttached({ staff : s, rec : impliedRec, role : impliedRole, org, impliedBy : role, display }))
+      processImpliedRoles(roles, s, impliedRec, impliedRole, org)
+    } // duplicate test
+  } // implies loop
 }
 
 // Setup 'zeroRes' matchers for 'checkCondition'. If matching parameters are missing, treated as false rather than an
