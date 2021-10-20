@@ -38,3 +38,5 @@
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-20T21:18:30.000Z)_
 
 ## Release 1.0.0-beta.54
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-20T21:34:06.000Z)_
+* _**hotfix**_: update federated json for better error reporting _(zane@liquid-labs.com; 2021-10-20T21:34:21.000Z)_
