@@ -1,22 +1,22 @@
 import * as fs from 'fs'
 
 const Node = class {
-  constructor([name, primMngrName, possibleMngrNames], implied = false) {
+  constructor([name, primaryManagerNodeName, possibleMngrNames], implied = false) {
     this.name = name
     this.implied = implied
-    this.primMngrName = primMngrName
-    this.primMngr = undefined
+    this.primaryManagerNodeName = primaryManagerNodeName
+    this.primaryManagerNode = undefined
     this.possibleMngrNames = possibleMngrNames || []
-    if (primMngrName) this.possibleMngrNames.unshift(primMngrName)
-    this.possibleMngrs = []
+    if (primaryManagerNodeName) this.possibleMngrNames.unshift(primaryManagerNodeName)
+    this.possibleManagerNode = []
     this.children = []
   }
 
   getName() { return this.name }
 
-  getPrimMngr() { return this.primMngr }
+  getPrimaryManagerNode() { return this.primaryManagerNode }
 
-  getPossibleMngrs() { return this.possibleMngrs }
+  getPossibleManagerNode() { return this.possibleManagerNode }
 
   getChildren() { return this.children }
 
@@ -35,20 +35,20 @@ const OrgStructure = class {
     this.roots = []
 
     const processNode = (node) => {
-      if (node.primMngrName === null) {
-        node.primMngr = null // which is not undefined, but positively null
+      if (node.primaryManagerNodeName === null) {
+        node.primaryManagerNode = null // which is not undefined, but positively null
         this.roots.push(node)
       }
       else {
-        const primMngr = nodes.find(n => n.name === node.primMngrName)
-        if (primMngr === undefined) {
+        const primaryManagerNode = nodes.find(n => n.name === node.primaryManagerNodeName)
+        if (primaryManagerNode === undefined) {
           throw new Error(`Invalid org structure. Role '${node.name}' references `
-                          + `non-existent primary manager role '${node.primMngrName}'.`)
+                          + `non-existent primary manager role '${node.primaryManagerNodeName}'.`)
         }
 
-        node.primMngr = primMngr
-        // console.error(`Adding ${node.name} as child of ${primMngr.name}`) // DEBUG
-        primMngr.children.push(node)
+        node.primaryManagerNode = primaryManagerNode
+        // console.error(`Adding ${node.name} as child of ${primaryManagerNode.name}`) // DEBUG
+        primaryManagerNode.children.push(node)
 
         node.possibleMngrNames.forEach(mngrName => {
           const mngr = nodes.find(n => n.name === mngrName)
@@ -57,7 +57,7 @@ const OrgStructure = class {
                             + `non-existent possible manager role '${mngrName}'.`)
           }
 
-          node.possibleMngrs.push(mngr)
+          node.possibleManagerNode.push(mngr)
         })
       }
 
@@ -88,7 +88,7 @@ const OrgStructure = class {
           const managingRoleName = mngrProtocol === 'self'
             ? role.name
             : mngrProtocol === 'same'
-              ? node.primMngrName
+              ? node.primaryManagerNodeName
               : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing org structure.`)
           // TODO: support optional managers.
           processNode(new Node([impliedRoleName, managingRoleName, null], true))

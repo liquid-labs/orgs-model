@@ -35,7 +35,11 @@ const Staff = class {
 
   addData(memberData, { deferHydration = false }) {
     this.members.push(new StaffMember(memberData))
-    if (!deferHydration) this.hydrate(this.org)
+    console.log(`deferHydration: ${deferHydration}`) // DEBUG
+    if (!deferHydration) {
+      console.log('hydrating')
+      this.hydrate(this.org)
+    }
   }
 
   remove(email) {
@@ -80,7 +84,7 @@ const Staff = class {
             errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
           })
 
-        roles.push(convertRoleToAttached({ staff : s, rec, role, org : this.org }))
+        roles.push(convertRoleToAttached({ staffMember : s, rec, role, org : this.org }))
         processImpliedRoles(roles, s, rec, role, this.org)
         return roles
       }, []) // StaffMember roles reduce
@@ -95,9 +99,9 @@ const Staff = class {
           let managerRole = null
           const node = org.orgStructure.getNodeByRoleName(attachedRole.name)
           if (node === undefined) { throw new Error(`Did not find org structure node for '${attachedRole.name}'.`) }
-          if (node.primMngrName) {
-            if (roleManager.hasRole(node.primMngrName)) {
-              managerRole = roleManager.getAttachedRole(node.primMngrName)
+          if (node.primaryManagerNodeName) {
+            if (roleManager.hasRole(node.primaryManagerNodeName)) {
+              managerRole = roleManager.getAttachedRole(node.primaryManagerNodeName)
             }
             else {
               node.possibleMngrNames.some((name) => (managerRole = roleManager.getAttachedRole(name)))
@@ -147,39 +151,49 @@ const Staff = class {
   }
 }
 
-const convertRoleToAttached = ({ staff, rec, role, org, impliedBy, display }) => {
+const convertRoleToAttached = ({ staffMember, rec, role, org, impliedBy, display }) => {
   if (role.isTitular()) {
     // notice we check 'rec', not 'role'; role may be implied.
     const orgNode = org.orgStructure.getNodeByRoleName(rec.name)
     if (orgNode === undefined) {
-      throw new Error(`Staff member '${staff.getEmail()}' claims role '${rec.name}' not used in this org.`)
+      throw new Error(`Staff member '${staffMember.getEmail()}' claims role '${rec.name}' not used in this org.`)
     }
     // TODO: check the prim manager from the org structure persective
-    // orgNode.getPrimMngr() !== null
+    // orgNode.getPrimaryManagerNode() !== null
   }
 
   // TODO: this is only valid for titular roles, yeah? nest this if...
   let roleManager = null
-  if (rec.manager && typeof rec.manager === 'string') {
-    // Then replace manager ID with manager object and add ourselves to their reports
-    // console.error(`converting with manager: ${rec.manager}`) // DEBUG
-    roleManager = org.getStaff().get(rec.manager)
-    if (roleManager === undefined) {
-      throw new Error(`No such manager '${rec.manager}' found while loading staff member '${staff.getEmail()}'.`)
+  if (role.titular === true) {
+    // if there's only one possible manager, let's set it
+    if (!rec.manager) {
+      const possibleManagers = org.staff.getByRoleName(role.name)
+      if (possibleManagers.length === 1) {
+        rec.manager = possibleManagers[0].email
+      }
     }
+    
+    if (rec.manager && typeof rec.manager === 'string') {
+      // Then replace manager ID with manager object and add ourselves to their reports
+      // console.error(`converting with manager: ${rec.manager}`) // DEBUG
+      roleManager = org.getStaff().get(rec.manager)
+      if (roleManager === undefined) {
+        throw new Error(`No such manager '${rec.manager}' found while loading staff member '${staffMember.getEmail()}'.`)
+      }
 
-    // Add ourselves to the manager's reports
-    if (roleManager.reportsByReportRole[role.name] === undefined) {
-      roleManager.reportsByReportRole[role.name] = []
+      // Add ourselves to the manager's reports
+      if (roleManager.reportsByReportRole[role.name] === undefined) {
+        roleManager.reportsByReportRole[role.name] = []
+      }
+      roleManager.reportsByReportRole[role.name].push(staffMember)
     }
-    roleManager.reportsByReportRole[role.name].push(staff)
   }
 
   // TODO: have constructor take an object and include 'impliedBy'
-  const attachedRole = new AttachedRole(role, rec, roleManager, staff)
+  const attachedRole = new AttachedRole(role, rec, roleManager, staffMember)
   attachedRole.display = display
   if (impliedBy !== undefined) { attachedRole.impliedBy = impliedBy }
-  staff.attachedRolesByName[role.name] = attachedRole
+  staffMember.attachedRolesByName[role.name] = attachedRole
   return attachedRole
 }
 
@@ -202,7 +216,7 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
           : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
       const impliedRec = { name : impliedRoleName, manager }
       
-      roles.push(convertRoleToAttached({ staff : s, rec : impliedRec, role : impliedRole, org, impliedBy : role, display }))
+      roles.push(convertRoleToAttached({ staffMember : s, rec : impliedRec, role : impliedRole, org, impliedBy : role, display }))
       processImpliedRoles(roles, s, impliedRec, impliedRole, org)
     } // duplicate test
   } // implies loop

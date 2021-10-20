@@ -54,7 +54,7 @@ describe('OrgStructure', () => {
     })
 
     test('\'CEO\' has null parent', () => {
-      expect(orgStructure.getNodeByRoleName('CEO').getPrimMngr()).toBe(null)
+      expect(orgStructure.getNodeByRoleName('CEO').getPrimaryManagerNode()).toBe(null)
     })
 
     test.each`
@@ -62,7 +62,7 @@ describe('OrgStructure', () => {
     ${'CTO'} | ${'CEO'}
     ${'Developer'} | ${'CTO'}
     `('\'$name\' has primary manager \'$mngrName\'', ({ name, mngrName }) => {
-      expect(orgStructure.getNodeByRoleName(name).getPrimMngr().getName()).toEqual(mngrName)
+      expect(orgStructure.getNodeByRoleName(name).getPrimaryManagerNode().getName()).toEqual(mngrName)
     })
 
     test.each`
@@ -70,7 +70,7 @@ describe('OrgStructure', () => {
     ${'CTO'} | ${['CEO']}
     ${'Developer'} | ${['CTO', 'Developer']}
     `('\'$name\' has possible managers \'$mngrs\'', ({ name, mngrs }) => {
-      expect(orgStructure.getNodeByRoleName(name).getPossibleMngrs().map(m => m.getName())).toEqual(mngrs)
+      expect(orgStructure.getNodeByRoleName(name).getPossibleManagerNode().map(m => m.getName())).toEqual(mngrs)
     })
   })
 })
