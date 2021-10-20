@@ -36,3 +36,5 @@
 ## Release 1.0.0-beta.53
 * _**hotfix**_: update federated-json version _(zane@liquid-labs.com; 2021-10-20T21:18:13.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-20T21:18:30.000Z)_
+
+## Release 1.0.0-beta.54
