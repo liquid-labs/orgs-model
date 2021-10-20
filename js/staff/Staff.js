@@ -1,7 +1,5 @@
 import * as fs from 'fs'
 
-import pick from 'lodash/pick'
-
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import { StaffMember } from './StaffMember'
@@ -16,7 +14,7 @@ const Staff = class {
     this.checkCondition = checkCondition
 
     this.key = 'email'
-    
+
     this.map = indexMembers(this.members)
   }
 
@@ -30,8 +28,7 @@ const Staff = class {
 
   addData(memberData, { deferHydration = false }) {
     this.members.push(new StaffMember(memberData))
-    if (!deferHydration)
-      this.hydrate(this.org)
+    if (!deferHydration) { this.hydrate(this.org) }
   }
 
   remove(email) {
@@ -66,9 +63,9 @@ const Staff = class {
           roles.push(rec)
           return roles
         }
-        
+
         if (typeof rec === 'string') {
-          rec = { name: rec }
+          rec = { name : rec }
         }
         // Verify rec references a good role. Note, we check the 'orgStructure' because there may be a role defined
         // globally that isn't in use in the org.
@@ -100,11 +97,11 @@ const Staff = class {
               list.push(...org.staff.getByRoleName(node.name))
               return list
             }, [])
-            
+
             if (possibleManagers.length === 1) {
               const managerEmail = possibleManagers[0].email
               const managedRoleName = attachedRole.getName()
-              roleManager = hydrateManager({ org, staffMember: s, managerEmail, managedRoleName })
+              roleManager = hydrateManager({ org, staffMember : s, managerEmail, managedRoleName })
               attachedRole.manager = roleManager
             }
           }
@@ -128,7 +125,7 @@ const Staff = class {
 
     return this
   }
-  
+
   /**
   * Returns the JSON string of the de-hydrated data structure.
   */
@@ -142,16 +139,16 @@ const Staff = class {
         roles            : [],
         employmentStatus : s.getEmploymentStatus(),
         parameters       : s.getParameters(),
-        tbd : s.tbd
+        tbd              : s.tbd
       }
       s.roles.forEach((attachedRole) => {
         if (attachedRole.impliedBy === undefined) {
           const roleData = {
-            name : attachedRole.getName(),
-            manager : attachedRole.getManager()?.getEmail(),
+            name      : attachedRole.getName(),
+            manager   : attachedRole.getManager()?.getEmail(),
             qualifier : attachedRole.qualifier,
-            acting : attachedRole.acting,
-            layout : attachedRole.layout
+            acting    : attachedRole.acting,
+            layout    : attachedRole.layout
           }
 
           data.roles.push(roleData)
@@ -204,7 +201,7 @@ const convertRoleToAttached = ({ staffMember, rec, role, org, impliedBy, display
 // Replace manager ID with manager object and add ourselves to their reports
 const hydrateManager = ({ org, managerEmail, managedRoleName, staffMember }) => {
   const roleManager = org.getStaff().get(managerEmail)
-  
+
   if (roleManager === undefined) {
     throw new Error(`No such manager '${managerEmail}' found while loading staff member '${staffMember.getEmail()}'.`)
   }
@@ -214,7 +211,7 @@ const hydrateManager = ({ org, managerEmail, managedRoleName, staffMember }) => 
     roleManager.reportsByReportRole[managedRoleName] = []
   }
   roleManager.reportsByReportRole[managedRoleName].push(staffMember)
-  
+
   return roleManager
 }
 
@@ -227,7 +224,7 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
           required  : true,
           errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}' (by implication).`
         })
-      
+
       // console.error(`Processing staff implied role: ${s.getEmail()}/${impliedRoleName}`) // DEBUG
 
       const manager = mngrProtocol === 'self'
@@ -236,7 +233,7 @@ const processImpliedRoles = (roles, s, rec, role, org) => {
           ? rec.manager
           : throw new Error(`Unkown (or undefined?) manager protocol '${mngrProtocol}' found while processing staff.`)
       const impliedRec = { name : impliedRoleName, manager }
-      
+
       roles.push(convertRoleToAttached({ staffMember : s, rec : impliedRec, role : impliedRole, org, impliedBy : role, display }))
       processImpliedRoles(roles, s, impliedRec, impliedRole, org)
     } // duplicate test

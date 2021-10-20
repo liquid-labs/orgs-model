@@ -25,7 +25,7 @@ const Roles = class {
 
   get(name, opts) {
     const { required, fuzzy, errMsgGen } = opts || {}
-    
+
     // we always try an exact match first
     let result = this.map[name]
     // now fuzzy match if desired
@@ -35,8 +35,8 @@ const Roles = class {
         return role.matcher !== undefined
           && name.match(new RegExp(role.matcher.pattern, 'i'))
           && !(role.matcher.antiPattern && name.match(new RegExp(role.matcher.antiPattern, 'i')))
-        })
-          
+      })
+
       if (matchingRoles.length === 1) {
         result = matchingRoles[0]
       }
@@ -44,11 +44,11 @@ const Roles = class {
         throw new Error(`Ambiguous role '${name}' matched to '${matchingRoles.map((r) => r.name).join("', '")}'`)
       }
     }
-    
+
     if (result === undefined && required) {
       throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
     }
-    
+
     return result
   }
 
