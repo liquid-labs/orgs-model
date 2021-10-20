@@ -12,17 +12,12 @@ const Staff = class {
     this.fileName = fileName
     const data = JSON.parse(fs.readFileSync(fileName))
     this.members = data.map((rec) => new StaffMember(rec))
-    this.map = this.members.reduce((acc, member, i) => {
-      if (acc[member.getEmail()] !== undefined) {
-        throw new Error(`Staff member with email '${member.getEmail()}' already exists at entry ${i}.`)
-      }
-      acc[member.getEmail()] = member
-      return acc
-    }, {})
 
     this.checkCondition = checkCondition
 
     this.key = 'email'
+    
+    this.map = indexMembers(this.members)
   }
 
   // TODO: depracated
@@ -35,11 +30,8 @@ const Staff = class {
 
   addData(memberData, { deferHydration = false }) {
     this.members.push(new StaffMember(memberData))
-    console.log(`deferHydration: ${deferHydration}`) // DEBUG
-    if (!deferHydration) {
-      console.log('hydrating')
+    if (!deferHydration)
       this.hydrate(this.org)
-    }
   }
 
   remove(email) {
@@ -66,6 +58,8 @@ const Staff = class {
   hydrate(org) {
     this.org = org
 
+    this.map = indexMembers(this.members)
+
     this.members.forEach((s) => {
       s.roles = s.roles.reduce((roles, rec) => { // Yes, both maps AND has side effects. Suck it!
         if (rec instanceof AttachedRole) {
@@ -91,24 +85,44 @@ const Staff = class {
     }) // StaffMember iteration
 
     // we need to determine the manager role after everything else has been set up because the manager's role is not
-    // determined strictly by the abstract or chart due to the 'possible managers' convention.
+    // determined strictly by the abstract org chart alone, since there may be multiple candidates
     this.members.forEach((s) => {
       s.getAttachedRoles().forEach((attachedRole) => {
-        const roleManager = attachedRole.getManager()
-        if (attachedRole.isTitular() && roleManager !== null) {
-          let managerRole = null
-          const node = org.orgStructure.getNodeByRoleName(attachedRole.name)
-          if (node === undefined) { throw new Error(`Did not find org structure node for '${attachedRole.name}'.`) }
-          if (node.primaryManagerNodeName) {
-            if (roleManager.hasRole(node.primaryManagerNodeName)) {
-              managerRole = roleManager.getAttachedRole(node.primaryManagerNodeName)
-            }
-            else {
-              node.possibleMngrNames.some((name) => (managerRole = roleManager.getAttachedRole(name)))
+        let roleManager = attachedRole.getManager()
+        if (attachedRole.isTitular()) {
+          // if there's only one possible manager, let's set it
+          if (roleManager === null) {
+            const possibleManagerNodes = this.org.orgStructure
+              .getNodeByRoleName(attachedRole.name)
+              .getPossibleManagerNodes()
+
+            const possibleManagers = possibleManagerNodes.reduce((list, node) => {
+              list.push(...org.staff.getByRoleName(node.name))
+              return list
+            }, [])
+            
+            if (possibleManagers.length === 1) {
+              const managerEmail = possibleManagers[0].email
+              const managedRoleName = attachedRole.getName()
+              roleManager = hydrateManager({ org, staffMember: s, managerEmail, managedRoleName })
+              attachedRole.manager = roleManager
             }
           }
-          attachedRole.managerRole = managerRole
-        }
+          if (roleManager !== null) {
+            let managerRole = null
+            const node = org.orgStructure.getNodeByRoleName(attachedRole.name)
+            if (node === undefined) { throw new Error(`Did not find org structure node for '${attachedRole.name}'.`) }
+            if (node.primaryManagerNodeName) {
+              if (roleManager.hasRole(node.primaryManagerNodeName)) {
+                managerRole = roleManager.getAttachedRole(node.primaryManagerNodeName)
+              }
+              else {
+                node.possibleMngrNames.some((name) => (managerRole = roleManager.getAttachedRole(name)))
+              }
+            }
+            attachedRole.managerRole = managerRole
+          } // has manager check
+        } // titular check
       })
     })
 
@@ -151,6 +165,15 @@ const Staff = class {
   }
 }
 
+const indexMembers = (members) =>
+  members.reduce((acc, member, i) => {
+    if (acc[member.getEmail()] !== undefined) {
+      throw new Error(`Staff member with email '${member.getEmail()}' already exists at entry ${i}.`)
+    }
+    acc[member.getEmail()] = member
+    return acc
+  }, {})
+
 const convertRoleToAttached = ({ staffMember, rec, role, org, impliedBy, display }) => {
   if (role.isTitular()) {
     // notice we check 'rec', not 'role'; role may be implied.
@@ -165,27 +188,8 @@ const convertRoleToAttached = ({ staffMember, rec, role, org, impliedBy, display
   // TODO: this is only valid for titular roles, yeah? nest this if...
   let roleManager = null
   if (role.titular === true) {
-    // if there's only one possible manager, let's set it
-    if (!rec.manager) {
-      const possibleManagers = org.staff.getByRoleName(role.name)
-      if (possibleManagers.length === 1) {
-        rec.manager = possibleManagers[0].email
-      }
-    }
-    
     if (rec.manager && typeof rec.manager === 'string') {
-      // Then replace manager ID with manager object and add ourselves to their reports
-      // console.error(`converting with manager: ${rec.manager}`) // DEBUG
-      roleManager = org.getStaff().get(rec.manager)
-      if (roleManager === undefined) {
-        throw new Error(`No such manager '${rec.manager}' found while loading staff member '${staffMember.getEmail()}'.`)
-      }
-
-      // Add ourselves to the manager's reports
-      if (roleManager.reportsByReportRole[role.name] === undefined) {
-        roleManager.reportsByReportRole[role.name] = []
-      }
-      roleManager.reportsByReportRole[role.name].push(staffMember)
+      roleManager = hydrateManager({ org, staffMember, managerEmail : rec.manager, managedRoleName : role.name })
     }
   }
 
@@ -195,6 +199,23 @@ const convertRoleToAttached = ({ staffMember, rec, role, org, impliedBy, display
   if (impliedBy !== undefined) { attachedRole.impliedBy = impliedBy }
   staffMember.attachedRolesByName[role.name] = attachedRole
   return attachedRole
+}
+
+// Replace manager ID with manager object and add ourselves to their reports
+const hydrateManager = ({ org, managerEmail, managedRoleName, staffMember }) => {
+  const roleManager = org.getStaff().get(managerEmail)
+  
+  if (roleManager === undefined) {
+    throw new Error(`No such manager '${managerEmail}' found while loading staff member '${staffMember.getEmail()}'.`)
+  }
+
+  // Add ourselves to the manager's reports
+  if (roleManager.reportsByReportRole[managedRoleName] === undefined) {
+    roleManager.reportsByReportRole[managedRoleName] = []
+  }
+  roleManager.reportsByReportRole[managedRoleName].push(staffMember)
+  
+  return roleManager
 }
 
 const processImpliedRoles = (roles, s, rec, role, org) => {

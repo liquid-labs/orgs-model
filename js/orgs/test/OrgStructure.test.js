@@ -70,7 +70,7 @@ describe('OrgStructure', () => {
     ${'CTO'} | ${['CEO']}
     ${'Developer'} | ${['CTO', 'Developer']}
     `('\'$name\' has possible managers \'$mngrs\'', ({ name, mngrs }) => {
-      expect(orgStructure.getNodeByRoleName(name).getPossibleManagerNode().map(m => m.getName())).toEqual(mngrs)
+      expect(orgStructure.getNodeByRoleName(name).getPossibleManagerNodes().map(m => m.getName())).toEqual(mngrs)
     })
   })
 })

@@ -50,7 +50,7 @@ const Organization = class {
   }
 
   getManagingRolesByManagedRoleName(roleName) {
-    return this.orgStructure.getNodeByRoleName(roleName).getPossibleManagerNode()
+    return this.orgStructure.getNodeByRoleName(roleName).getPossibleManagerNodes()
   }
 
   generateOrgChartData(style = 'debang/OrgChart') {

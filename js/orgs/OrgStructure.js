@@ -8,7 +8,7 @@ const Node = class {
     this.primaryManagerNode = undefined
     this.possibleMngrNames = possibleMngrNames || []
     if (primaryManagerNodeName) this.possibleMngrNames.unshift(primaryManagerNodeName)
-    this.possibleManagerNode = []
+    this.possibleManagerNodes = []
     this.children = []
   }
 
@@ -16,7 +16,7 @@ const Node = class {
 
   getPrimaryManagerNode() { return this.primaryManagerNode }
 
-  getPossibleManagerNode() { return this.possibleManagerNode }
+  getPossibleManagerNodes() { return this.possibleManagerNodes }
 
   getChildren() { return this.children }
 
@@ -57,7 +57,7 @@ const OrgStructure = class {
                             + `non-existent possible manager role '${mngrName}'.`)
           }
 
-          node.possibleManagerNode.push(mngr)
+          node.possibleManagerNodes.push(mngr)
         })
       }
 
