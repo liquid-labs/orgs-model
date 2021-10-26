@@ -24,17 +24,31 @@ const Roles = class {
   list() { return this.items.slice() }
 
   get(name, opts) {
-    const { required, fuzzy, errMsgGen } = opts || {}
+    const { errMsgGen, fuzzy = false, includeQualifier = false, required = false } = opts || {}
 
     // we always try an exact match first
     let result = this.map[name]
+    let qualifier = null
     // now fuzzy match if desired
     if (result === undefined && fuzzy === true) {
       const matchingRoles = this.items.filter((role) => {
-        if (name === 'Chief admin officer') console.log(`Testing ${role.name}: ${role.matcher?.pattern}`) // DEBUG
-        return role.matcher !== undefined
-          && name.match(new RegExp(role.matcher.pattern, 'i'))
-          && !(role.matcher.antiPattern && name.match(new RegExp(role.matcher.antiPattern, 'i')))
+        if (role.matcher !== undefined) {
+          const { antiPattern, pattern, qualifierGroup } = role.matcher
+          const match = name.match(new RegExp(pattern, 'i'))
+          if (match) {
+            // check anti-pattern first and bail out to avoid setting qualifier for disqualified match
+            if (antiPattern && name.match(new RegExp(antiPattern, 'i'))) {
+              return false
+            }
+            
+            if (qualifierGroup) {
+              qualifier = match[qualifierGroup]
+              console.error(`qualifier group: ${qualifierGroup}/${qualifier}`)
+            }
+            return true
+          }
+        }
+        return false
       })
 
       if (matchingRoles.length === 1) {
@@ -45,11 +59,16 @@ const Roles = class {
       }
     }
 
-    if (result === undefined && required) {
+    if (result === undefined && required === true) {
       throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
     }
 
-    return result
+    if (includeQualifier === true) {
+      return [ result, qualifier ]
+    }
+    else {
+      return result
+    }
   }
 
   getStaffInRole(roleName) {
