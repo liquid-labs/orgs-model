@@ -40,7 +40,7 @@ const Roles = class {
             if (antiPattern && name.match(new RegExp(antiPattern, 'i'))) {
               return false
             }
-            
+
             if (qualifierGroup) {
               qualifier = match[qualifierGroup]
               console.error(`qualifier group: ${qualifierGroup}/${qualifier}`)
@@ -64,7 +64,7 @@ const Roles = class {
     }
 
     if (includeQualifier === true) {
-      return [ result, qualifier ]
+      return [result, qualifier]
     }
     else {
       return result
