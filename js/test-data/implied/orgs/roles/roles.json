@@ -1,0 +1,11 @@
+[
+  { "name": "CEO", "singular": true, "titular": true, "jobDescription": "Chief executive officer." },
+  { "name": "CTO", "singular": true, "titular": true, "jobDescription": "Chief technical officer.", "implies": [ { "name": "Head Developer", "mngrProtocol": "self" }, { "name": "Sensitive Data Handler", "mngrProtocol": "self" } ] },
+  { "name": "Developer", "titular": true, "qualifiable": true, "jobDescription": "Hacker." },
+  { "name": "Senior Developer", "titular": true, "qualifiable": true, "superRole": "Developer", "jobDescription": "Hacker." },
+  { "name": "Head Developer", "titular": true, "qualifiable": true, "superRole": "Senior Developer", "jobDescription": "Hacker." },
+  { "name": "Tester", "titular": true, "qualifiable": true, "jobDescription": "QA." },
+  { "name": "Sensitive Data Handler", "jobDescription": "Knows secrets." },
+  { "name": "Acme Admin", "designated": true, "jobDescription": "Administers the Acme account." },
+  { "name": "Business Support Admin", "designated": true, "jobDescription": "Provides general administrative support for third-party accounts and other non-production, internal, and business services." }
+]

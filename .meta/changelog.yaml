@@ -7,10 +7,7 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
-    - "@liquid-labs/liq-core"
     - "@liquid-labs/orgs-model"
-    - "@moca/moca-financial-policy"
-    - "@liquid-labs/policy-core"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
@@ -137,6 +134,21 @@
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Match roles and save refreshed employees
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- startTimestamp: 2021-10-26T23:17:07.473Z
+  startEpochMillis: 1635290227473
+  issues:
+    - https://github.com/Liquid-Labs/orgs-model/issues/62
+  branch: 2021.10.26-zane@liquid-labs.com-fix_implied_roles
+  branchFrom: b76a0064ae796f1422dde21d14dbecde1c34174a
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Fix implied roles
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []

@@ -113,6 +113,11 @@ const OrgStructure = class {
       throw new Error(`Found non-unique role${dupeRoles.length > 1 ? 's' : ''} `
                       + `references in org structure: ${dupeRoles.join(', ')}`)
     }
+    
+    // TODO: for now, we limit roots to a single entry; the original idea was to support multiple roots (use case not remembered/clear), but it causes problems in generating the org chart in that there's an assumption of a single root somewhere
+    if (this.roots.length > 1) {
+      throw new Error(`Multiple non-managed (root) entries found. We currently only support a single non-managed entry. (${this.roots.map(r => r.name).join(', ')})`)
+    }
   }
 
   getRoots() { return [...this.roots] }

@@ -105,7 +105,7 @@ const Organization = class {
           // if there's a qualifier, we create the 'effective' role name here
           const qualifier = row[2]
           const title = qualifier
-            ? roleName.replace(/^(Senior )?/, `$1${qualifier} `)
+            ? roleName.replace(/^((Head|Lead|Senior|Junior) )?/, `$1${qualifier} `)
             : roleName
           const role = this.roles.get(roleName)
 
