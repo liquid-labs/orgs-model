@@ -42,3 +42,8 @@
 * _**hotfix**_: update federated json for better error reporting _(zane@liquid-labs.com; 2021-10-20T21:34:21.000Z)_
 
 ## Release 1.0.0-beta.55
+
+## Release 1.0.0-beta.56
+* Fix implied roles _(zane@liquid-labs.com; 2021-10-26T23:17:07.473Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-27T01:23:15.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2021-10-27T01:23:53.000Z)_
