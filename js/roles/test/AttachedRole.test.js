@@ -38,4 +38,27 @@ describe('AttachedRole', () => {
       expect(org.getStaff().get(email).getAttachedRole(roleName).getQualifier()).toBe(qualifier)
     })
   })
+  
+  describe('implied roles', () => {
+    let impliedOrg
+    let ceo
+    beforeAll(() => {
+      impliedOrg = new Organization('./js/test-data/implied', './js/staff/test/staff.json')
+      ceo = impliedOrg.staff.get('ceo@foo.com')
+    })
+    
+    test("implied-CEO has implied titular role 'Head Developer'", () => {
+      expect(ceo.hasRole('Head Developer')).toBe(true)
+      expect(ceo.getAttachedRole('Head Developer')).toBeTruthy()
+    })
+    
+    test("implied-CEO has implied non-titular role 'Sensitive Data Handler'", () => {
+      expect(ceo.hasRole('Sensitive Data Handler')).toBe(true)
+      expect(ceo.getAttachedRole('Sensitive Data Handler')).toBeTruthy()
+    })
+    
+    test("implied CEO is their own manager as 'Head Developer'", () => {
+      expect(ceo.getAttachedRole('Head Developer').getManager()).toBe(ceo)
+    })
+  })
 })

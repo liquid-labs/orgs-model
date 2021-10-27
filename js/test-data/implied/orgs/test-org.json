@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "com.liquid-labs.federated-json": {
+      "mountSpecs": [
+        {
+          "path": ".thirdPartyAccounts",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/third-party-accounts.json"
+        },
+        {
+          "path": ".roles",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/implied/orgs/roles/roles.json"
+        },
+        {
+          "path": ".vendors",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/vendors.json"
+        }
+      ]
+    }
+  },
+  "roles": null,
+  "thirdPartyAccounts": null,
+  "vendors": null
+}
