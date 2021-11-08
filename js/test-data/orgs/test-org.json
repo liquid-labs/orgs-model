@@ -11,13 +11,13 @@
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/roles/roles.json"
         },
         {
-          "path": ".vendors",
-          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/vendors.json"
+          "path": ".technologies",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/technologies.json"
         }
       ]
     }
   },
   "roles": null,
   "thirdPartyAccounts": null,
-  "vendors": null
+  "technologies": null
 }

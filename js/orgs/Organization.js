@@ -5,6 +5,7 @@ import { AccountsAPI } from '../accounts'
 import { AuditRecordsAPI } from '../auditRecords'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
+import { TechnologiesAPI } from '../technologies'
 import { VendorsAPI } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
@@ -27,8 +28,11 @@ const Organization = class {
 
     this.accounts = new AccountsAPI(this)
     this.auditRecords = new AuditRecordsAPI(this)
-    this.audits = this.innerState.audits
+    this.audits = this.innerState.audits // new AuditsAPI(this)
+    this.technologies = new TechnologiesAPI(this)
     this.vendors = new VendorsAPI(this)
+    
+    this.technologies.hydrate()
   }
 
   // TODO: deprecated; just use 'org.roles'

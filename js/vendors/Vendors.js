@@ -1,19 +1,25 @@
-/**
-* Basic methods for accessing the vendors/product data. Note that functionality is split up like this to make these
-* functions easier to unit test.
-*/
+import { Resources } from '../lib/resources'
+
+const key = 'legalName'
 
 /**
-* Retrieves a single vendor/product entry by name.
+* Basic class wrapping vendor items. Functionality is split between 'Vendors' and 'VendorsAPI' to simplify testing.
 */
-const get = (data, name) => data?.vendors?.[name] && toStandalone(data, name)
+const Vendors = class extends Resources {
+  constructor(items) {
+    super({ items, key })
+    this.indexCommon = this.items.reduce((index, item) => {
+      const { commonName } = item
+      const list = index[commonName] || []
+      list.push(item)
+      index[commonName] = list
+      return index
+    }, {})
+  }
+  
+  getByCommonName(commonName) {
+    return this.indexCommon[commonName] || []
+  }
+}
 
-const list = (data) => Object.keys(data?.vendors || {}).sort().map((key) => toStandalone(data, key))
-
-// helper/non-exported items
-/**
-* Since our data is complete as is, this just makes a copy for safety's sake.
-*/
-const toStandalone = (data, name) => Object.assign({ id : name }, data.vendors[name])
-
-export { get, list }
+export { Vendors }

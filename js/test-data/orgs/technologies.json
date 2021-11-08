@@ -1,5 +1,5 @@
-{
-  "Amazon API Gateway": {
+[
+  {
     "name": "Amazon API Gateway",
     "purposeSummary": "network route - API management",
     "usageStatus": "Planned future use",
@@ -25,4 +25,4 @@
     "notes": "Used to manage incoming API requests.",
     "documentReferences": []
   }
-}
+]
