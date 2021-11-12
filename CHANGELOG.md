@@ -47,3 +47,7 @@
 * Fix implied roles _(zane@liquid-labs.com; 2021-10-26T23:17:07.473Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-10-27T01:23:15.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2021-10-27T01:23:53.000Z)_
+
+## Release 1.0.0-beta.57
+* Convert audits DB to a list _(zane@liquid-labs.com; 2021-11-08T21:41:54.995Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2021-11-12T23:00:19.000Z)_
