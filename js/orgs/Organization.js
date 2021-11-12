@@ -31,7 +31,7 @@ const Organization = class {
     this.audits = this.innerState.audits // new AuditsAPI(this)
     this.technologies = new TechnologiesAPI(this)
     this.vendors = new VendorsAPI(this)
-    
+
     this.technologies.hydrate()
   }
 

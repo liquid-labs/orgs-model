@@ -24,11 +24,11 @@ const Roles = class {
   list() { return this.items.slice() }
 
   get(name, {
-      errMsgGen,
-      fuzzy = false,
-      includeQualifier = false,
-      required = false } = {}) {
-
+    errMsgGen,
+    fuzzy = false,
+    includeQualifier = false,
+    required = false
+  } = {}) {
     // we always try an exact match first
     let result = this.map[name]
     let qualifier = null

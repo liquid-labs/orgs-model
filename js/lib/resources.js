@@ -4,11 +4,11 @@
 const Resources = class {
   constructor({ items, key }) {
     this.items = items || []
-    this.items.forEach((item) => item.id = item.id || item[key])
+    this.items.forEach((item) => { item.id = item.id || item[key] })
     this.index = this.items.reduce((index, item) => { index[item[key]] = item; return index }, {})
     this.key = key
   }
-  
+
   /**
   * Retrieves a single vendor/product entry by name.
   */
@@ -17,10 +17,10 @@ const Resources = class {
     if (required === true && result === undefined) {
       throw new Error(`Did not find required vendor '${name}'.`)
     }
-    
+
     return result
   }
-  
+
   key() { return this.key }
 
   list({ sort = this.key } = {}) {

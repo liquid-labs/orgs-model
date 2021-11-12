@@ -10,18 +10,18 @@ import { commonAPIInstanceSetup } from '../lib/resources'
 const TechnologiesAPI = class extends Technologies {
   constructor(org) {
     super(org.innerState.technologies)
-    commonAPIInstanceSetup({ self: this, org, checkCondition })
+    commonAPIInstanceSetup({ self : this, org, checkCondition })
   }
-    
+
   hydrate() {
     for (const technology of this.items || []) {
-      const { 'Vendor name': vendorName, "Name": name } = technology
-      
+      const { 'Vendor name': vendorName, Name: name } = technology
+
       const vendor = this.org.vendors.get(vendorName)
       if (vendor === undefined) {
-        const badRefEntry = { sourceType: 'technology', sourceName: name, ref: vendorName }
+        const badRefEntry = { sourceType : 'technology', sourceName : name, ref : vendorName }
         const commonVendors = this.org.vendors.getByCommonName(vendorName)
-        if (commonVendors.length == 1) {
+        if (commonVendors.length === 1) {
           badRefEntry.advice = `There is a vendor with that common name. If that is the correct vendor, use legal name '${commonVendors[0].legalName}' in the technology entry.`
         }
         else if (commonVendors.length > 1) {

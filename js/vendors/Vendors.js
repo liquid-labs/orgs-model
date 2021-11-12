@@ -16,7 +16,7 @@ const Vendors = class extends Resources {
       return index
     }, {})
   }
-  
+
   getByCommonName(commonName) {
     return this.indexCommon[commonName] || []
   }
