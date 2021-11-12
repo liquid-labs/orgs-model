@@ -3,6 +3,10 @@
     "com.liquid-labs.federated-json": {
       "mountSpecs": [
         {
+          "path": ".audits",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/audits.json"
+        },
+        {
           "path": ".thirdPartyAccounts",
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/third-party-accounts.json"
         },
@@ -17,6 +21,7 @@
       ]
     }
   },
+  "audits": null,
   "roles": null,
   "thirdPartyAccounts": null,
   "technologies": null
