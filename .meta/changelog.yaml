@@ -7,7 +7,14 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
+    - "@liquid-labs/policies-model"
     - "@liquid-labs/orgs-model"
+    - "@liquid-labs/policy-projects"
+    - "@liquid-labs/liq-ext-audit-vendors"
+    - "@liquid-labs/policy-staff"
+    - "@liquid-labs/policy-devices"
+    - "@liquid-labs/liq-ext-audits"
+    - "@moca/moca-financial-policy"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
