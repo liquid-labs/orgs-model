@@ -51,3 +51,7 @@
 ## Release 1.0.0-beta.57
 * Convert audits DB to a list _(zane@liquid-labs.com; 2021-11-08T21:41:54.995Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2021-11-12T23:00:19.000Z)_
+
+## Release 1.0.0-beta.58
+* _**hotfix**_: actually use the AuditsAPI _(zane@liquid-labs.com; 2021-11-12T23:06:48.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-11-12T23:07:06.000Z)_
