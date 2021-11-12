@@ -3,6 +3,7 @@ import { JSONLoop } from './lib/JSONLoop'
 
 import { AccountsAPI } from '../accounts'
 import { AuditRecordsAPI } from '../auditRecords'
+import { AuditsAPI } from '../audits'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
 import { TechnologiesAPI } from '../technologies'
@@ -28,7 +29,7 @@ const Organization = class {
 
     this.accounts = new AccountsAPI(this)
     this.auditRecords = new AuditRecordsAPI(this)
-    this.audits = this.innerState.audits // new AuditsAPI(this)
+    this.audits = new AuditsAPI(this)
     this.technologies = new TechnologiesAPI(this)
     this.vendors = new VendorsAPI(this)
 
