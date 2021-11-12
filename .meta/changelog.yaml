@@ -7,7 +7,14 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
+    - "@liquid-labs/policies-model"
     - "@liquid-labs/orgs-model"
+    - "@liquid-labs/policy-projects"
+    - "@liquid-labs/liq-ext-audit-vendors"
+    - "@liquid-labs/policy-staff"
+    - "@liquid-labs/policy-devices"
+    - "@liquid-labs/liq-ext-audits"
+    - "@moca/moca-financial-policy"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
@@ -149,6 +156,22 @@
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Fix implied roles
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- startTimestamp: 2021-11-08T21:41:54.995Z
+  startEpochMillis: 1636407714995
+  issues:
+    - https://github.com/Liquid-Labs/policies-model/issues/8
+  branch: 2021.11.06-zane@liquid-labs.com-convert_audits_db_to
+  branchFrom: 387760de40beada1455467277e7f789c947c5ba9
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/policies-model"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Convert audits DB to a list
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
