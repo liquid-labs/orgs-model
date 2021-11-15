@@ -5,8 +5,18 @@ const Resources = class {
   constructor({ items, key }) {
     this.items = items || []
     this.items.forEach((item) => { item.id = item.id || item[key] })
-    this.index = this.items.reduce((index, item) => { index[item[key]] = item; return index }, {})
     this.key = key
+
+    this.index = this.items.reduce((index, item) => { index[item[key]] = item; return index }, {})
+  }
+
+  add(item) {
+    if (this.index[item.id] !== undefined) {
+      throw new Error(`Cannot add item with existing key '${item.id}'.`)
+    }
+
+    this.items.push(item)
+    this.index[item.id] = item
   }
 
   /**
