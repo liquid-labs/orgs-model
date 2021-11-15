@@ -57,3 +57,7 @@
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-11-12T23:07:06.000Z)_
 
 ## Release 1.0.0-beta.59
+
+## Release 1.0.0-beta.60
+* _**hotfix**_: ensure rebuild before version update _(zane@liquid-labs.com; 2021-11-12T23:11:38.000Z)_
+* Convert audits DB to a list _(zane@liquid-labs.com; 2021-11-12T23:30:29.598Z)_
