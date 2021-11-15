@@ -175,3 +175,25 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2021-11-12T23:30:29.598Z
+  startEpochMillis: 1636759829598
+  issues:
+    - https://github.com/Liquid-Labs/policies-model/issues/8
+  branch: 2021.11.06-zane@liquid-labs.com-convert_audits_db_to
+  branchFrom: e93402bfccfc2677888c758723b4f738266bb695
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/policies-model"
+    - "@liquid-labs/policy-projects"
+    - "@liquid-labs/liq-ext-audit-vendors"
+    - "@liquid-labs/policy-staff"
+    - "@liquid-labs/policy-devices"
+    - "@liquid-labs/liq-ext-audits"
+    - "@moca/moca-financial-policy"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Convert audits DB to a list
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
