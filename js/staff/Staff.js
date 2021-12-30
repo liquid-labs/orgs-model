@@ -8,6 +8,7 @@ import { AttachedRole } from '../roles'
 const Staff = class {
   constructor(fileName) {
     this.fileName = fileName
+    // console.error(`Loading staff from '${fileName}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
     const data = JSON.parse(fs.readFileSync(fileName))
     this.members = data.map((rec) => new StaffMember(rec))
 

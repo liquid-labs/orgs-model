@@ -4,6 +4,7 @@ import { loadBashSettings } from './bash-env'
 
 const loadOrgState = (dataPath) => {
   const liqSettingsPath = `${process.env.HOME}/.liq/settings.sh`
+  // console.error(`Loading settings from '${liqSettingsPath}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
   loadBashSettings(liqSettingsPath, 'LIQ_PLAYGROUND')
 
   // first, we handle the original bash-centric approach, centered on individual settings
@@ -13,7 +14,9 @@ const loadOrgState = (dataPath) => {
   // the 'settings.sh' values are now availale on process.env
 
   // and here's the prototype new approach; the read function handles the 'exists' check
-  return fjson.read(`${dataPath}/orgs/${process.env.ORG_ID}.json`)
+  const rootJsonPath = `${dataPath}/orgs/${process.env.ORG_ID}.json`
+  // console.error(`Loading root JSON from '${rootJsonPath}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
+  return fjson.read(rootJsonPath)
 }
 
 export { loadOrgState }
