@@ -6,11 +6,24 @@ import * as fjson from '@liquid-labs/federated-json'
 */
 
 /**
-* Retrieves a single audit record entry by name <audit name>/<target>.
+* Retrieves a single audit record entry by id: '<target domain>/<audit name>/<target id>' or a map of all records for a given audit by id '<target domain>/<audit name>'.
 */
 const get = (data, id) => {
-  const [auditName, targetId] = splitId(id)
-  return data?.auditRecords?.[auditName]?.[targetId] && toStandalone(data, auditName, targetId)
+  const [targetDomain, auditName, targetId] = splitId(id)
+  
+  if (targetId === undefined) {
+    const auditRecords = data.auditRecords?.[targetDomain]?.[auditName]
+    
+    return auditRecords && Object.keys(auditRecords).reduce((acc, finalTargetId) => {
+        acc[finalTargetId] = toStandalone({ data, targetDomain, auditName, targetId: finalTargetId })
+        return acc
+      }, {})
+      || undefined
+  }
+  else {
+    return data?.auditRecords?.[auditName]?.[targetId] && toStandalone(data, targetDomain, auditName, targetId)
+      || undefined
+  }
 }
 
 const list = (data, { domain, 'audit name': auditName }) => {
@@ -87,13 +100,10 @@ const splitId = (id) => {
 /**
 * Since our data is complete as is, this just makes a copy for safety's sake.
 */
-const toStandalone = (data, auditName, targetId) => {
-  const [domain] = auditName.split(/-(.+)/)
-  return Object.assign({
-    id : `${auditName}/${targetId}`,
-    domain
+const toStandalone = ({ data, targetDomain, auditName, targetId }) => Object.assign(
+  {
+    id : `${targetDomain}/${auditName}/${targetId}`
   },
-  data.auditRecords[domain][auditName][targetId])
-}
+  data.auditRecords[targetDomain][auditName][targetId])
 
 export { get, list, persist, update }
