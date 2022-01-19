@@ -19,7 +19,7 @@ const AuditRecords = class extends Resources {
       indexSpec: {
         index: this.#indexByAudit,
         keyField: 'auditId',
-        relationship: idxType.INDEX_ONE_TO_MANY
+        relationship: idxType.ONE_TO_MANY
       }
     })
   }

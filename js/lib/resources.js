@@ -18,7 +18,7 @@ const Resources = class {
       indexSpec: {
         index: this.#indexById,
         keyField: 'id',
-        relationship: relationship.INDEX_ONE_TO_ONE
+        relationship: relationship.ONE_TO_ONE
       }
     })
   }

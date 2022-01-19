@@ -16,7 +16,7 @@ const Vendors = class extends Resources {
       indexSpec: {
         index: this.#indexByCommonName,
         keyField: 'commonName',
-        relationship: idxType.INDEX_ONE_TO_MANY
+        relationship: idxType.ONE_TO_MANY
       }
     })
   }

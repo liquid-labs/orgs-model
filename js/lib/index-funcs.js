@@ -47,8 +47,8 @@ const deleteItem = (args) => {
 
 const routeByRelationship = ({ items, indexSpec, one2oneFunc, one2manyFunc }) => {
   switch (indexSpec.relationship) {
-    case relationship.INDEX_ONE_TO_ONE: one2oneFunc({ items, ...indexSpec }); break
-    case relationship.INDEX_ONE_TO_MANY: one2manyFunc({ items, ...indexSpec }); break
+    case relationship.ONE_TO_ONE: one2oneFunc({ items, ...indexSpec }); break
+    case relationship.ONE_TO_MANY: one2manyFunc({ items, ...indexSpec }); break
     default: throw new Error(`Unknown index relationship spec ('${relationship}')`)
   }
 }
