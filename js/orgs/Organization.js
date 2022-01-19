@@ -15,6 +15,10 @@ const Organization = class {
     // innerState defines:
     // * thirdPartyAccounts
     this.innerState = loadOrgState(dataPath)
+    this.innerState.auditRecords = this.innerState.auditRecords || []
+    this.innerState.audits = this.innerState.audits || []
+    this.innerState.vendors = this.innerState.vendors || []
+    this.innerState.technologies = this.innerState.technologies || []
 
     // TODO: Move all this to 'innerState' (for roles and staff, by loading all with the federated json used in
     // 'loadOrgState') and just use the global hydration.

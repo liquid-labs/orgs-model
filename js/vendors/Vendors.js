@@ -1,24 +1,28 @@
-import { Resources } from '../lib/resources'
+import { Resources } from '../lib/resources.js'
+import * as idxType from '../lib/index-relationships.js'
 
-const key = 'legalName'
+const keyField = 'legalName'
 
 /**
 * Basic class wrapping vendor items. Functionality is split between 'Vendors' and 'VendorsAPI' to simplify testing.
 */
 const Vendors = class extends Resources {
+  #indexByCommonName = {}
+  
   constructor(items) {
-    super({ items, key })
-    this.indexCommon = this.items.reduce((index, item) => {
-      const { commonName } = item
-      const list = index[commonName] || []
-      list.push(item)
-      index[commonName] = list
-      return index
-    }, {})
+    super({ items, keyField })
+    this.addIndex({
+      items,
+      indexSpec: {
+        index: this.#indexByCommonName,
+        keyField: 'commonName',
+        relationship: idxType.INDEX_ONE_TO_MANY
+      }
+    })
   }
 
   getByCommonName(commonName) {
-    return this.indexCommon[commonName] || []
+    return this.#indexByCommonName[commonName] || []
   }
 }
 

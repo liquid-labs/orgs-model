@@ -1,9 +1,33 @@
+import { Resources } from '../lib/resources.js'
+import * as idxType from '../lib/index-relationships.js'
+
 import * as fjson from '@liquid-labs/federated-json'
 
+const keyField = 'id'
+
 /**
-* Basic methods for accessing the audit record data. Note that functionality is split up like this to make these
-* functions easier to unit test.
+* Basic class for accessing the audit record data.
 */
+const AuditRecords = class extends Resources {
+  // setup custom indexes
+  #indexByAudit = {}
+  
+  constructor(items) {
+    super({ items, keyField })
+    this.addIndex({
+      items,
+      indexSpec: {
+        index: this.#indexByAudit,
+        keyField: 'auditId',
+        relationship: idxType.INDEX_ONE_TO_MANY
+      }
+    })
+  }
+  
+  getByAudit(auditId) {
+    return this.#indexByAudit[auditId] || []
+  }
+}
 
 /**
 * Retrieves a single audit record entry by id: '<target domain>/<audit name>/<target id>' or a map of all records for a given audit by id '<target domain>/<audit name>'.
@@ -97,13 +121,4 @@ const splitId = (id) => {
   return [auditName, targetId]
 }
 
-/**
-* Since our data is complete as is, this just makes a copy for safety's sake.
-*/
-const toStandalone = ({ data, targetDomain, auditName, targetId }) => Object.assign(
-  {
-    id : `${targetDomain}/${auditName}/${targetId}`
-  },
-  data.auditRecords[targetDomain][auditName][targetId])
-
-export { get, list, persist, update }
+export { AuditRecords }

@@ -1,26 +1,19 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
-import * as auditRecords from './AuditRecords'
+import { AuditRecords } from './AuditRecords.js'
 
 /**
 * Public API for managing third-party account records. Uses the `Accounts` library, which actually implements the
 * functions. The library is split like this to make testing easier.
 */
-const AuditRecordsAPI = class {
+const AuditRecordsAPI = class extends AuditRecords {
   constructor(org) {
-    this.org = org
+    super(org.innerState.auditRecords)
+    
     this.checkCondition = AuditRecordsAPI.checkCondition
 
     this.key = 'id'
   }
-
-  get(id) { return auditRecords.get(this.org.innerState, id) }
-
-  list(options) { return auditRecords.list(this.org.innerState, options) }
-
-  persist(options) { return auditRecords.persist(this.org.innerState, options) }
-
-  update(auditRecord) { return auditRecords.update(this.org.innerState, auditRecord) }
 }
 
 /**
