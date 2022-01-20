@@ -172,4 +172,29 @@ describe('IndexManager', () => {
       expect(oneToMany['new'][0]).toBe(newItem)
     })
   })
+  
+  describe('deleteItem', () => {
+    let oneToOne, oneToMany, itemToDelete
+    const items = [...testItems]
+    
+    beforeAll(() => {
+      const indexManager = new IndexManager({ items })
+      oneToOne = indexManager.getIndex('byId')
+      oneToMany = indexManager.addIndex(oneToManySpec)
+      
+      itemToDelete = items[2]
+      items.splice(2, 1)
+      indexManager.deleteItem(itemToDelete)
+    })
+    
+    test('properly deletes from ID index', () => {
+      verifyOneToOneIndex({ index: oneToOne, items })
+      expect(oneToOne[3]).toBeUndefined()
+    })
+    
+    test('properly deletes from one-to-many index', () => {
+      verifyOneToManyIndex({ index: oneToMany, items, expectedSize: 2, listSizes : { foo: 1, bar: 1 } })
+      expect(oneToMany['foo'][0]).not.toBe(itemToDelete)
+    })
+  })
 })
