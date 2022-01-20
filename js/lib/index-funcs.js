@@ -4,12 +4,13 @@ const IndexManager = class {
   #indexSpecs = []
   #specIndex = {}
   #items
+  #idIndex
   
-  constructor({ items }) {
+  constructor({ items, idField = 'id', idIndexName = 'byId' }) {
     this.#items = items
-    this.addIndex({
+    this.#idIndex = this.addIndex({
       name: 'byId',
-      keyField: 'id',
+      keyField: idField,
       relationship: relationships.ONE_TO_ONE
     })
   }
