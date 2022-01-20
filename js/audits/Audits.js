@@ -8,20 +8,14 @@ const keyField = 'name'
 * testing.
 */
 const Audits = class extends Resources {
-  /**
-  * A custom index of a list of audits grouped by their target type.
-  */
-  #indexByTarget = {}
+  #indexByTarget
   
   constructor(items) {
     super({ items, keyField })
-    this.addIndex({
-      items,
-      indexSpec: {
-        index: this.#indexByTarget,
-        keyField: 'target',
-        relationship: idxType.ONE_TO_MANY
-      }
+    this.#indexByTarget = this.indexManager.addIndex({
+      name: 'byTarget',
+      keyField: 'target',
+      relationship: idxType.ONE_TO_MANY
     })
   }
 

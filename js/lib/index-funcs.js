@@ -1,67 +1,122 @@
-import * as relationship from './index-relationships.js'
+import * as relationships from './index-relationships.js'
 
-const rebuild = (args) => {
-  routeByRelationship({
-    ...args,
-    one2oneFunc: rebuildOneToOne,
-    one2manyFunc: rebuildOneToMany
-  })
-}
+const IndexManager = class {
+  #indexSpecs = []
+  #specIndex = {}
+  #items
+  
+  constructor({ items }) {
+    this.#items = items
+    this.addIndex({
+      name: 'byId',
+      keyField: 'id',
+      relationship: relationships.ONE_TO_ONE
+    })
+  }
+  
+  addIndex(indexSpec) {
+    for (const reqField of ['relationship', 'keyField']) {
+      if (indexSpec[reqField] === undefined) {
+        throw new Error(`Index spec lacks required field '${reqField}'.`)
+      }
+    }
 
-const rebuildAll = (args) => {
-  routeByRelationships({
-    ...args,
-    one2oneFunc: rebuildOneToOne,
-    one2manyFunc: rebuildOneToMany
-  })
-}
-
-const addItem = (args) => {
-  routeByRelationships({
-    ...args,
-    one2oneFunc: addOneToOne,
-    one2manyFunc: addOneToMany
-  })
-}
-
-const updateItem = (args) => {
-  routeByRelationships({
-    ...args,
-    one2oneFunc: updateOneToOne,
-    one2manyFunc: updateOneToMany
-  })
-}
-
-const deleteItem = (args) => {
-  routeByRelationships({
-    ...args,
-    one2oneFunc: deleteOneToOne,
-    one2manyFunc: deleteOneToMany
-  })
+    const index = {}
+    indexSpec = { index, ...indexSpec }
+    this.#indexSpecs.push(indexSpec)
+    if (indexSpec.name !== undefined) {
+      this.#specIndex[indexSpec.name] = indexSpec
+    }
+    this.rebuild(indexSpec)
+    
+    return index
+  }
+  
+  getIndex(name) {
+    return this.#getIndexSpec(name).index
+  }
+  
+  getNamedIndexCount() { return Object.keys(this.#specIndex).length }
+  
+  getTotalIndexCount() { return this.#indexSpecs.length }
+  
+  rebuild(specOrName) {
+    const indexSpec = typeof specOrName === 'string' ? this.#getIndexSpec(specOrName) : specOrName
+    routeByRelationship({
+      items: this.#items,
+      indexSpec,
+      one2oneFunc: rebuildOneToOne,
+      one2manyFunc: rebuildOneToMany
+    })
+  }
+  
+  rebuildAll() {
+    routeByRelationships({
+      items: this.#items,
+      indexSpecs: this.#indexSpecs,
+      one2oneFunc: rebuildOneToOne,
+      one2manyFunc: rebuildOneToMany
+    })
+  }
+  
+  addItem(item) {
+    routeByRelationships({
+      item,
+      indexSpecs: this.#indexSpecs,
+      one2oneFunc: addOneToOne,
+      one2manyFunc: addOneToMany
+    })
+  }
+  
+  updateItem(item) {
+    routeByRelationships({
+      item,
+      indexSpecs: this.#indexSpecs,
+      one2oneFunc: updateOneToOne,
+      one2manyFunc: updateOneToMany
+    })
+  }
+  
+  deleteItem(item) {
+    routeByRelationships({
+      item,
+      indexSpecs: this.#indexSpecs,
+      one2oneFunc: deleteOneToOne,
+      one2manyFunc: deleteOneToMany
+    })
+  }
+  
+  #getIndexSpec(name) {
+    const indexSpec = this.#specIndex[name]
+    if (indexSpec === undefined) {
+      throw new Error(`No such index '${name}' found.`)
+    }
+    return indexSpec
+  }
 }
 
 /**
 * ## Helpers
 * ### Internal plumbing
 */
-
-const routeByRelationship = ({ items, indexSpec, one2oneFunc, one2manyFunc }) => {
-  switch (indexSpec.relationship) {
-    case relationship.ONE_TO_ONE: one2oneFunc({ items, ...indexSpec }); break
-    case relationship.ONE_TO_MANY: one2manyFunc({ items, ...indexSpec }); break
-    default: throw new Error(`Unknown index relationship spec ('${relationship}')`)
-  }
-}
-
-const routeByRelationships = ({ indexSpecs, ...rest }) => {
-  for (const indexSpec of indexSpecs) {
-    routeByRelationship({ indexSpec, ...rest })
-  }
-}
-
 const truncateObject = (o) => {
   for (const key in o) {
     delete o[key]
+  }
+}
+
+const routeByRelationship = ({ indexSpec, one2oneFunc, one2manyFunc, ...rest }) => {
+  switch (indexSpec.relationship) {
+    case relationships.ONE_TO_ONE: one2oneFunc({ ...indexSpec, ...rest }); break
+    case relationships.ONE_TO_MANY: one2manyFunc({ ...indexSpec, ...rest }); break
+    // TODO: include this check in 'addIndex'
+    default: throw new Error(`Unknown index relationship spec ('${indexSpec.relationship}')`)
+  }
+}
+
+const routeByRelationships = ({ indexSpecs, ...args }) => {
+  for (const indexSpec of indexSpecs) {
+    routeByRelationship({ indexSpec, ...args })
   }
 }
 
@@ -102,13 +157,13 @@ const addOneToMany = ({ item, index, keyField }) => {
 /**
 * Any "is this a valid update" checks are assumed to be performed by the caller.
 */
-const updateOne2One = addOneToOne
+const updateOneToOne = (args) => { addOneToOne(args) }
 
 /**
 * Any "is this a valid update" checks are assumed to be performed by the caller.
 */
 const updateOneToMany = ({ item, ...rest }) => {
-  const { list, listIndex } = getListIndex({ item, ...rest })
+  const { list, listIndex } = getListAndIndex({ item, ...rest })
   list.splice(listIndex, 1, item)
 }
 
@@ -123,24 +178,19 @@ const deleteOneToOne = ({ item, index, keyField }) => {
 * Any "is this a valid delete" checks are assumed to be performed by the caller.
 */
 const deleteOneToMany = (args) => {
-  const { list, listIndex } = getListIndex(args)
+  const { list, listIndex } = getListAndIndex(args)
   list.splice(listIndex, 1)
 }
 
 /**
-* Helper for update and delete functions 'one2many' functions.
+* Helper for update and delete 'one2many' functions.
 */
 const getListAndIndex = ({ item, index, keyField }) => {
+  console.log(index)
   const indexValue = item[keyField]
   const list = index[indexValue]
   const listIndex = list.findIndex((i) => i[keyField] === indexValue)
   return { list, listIndex }
 }
 
-export {
-  rebuild,
-  rebuildAll,
-  addItem,
-  updateItem,
-  deleteItem
-}
+export { IndexManager }

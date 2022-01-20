@@ -9,18 +9,14 @@ const keyField = 'id'
 * Basic class for accessing the audit record data.
 */
 const AuditRecords = class extends Resources {
-  // setup custom indexes
-  #indexByAudit = {}
+  #indexByAudit
   
   constructor(items) {
     super({ items, keyField })
-    this.addIndex({
-      items,
-      indexSpec: {
-        index: this.#indexByAudit,
-        keyField: 'auditId',
-        relationship: idxType.ONE_TO_MANY
-      }
+    this.#indexByAudit = this.indexManager.addIndex({
+      name: 'byAudit',
+      keyField: 'auditId',
+      relationship: idxType.ONE_TO_MANY
     })
   }
   
