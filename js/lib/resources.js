@@ -1,4 +1,4 @@
-import { IndexManager } from './index-funcs.js'
+import { IndexManager } from './IndexManager.js'
 import * as relationships from './index-relationships.js'
 
 /**

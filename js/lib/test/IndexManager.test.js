@@ -1,5 +1,5 @@
 /* globals beforeAll describe expect test */
-import { IndexManager } from '../index-funcs.js'
+import { IndexManager } from '../IndexManager.js'
 import * as idxRelationships from '../index-relationships.js'
 
 const testItems = [
