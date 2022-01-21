@@ -5,7 +5,7 @@ import { ListManager } from '../ListManager.js'
 import * as idxRelationships from '../index-relationships.js'
 
 const testItems = [
-  { id: 1, type: 'foo' },
+  { id: 1, type: 'foo', nestedObj: { data: "Hi!" } },
   { id: 2, type: 'bar' },
   { id: 3, type: 'foo' }
 ]
@@ -30,6 +30,68 @@ const verifyOneToManyIndex = ({ index, items = testItems, expectedSize = 2, list
 }
 
 describe('ListManager', () => {
+  describe('contructor', () => {
+    const items = [...testItems]
+    const listManager = new ListManager({ items })
+    const newId = items.length + 1
+    const newItem = { id: newId, type: "new" }
+    const newListIdx = items.length
+    
+    beforeAll(() => {
+      items.push(newItem)
+      listManager.rebuildAll()
+    })
+    
+    test('uses the list object itself', () => {
+      expect(listManager.getItem(newId)).toEqual(newItem)
+    })
+    
+    test('uses the items in the list', () => {
+      // notice that we're twiddling the item we added to avoid polluting the original items
+      items[newListIdx].testField = 10
+      const retrievedItem = listManager.getItem(newId)
+      expect(retrievedItem.testField).toBe(10)
+    })
+  })
+  
+  describe('getItems', () => {
+    const items = [...testItems]
+    const listManager = new ListManager({ items })
+    const defaultItems = listManager.getItems()
+    const clonedItems = listManager.getItems({ cloneAll: true })
+    
+    test('returns a copy of the list containing the original items by default', () => {
+      delete defaultItems.getSafe
+      expect(items).toEqual(defaultItems)
+      expect(items).not.toBe(defaultItems)
+      expect(items[0]).toBe(defaultItems[0])
+    })
+    
+    test("'cloneAll : true' results in unique list and items", () => {
+      expect(items).toEqual(clonedItems)
+      expect(items).not.toBe(clonedItems)
+      expect(items[0]).toEqual(clonedItems[0])
+      expect(items[0]).not.toBe(clonedItems[0])
+    })
+  })
+  
+  describe('getItem', () => {
+    const items = [...testItems]
+    const listManager = new ListManager({ items })
+    const itemGet = listManager.getItem(1)
+    const itemOrig = items[0]
+    
+    test('creates an independent copy of the managed object', () => {
+      expect(itemGet).toEqual(itemOrig)
+      expect(itemGet).not.toBe(itemOrig)
+    })
+    
+    test('performs a deep copy', () => {
+      expect(itemGet.nestedObj).toEqual(itemOrig.nestedObj)
+      expect(itemGet.nestedObj).not.toBe(itemOrig.nestedObj)
+    })
+  })
+  
   describe('addIndex', () => {
     const items = [...testItems]
     const listManager = new ListManager({ items })

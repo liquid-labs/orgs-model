@@ -53,10 +53,20 @@ const ListManager = class {
   }
   
   /**
-  * ## Item retriewal functions
+  * ## Retriewal functions
   */
   
-  getItems({ cloneAll = false, noClone = false }) {
+  /**
+  * Retrieves the list. By default, the list is copied but the items are not. However, a 'getSafe(listIndex)' function
+  * is attached to the array which can be used to make update safe copies of the items in the list.
+  *
+  * #### Parameters
+  *
+  * - `cloneAll`: Preimptively deep-clones all items in the list. Both the list and items will be unique and
+  *      independent. The `getSafe` function is not attached since everything is already cloned.
+  * - `noClone`: returns the underlying list itself. `noClone` is ignored if `cloneAll` is `true`.
+  */
+  getItems({ cloneAll = false, noClone = false } = {}) {
     return cloneAll === true
       ? this.#items.map((i) => structuredClone(i))
       : noClone === true
