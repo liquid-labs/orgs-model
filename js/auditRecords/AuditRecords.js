@@ -13,7 +13,7 @@ const AuditRecords = class extends Resources {
   
   constructor(items) {
     super({ items, keyField })
-    this.#indexByAudit = this.indexManager.addIndex({
+    this.#indexByAudit = this.listManager.addIndex({
       name: 'byAudit',
       keyField: 'auditId',
       relationship: idxType.ONE_TO_MANY

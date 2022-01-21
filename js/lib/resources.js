@@ -1,4 +1,4 @@
-import { IndexManager } from './IndexManager.js'
+import { ListManager } from './ListManager.js'
 import * as relationships from './index-relationships.js'
 
 /**
@@ -12,8 +12,8 @@ const Resources = class {
     // add standard 'id' field if not present.
     this.items.forEach((item) => { item.id = item.id || item[keyField] })
     
-    this.indexManager = new IndexManager({ items })
-    this.#indexById = this.indexManager.getIndex('byId')
+    this.listManager = new ListManager({ items })
+    this.#indexById = this.listManager.getIndex('byId')
   }
 
   add(item) {
@@ -23,7 +23,7 @@ const Resources = class {
 
     this.items.push(item)
     
-    this.indexManager.addItem(item)
+    this.listManager.addItem(item)
   }
 
   /**
@@ -46,7 +46,7 @@ const Resources = class {
     const itemIndex = this.indexOf(item)
     this.items.splice(itemIndex, 1, item)
     
-    this.indexManager.updateItem(item)
+    this.listManager.updateItem(item)
     
     return item
   }
@@ -60,7 +60,7 @@ const Resources = class {
     const itemIndex = this.indexOf((i) => i.id === item.id)
     this.items.splice(itemIndex, 1)
     
-    this.indexManager.deleteItem(item)
+    this.listManager.deleteItem(item)
   }
 
   list({ sort = 'id' } = {}) {

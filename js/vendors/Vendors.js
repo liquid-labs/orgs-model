@@ -11,7 +11,7 @@ const Vendors = class extends Resources {
   
   constructor(items) {
     super({ items, keyField })
-    this.#indexByCommonName = this.indexManager.addIndex({
+    this.#indexByCommonName = this.listManager.addIndex({
       name: 'byCommonName',
       keyField: 'commonName',
       relationship: idxType.ONE_TO_MANY

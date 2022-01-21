@@ -1,5 +1,7 @@
+// TODO: update tests to distinguish between implicit ID index and user added one-to-one indexes. See deletion tests for updated wording.
+
 /* globals beforeAll describe expect test */
-import { IndexManager } from '../IndexManager.js'
+import { ListManager } from '../ListManager.js'
 import * as idxRelationships from '../index-relationships.js'
 
 const testItems = [
@@ -27,18 +29,18 @@ const verifyOneToManyIndex = ({ index, items = testItems, expectedSize = 2, list
   }
 }
 
-describe('IndexManager', () => {
+describe('ListManager', () => {
   describe('addIndex', () => {
     const items = [...testItems]
-    const indexManager = new IndexManager({ items })
+    const listManager = new ListManager({ items })
     let oneToOne, oneToMany, anonymous
     
     beforeAll(() => {
-      oneToOne = indexManager.getIndex('byId')
-      oneToMany = indexManager.addIndex(oneToManySpec)
+      oneToOne = listManager.getIndex('byId')
+      oneToMany = listManager.addIndex(oneToManySpec)
       const anonymousSpec = Object.assign({}, oneToManySpec)
       delete anonymousSpec.name
-      anonymous = indexManager.addIndex(anonymousSpec)
+      anonymous = listManager.addIndex(anonymousSpec)
     })
     
     test('properly initalizes implicit one-to-on index', () => verifyOneToOneIndex({ index: oneToOne }))
@@ -49,30 +51,30 @@ describe('IndexManager', () => {
   })
   
   describe('indexCounts', () => {
-    const indexManager = new IndexManager({ items: [...testItems] })
+    const listManager = new ListManager({ items: [...testItems] })
     
     beforeAll(() => {
       const anonymousSpec = Object.assign({}, oneToManySpec)
       delete anonymousSpec.name
-      indexManager.addIndex(anonymousSpec)
+      listManager.addIndex(anonymousSpec)
     })
     
-    test('has 1 named index', () => expect(indexManager.getNamedIndexCount()).toBe(1))
+    test('has 1 named index', () => expect(listManager.getNamedIndexCount()).toBe(1))
     
-    test('has 2 indexes total', () => expect(indexManager.getTotalIndexCount()).toBe(2))
+    test('has 2 indexes total', () => expect(listManager.getTotalIndexCount()).toBe(2))
   })
   
   describe('rebuild', () => {
     describe('for one-to-one indexes', () => {
       const items = [...testItems]
-      const indexManager = new IndexManager({ items })
+      const listManager = new ListManager({ items })
       let index
       
       beforeAll(() => {
-        index = indexManager.getIndex('byId')
+        index = listManager.getIndex('byId')
         items.splice(2, 1) // remove id: 3
         items.push({ id: 8, type: 'new' })
-        indexManager.rebuild({ keyField: 'id', relationship: idxRelationships.ONE_TO_ONE, index })
+        listManager.rebuild({ keyField: 'id', relationship: idxRelationships.ONE_TO_ONE, index })
       })
       
       test('builds a valid one-to-one index', () => verifyOneToOneIndex({ index, items }))
@@ -82,13 +84,13 @@ describe('IndexManager', () => {
     
     describe('for one-to-many indexes', () => {
       const items = [...testItems, { id: 8, type: 'old'} ]
-      const indexManager = new IndexManager({ items })
+      const listManager = new ListManager({ items })
       let index
 
       beforeAll(() => {
-        index = indexManager.addIndex(oneToManySpec)
+        index = listManager.addIndex(oneToManySpec)
         items.splice(items.length - 1, 1) // id: 8
-        indexManager.rebuild('byType')
+        listManager.rebuild('byType')
       })
       
       test('creates a valid one-to-many index', () => verifyOneToManyIndex({ index }))
@@ -99,14 +101,14 @@ describe('IndexManager', () => {
   
   describe('rebuildAll', () => {
     const items = [...testItems, { id: 8, type: 'old' }]
-    const indexManager = new IndexManager({ items })
+    const listManager = new ListManager({ items })
     let oneToOne, oneToMany
     
     beforeAll(() => {
-      oneToOne = indexManager.getIndex('byId')
-      oneToMany = indexManager.addIndex(oneToManySpec)
+      oneToOne = listManager.getIndex('byId')
+      oneToMany = listManager.addIndex(oneToManySpec)
       items.splice(items.length - 1, 1)
-      indexManager.rebuildAll()
+      listManager.rebuildAll()
     })
     
     test('properly rebuilds multiple indexes', () => {
@@ -125,25 +127,28 @@ describe('IndexManager', () => {
     const items = [...testItems]
     const item7 = { id: 7, type: 'foo' }
     const item8 = { id: 8, type: 'new' }
+    const listManager = new ListManager({ items })
     
     beforeAll(() => {
-      const indexManager = new IndexManager({ items })
-      oneToOne = indexManager.getIndex('byId')
-      oneToMany = indexManager.addIndex(oneToManySpec)
+      oneToOne = listManager.getIndex('byId')
+      oneToMany = listManager.addIndex(oneToManySpec)
       
-      items.push(item7)
-      indexManager.addItem(item7)
-      items.push(item8)
-      indexManager.addItem(item8)
+      listManager.addItem(item7)
+      listManager.addItem(item8)
     })
     
     test('properly updates one-to-one indexes', () => {
-      verifyOneToOneIndex({ index: oneToOne, items })
+      verifyOneToOneIndex({ index: oneToOne, items: listManager.getItems({ noClone: true }) })
       expect(oneToOne[7]).toBe(item7)
     })
     
     test('properly updates one-to-many indexes', () => {
-      verifyOneToManyIndex({ index: oneToMany, items, expectedSize: 3, listSizes : { foo: 3, bar: 1, new: 1 } })
+      verifyOneToManyIndex({
+        index: oneToMany,
+        items: listManager.getItems({ noClone: true }),
+        expectedSize: 3,
+        listSizes : { foo: 3, bar: 1, new: 1 }
+      })
       expect(oneToMany['new'][0]).toBe(item8)
     })
   })
@@ -154,12 +159,11 @@ describe('IndexManager', () => {
     const newItem = { id: 3, type: 'new' }
     
     beforeAll(() => {
-      const indexManager = new IndexManager({ items })
-      oneToOne = indexManager.getIndex('byId')
-      oneToMany = indexManager.addIndex(oneToManySpec)
+      const listManager = new ListManager({ items })
+      oneToOne = listManager.getIndex('byId')
+      oneToMany = listManager.addIndex(oneToManySpec)
       
-      items.splice(2, 1, newItem)
-      indexManager.updateItem(newItem)
+      listManager.updateItem(newItem)
     })
     
     test('properly updates one-to-one indexes', () => {
@@ -178,13 +182,12 @@ describe('IndexManager', () => {
     const items = [...testItems]
     
     beforeAll(() => {
-      const indexManager = new IndexManager({ items })
-      oneToOne = indexManager.getIndex('byId')
-      oneToMany = indexManager.addIndex(oneToManySpec)
+      const listManager = new ListManager({ items })
+      oneToOne = listManager.getIndex('byId')
+      oneToMany = listManager.addIndex(oneToManySpec)
       
       itemToDelete = items[2]
-      items.splice(2, 1)
-      indexManager.deleteItem(itemToDelete)
+      listManager.deleteItem(itemToDelete)
     })
     
     test('properly deletes from ID index', () => {
