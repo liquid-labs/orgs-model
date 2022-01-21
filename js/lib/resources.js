@@ -5,30 +5,37 @@ import * as relationships from './index-relationships.js'
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
-  #items
+  #indexById
   
-  constructor({ items = [], keyField, itemName }) {
-    this.#items = items
+  constructor({ items = [], keyField }) {
+    this.items = items || []
     // add standard 'id' field if not present.
-    this.#items.forEach((item) => { item.id = item.id || item[keyField] })
+    this.items.forEach((item) => { item.id = item.id || item[keyField] })
     
-    this.indexManager = new IndexManager({ items, itemName })
+    this.indexManager = new IndexManager({ items })
+    this.#indexById = this.indexManager.getIndex('byId')
   }
 
   add(item) {
     if (this.get(item.id) !== undefined) {
       throw new Error(`Cannot add item with existing key '${item.id}'; try 'update'.`)
     }
+
+    this.items.push(item)
     
     this.indexManager.addItem(item)
   }
 
   /**
-  * Retrieves a single item by name.
+  * Retrieves a single vendor/product entry by name.
   */
-  get(id, options) {
-    // The IndexManager uses 'itemName' to produce verbose error messages if necessary so we can just use it directly.
-    return indexManager.getItem(id, options)
+  get(name, { required = false } = {}) {
+    const result = this.#indexById[name]
+    if (required === true && result === undefined) {
+      throw new Error(`Did not find required vendor '${name}'.`)
+    }
+
+    return Object.assign({}, result)
   }
   
   update(item) {
@@ -36,7 +43,12 @@ const Resources = class {
       throw new Error(`No such item with key '${item.id}' to update; try 'add'.`)
     }
     
-    return this.indexManager.updateItem(item)
+    const itemIndex = this.indexOf(item)
+    this.items.splice(itemIndex, 1, item)
+    
+    this.indexManager.updateItem(item)
+    
+    return item
   }
   
   delete(itemId) {
@@ -46,15 +58,15 @@ const Resources = class {
     }
     
     const itemIndex = this.indexOf((i) => i.id === item.id)
-    this.#items.splice(itemIndex, 1)
+    this.items.splice(itemIndex, 1)
     
     this.indexManager.deleteItem(item)
   }
 
   list({ sort = 'id' } = {}) {
     return sort
-      ? this.#items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
-      : this.#items
+      ? this.items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
+      : this.items
   }
 }
 
