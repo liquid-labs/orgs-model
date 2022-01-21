@@ -1,3 +1,5 @@
+// TODO: update tests to distinguish between implicit ID index and user added one-to-one indexes. See deletion tests for updated wording.
+
 /* globals beforeAll describe expect test */
 import { IndexManager } from '../IndexManager.js'
 import * as idxRelationships from '../index-relationships.js'
@@ -125,25 +127,28 @@ describe('IndexManager', () => {
     const items = [...testItems]
     const item7 = { id: 7, type: 'foo' }
     const item8 = { id: 8, type: 'new' }
+    const indexManager = new IndexManager({ items })
     
     beforeAll(() => {
-      const indexManager = new IndexManager({ items })
       oneToOne = indexManager.getIndex('byId')
       oneToMany = indexManager.addIndex(oneToManySpec)
       
-      items.push(item7)
       indexManager.addItem(item7)
-      items.push(item8)
       indexManager.addItem(item8)
     })
     
     test('properly updates one-to-one indexes', () => {
-      verifyOneToOneIndex({ index: oneToOne, items })
+      verifyOneToOneIndex({ index: oneToOne, items: indexManager.getItems({ noClone: true }) })
       expect(oneToOne[7]).toBe(item7)
     })
     
     test('properly updates one-to-many indexes', () => {
-      verifyOneToManyIndex({ index: oneToMany, items, expectedSize: 3, listSizes : { foo: 3, bar: 1, new: 1 } })
+      verifyOneToManyIndex({
+        index: oneToMany,
+        items: indexManager.getItems({ noClone: true }),
+        expectedSize: 3,
+        listSizes : { foo: 3, bar: 1, new: 1 }
+      })
       expect(oneToMany['new'][0]).toBe(item8)
     })
   })
@@ -158,7 +163,6 @@ describe('IndexManager', () => {
       oneToOne = indexManager.getIndex('byId')
       oneToMany = indexManager.addIndex(oneToManySpec)
       
-      items.splice(2, 1, newItem)
       indexManager.updateItem(newItem)
     })
     
@@ -183,7 +187,6 @@ describe('IndexManager', () => {
       oneToMany = indexManager.addIndex(oneToManySpec)
       
       itemToDelete = items[2]
-      items.splice(2, 1)
       indexManager.deleteItem(itemToDelete)
     })
     
