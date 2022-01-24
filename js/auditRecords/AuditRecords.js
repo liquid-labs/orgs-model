@@ -20,58 +20,16 @@ const AuditRecords = class extends Resources {
     })
   }
   
-  getByAudit(auditId) {
-    return this.#indexByAudit[auditId] || []
+  getByAudit(auditId, options) {
+    return this.list(Object.assign(
+      { _items: this.#indexByAudit[auditId] || [] },
+      options
+    ))
   }
 }
 
-/**
-* Retrieves a single audit record entry by id: '<target domain>/<audit name>/<target id>' or a map of all records for a given audit by id '<target domain>/<audit name>'.
-*/
-const get = (data, id) => {
-  const [targetDomain, auditName, targetId] = splitId(id)
-  
-  if (targetId === undefined) {
-    const auditRecords = data.auditRecords?.[targetDomain]?.[auditName]
-    
-    return auditRecords && Object.keys(auditRecords).reduce((acc, finalTargetId) => {
-        acc[finalTargetId] = toStandalone({ data, targetDomain, auditName, targetId: finalTargetId })
-        return acc
-      }, {})
-      || undefined
-  }
-  else {
-    return data?.auditRecords?.[auditName]?.[targetId] && toStandalone(data, targetDomain, auditName, targetId)
-      || undefined
-  }
-}
-
-const list = (data, { domain, 'audit name': auditName }) => {
-  if (data.auditRecords === undefined) {
-    return []
-  }
-
-  const domainKeys = domain === undefined
-    ? Object.keys(data.auditRecords || {})
-    : [domain]
-
-  return domainKeys.reduce((acc, domainName) => {
-    const domainRecs = data.auditRecords[domainName] || {}
-    const auditNames = auditName === undefined
-      ? Object.keys(domainRecs)
-      : [auditName]
-    for (const auditName of auditNames) {
-      const auditRecs = domainRecs[auditName] || {}
-      for (const targetId of Object.keys(auditRecs)) {
-        acc.push(toStandalone(data, auditName, targetId))
-      }
-    }
-    return acc
-  },
-  [])
-    .sort((a, b) => a.id.localeCompare(b.id))
-}
-
+// TODO: deprecated; retained for reference
+/*
 const persist = (data, { domain, domains }) => {
   if (!domains && domain) {
     domains = [domain]
@@ -116,5 +74,6 @@ const splitId = (id) => {
   }
   return [auditName, targetId]
 }
+END deprecated methods */
 
 export { AuditRecords }

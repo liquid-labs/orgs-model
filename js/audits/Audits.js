@@ -19,8 +19,11 @@ const Audits = class extends Resources {
     })
   }
 
-  getByTarget(target) {
-    return this.#indexByTarget[target] || []
+  getByTarget(target, options) {
+    return this.list(Object.assign(
+      { _items: this.#indexByTarget[target] || [] },
+      options
+    ))
   }
 }
 

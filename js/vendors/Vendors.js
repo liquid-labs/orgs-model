@@ -18,8 +18,11 @@ const Vendors = class extends Resources {
     })
   }
 
-  getByCommonName(commonName) {
-    return this.#indexByCommonName[commonName] || []
+  getByCommonName(commonName, options) {
+    return this.list(Object.assign(
+      { _items: this.#indexByCommonName[commonName] || [] },
+      options
+    ))
   }
 }
 

@@ -63,10 +63,10 @@ const Resources = class {
     this.listManager.deleteItem(item)
   }
 
-  list({ sort = 'id' } = {}) {
+  list({ sort = 'id', _items = this.items } = {}) {
     return sort
-      ? this.items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
-      : this.items
+      ? _items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
+      : _items
   }
 }
 
