@@ -5,9 +5,11 @@ import * as relationships from './index-relationships.js'
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
+  #keyField
   #indexById
   
   constructor({ items = [], keyField }) {
+    this.#keyField = keyField
     this.items = items || []
     // add standard 'id' field if not present.
     this.items.forEach((item) => { item.id = item.id || item[keyField] })
@@ -15,8 +17,17 @@ const Resources = class {
     this.listManager = new ListManager({ items })
     this.#indexById = this.listManager.getIndex('byId')
   }
+  
+  get keyField() { return this.#keyField }
 
   add(item) {
+    if (item.id === undefined) {
+      if (item[this.keyField] === undefined) {
+        throw new Error(`Cannot add item '${item}' with no 'id' or ${this.keyField}`)
+      }
+      item.id = item[this.keyField]
+    }
+    
     if (this.get(item.id) !== undefined) {
       throw new Error(`Cannot add item with existing key '${item.id}'; try 'update'.`)
     }
@@ -35,7 +46,9 @@ const Resources = class {
       throw new Error(`Did not find required vendor '${name}'.`)
     }
 
-    return Object.assign({}, result)
+    return result === undefined
+      ? undefined
+      : Object.assign({}, result)
   }
   
   update(item) {
