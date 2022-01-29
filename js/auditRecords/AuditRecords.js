@@ -1,44 +1,35 @@
+import { Resources } from '../lib/resources.js'
+import * as idxType from '../lib/index-relationships.js'
+
 import * as fjson from '@liquid-labs/federated-json'
 
-/**
-* Basic methods for accessing the audit record data. Note that functionality is split up like this to make these
-* functions easier to unit test.
-*/
+const keyField = 'id'
 
 /**
-* Retrieves a single audit record entry by name <audit name>/<target>.
+* Basic class for accessing the audit record data.
 */
-const get = (data, id) => {
-  const [auditName, targetId] = splitId(id)
-  return data?.auditRecords?.[auditName]?.[targetId] && toStandalone(data, auditName, targetId)
-}
-
-const list = (data, { domain, 'audit name': auditName }) => {
-  if (data.auditRecords === undefined) {
-    return []
+const AuditRecords = class extends Resources {
+  #indexByAudit
+  
+  constructor(items) {
+    super({ items, keyField })
+    this.#indexByAudit = this.listManager.addIndex({
+      name: 'byAudit',
+      keyField: 'auditId',
+      relationship: idxType.ONE_TO_MANY
+    })
   }
-
-  const domainKeys = domain === undefined
-    ? Object.keys(data.auditRecords || {})
-    : [domain]
-
-  return domainKeys.reduce((acc, domainName) => {
-    const domainRecs = data.auditRecords[domainName] || {}
-    const auditNames = auditName === undefined
-      ? Object.keys(domainRecs)
-      : [auditName]
-    for (const auditName of auditNames) {
-      const auditRecs = domainRecs[auditName] || {}
-      for (const targetId of Object.keys(auditRecs)) {
-        acc.push(toStandalone(data, auditName, targetId))
-      }
-    }
-    return acc
-  },
-  [])
-    .sort((a, b) => a.id.localeCompare(b.id))
+  
+  getByAudit(auditId, options) {
+    return this.list(Object.assign(
+      { _items: this.#indexByAudit[auditId] || [] },
+      options
+    ))
+  }
 }
 
+// TODO: deprecated; retained for reference
+/*
 const persist = (data, { domain, domains }) => {
   if (!domains && domain) {
     domains = [domain]
@@ -83,17 +74,6 @@ const splitId = (id) => {
   }
   return [auditName, targetId]
 }
+END deprecated methods */
 
-/**
-* Since our data is complete as is, this just makes a copy for safety's sake.
-*/
-const toStandalone = (data, auditName, targetId) => {
-  const [domain] = auditName.split(/-(.+)/)
-  return Object.assign({
-    id : `${auditName}/${targetId}`,
-    domain
-  },
-  data.auditRecords[domain][auditName][targetId])
-}
-
-export { get, list, persist, update }
+export { AuditRecords }

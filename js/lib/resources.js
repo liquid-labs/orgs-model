@@ -1,42 +1,85 @@
+import { ListManager } from './ListManager.js'
+import * as relationships from './index-relationships.js'
+
 /**
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
-  constructor({ items, key }) {
+  #keyField
+  #indexById
+  
+  constructor({ items = [], keyField }) {
+    this.#keyField = keyField
     this.items = items || []
-    this.items.forEach((item) => { item.id = item.id || item[key] })
-    this.key = key
-
-    this.index = this.items.reduce((index, item) => { index[item[key]] = item; return index }, {})
+    // add standard 'id' field if not present.
+    this.items.forEach((item) => { item.id = item.id || item[keyField] })
+    
+    this.listManager = new ListManager({ items })
+    this.#indexById = this.listManager.getIndex('byId')
   }
+  
+  get keyField() { return this.#keyField }
 
   add(item) {
-    if (this.index[item.id] !== undefined) {
-      throw new Error(`Cannot add item with existing key '${item.id}'.`)
+    if (item.id === undefined) {
+      if (item[this.keyField] === undefined) {
+        throw new Error(`Cannot add item '${item}' with no 'id' or ${this.keyField}`)
+      }
+      item.id = item[this.keyField]
+    }
+    
+    if (this.get(item.id) !== undefined) {
+      throw new Error(`Cannot add item with existing key '${item.id}'; try 'update'.`)
     }
 
     this.items.push(item)
-    this.index[item.id] = item
+    
+    this.listManager.addItem(item)
   }
 
   /**
   * Retrieves a single vendor/product entry by name.
   */
   get(name, { required = false } = {}) {
-    const result = this.index[name]
+    const result = this.#indexById[name]
     if (required === true && result === undefined) {
       throw new Error(`Did not find required vendor '${name}'.`)
     }
 
-    return result
+    return result === undefined
+      ? undefined
+      : Object.assign({}, result)
+  }
+  
+  update(item) {
+    if (this.get(item.id) === undefined) {
+      throw new Error(`No such item with key '${item.id}' to update; try 'add'.`)
+    }
+    
+    const itemIndex = this.indexOf(item)
+    this.items.splice(itemIndex, 1, item)
+    
+    this.listManager.updateItem(item)
+    
+    return item
+  }
+  
+  delete(itemId) {
+    const item = this.get(itemId)
+    if (item === undefined) {
+      throw new Error(`No such item with id '${item.id}' found.`)
+    }
+    
+    const itemIndex = this.indexOf((i) => i.id === item.id)
+    this.items.splice(itemIndex, 1)
+    
+    this.listManager.deleteItem(item)
   }
 
-  key() { return this.key }
-
-  list({ sort = this.key } = {}) {
+  list({ sort = 'id', _items = this.items } = {}) {
     return sort
-      ? this.items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
-      : this.items
+      ? _items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
+      : _items
   }
 }
 
@@ -47,4 +90,7 @@ const commonAPIInstanceSetup = ({ self, org, checkCondition }) => {
   self.checkCondition = checkCondition
 }
 
-export { commonAPIInstanceSetup, Resources }
+export {
+  commonAPIInstanceSetup,
+  Resources
+}

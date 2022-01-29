@@ -7,14 +7,12 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
-    - "@liquid-labs/policies-model"
-    - "@liquid-labs/policy-projects"
-    - "@liquid-labs/liq-ext-audit-vendors"
-    - "@liquid-labs/policy-staff"
-    - "@liquid-labs/policy-devices"
-    - "@liquid-labs/liq-ext-audits"
-    - "@moca/moca-financial-policy"
+    - "@liquid-labs/liq-core"
     - "@liquid-labs/orgs-model"
+    - "@liquid-labs/liq-vendors"
+    - "@liquid-labs/policies-model"
+    - "@liquid-labs/liq-technologies"
+    - "@liquid-labs/liq-audits"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
@@ -194,6 +192,24 @@
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Convert audits DB to a list
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- startTimestamp: 2022-01-11T22:53:12.043Z
+  startEpochMillis: 1641941592043
+  issues:
+    - https://github.com/Liquid-Labs/liq-core/issues/33
+    - https://github.com/Liquid-Labs/liq-core/issues/36
+  branch: 2021.11.05-zane@liquid-labs.com-support_sourcing_responsibility_for
+  branchFrom: 8284cbfa69ba5062ec92b718714a08f7efd5fb50
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-core"
+    - "@liquid-labs/liq-audits"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Support sourcing responsibility for evidence
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
