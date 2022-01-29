@@ -66,3 +66,4 @@
 * _**hotfix**_: noted useful future outputs _(zane@liquid-labs.com; 2021-12-30T20:46:01.000Z)_
 * Support sourcing responsibility for evidence _(zane@liquid-labs.com; 2022-01-11T22:53:12.043Z)_
 * _**hotfix**_: lint and bugfixes _(zane@liquid-labs.com; 2022-01-29T01:37:14.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-29T01:37:30.000Z)_
