@@ -8,19 +8,19 @@ const keyField = 'legalName'
 */
 const Vendors = class extends Resources {
   #indexByCommonName
-  
+
   constructor(items) {
     super({ items, keyField })
     this.#indexByCommonName = this.listManager.addIndex({
-      name: 'byCommonName',
-      keyField: 'commonName',
-      relationship: idxType.ONE_TO_MANY
+      name         : 'byCommonName',
+      keyField     : 'commonName',
+      relationship : idxType.ONE_TO_MANY
     })
   }
 
   getByCommonName(commonName, options) {
     return this.list(Object.assign(
-      { _items: this.#indexByCommonName[commonName] || [] },
+      { _items : this.#indexByCommonName[commonName] || [] },
       options
     ))
   }

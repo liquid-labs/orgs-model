@@ -1,8 +1,6 @@
 import { Resources } from '../lib/resources.js'
 import * as idxType from '../lib/index-relationships.js'
 
-import * as fjson from '@liquid-labs/federated-json'
-
 const keyField = 'id'
 
 /**
@@ -10,19 +8,19 @@ const keyField = 'id'
 */
 const AuditRecords = class extends Resources {
   #indexByAudit
-  
+
   constructor(items) {
     super({ items, keyField })
     this.#indexByAudit = this.listManager.addIndex({
-      name: 'byAudit',
-      keyField: 'auditId',
-      relationship: idxType.ONE_TO_MANY
+      name         : 'byAudit',
+      keyField     : 'auditId',
+      relationship : idxType.ONE_TO_MANY
     })
   }
-  
+
   getByAudit(auditId, options) {
     return this.list(Object.assign(
-      { _items: this.#indexByAudit[auditId] || [] },
+      { _items : this.#indexByAudit[auditId] || [] },
       options
     ))
   }

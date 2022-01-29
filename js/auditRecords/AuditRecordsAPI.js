@@ -9,7 +9,7 @@ import { AuditRecords } from './AuditRecords.js'
 const AuditRecordsAPI = class extends AuditRecords {
   constructor(org) {
     super(org.innerState.auditRecords)
-    
+
     this.checkCondition = AuditRecordsAPI.checkCondition
 
     this.key = 'id'

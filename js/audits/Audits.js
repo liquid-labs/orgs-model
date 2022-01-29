@@ -9,19 +9,19 @@ const keyField = 'name'
 */
 const Audits = class extends Resources {
   #indexByTarget
-  
+
   constructor(items) {
     super({ items, keyField })
     this.#indexByTarget = this.listManager.addIndex({
-      name: 'byTarget',
-      keyField: 'target',
-      relationship: idxType.ONE_TO_MANY
+      name         : 'byTarget',
+      keyField     : 'target',
+      relationship : idxType.ONE_TO_MANY
     })
   }
 
   getByTarget(target, options) {
     return this.list(Object.assign(
-      { _items: this.#indexByTarget[target] || [] },
+      { _items : this.#indexByTarget[target] || [] },
       options
     ))
   }

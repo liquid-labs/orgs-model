@@ -32,7 +32,7 @@ const ListManager = class {
   #idIndex
   #idField
   #className
-  
+
   /**
   * #### Parameters
   *
@@ -45,17 +45,17 @@ const ListManager = class {
     this.#items = items
     this.#idField = idField
     this.#idIndex = this.addIndex({
-      name: 'byId',
-      keyField: idField,
-      relationship: relationships.ONE_TO_ONE
+      name         : 'byId',
+      keyField     : idField,
+      relationship : relationships.ONE_TO_ONE
     })
     this.#className = className
   }
-  
+
   /**
   * ## Retriewal functions
   */
-  
+
   /**
   * Retrieves the list. By default, the list is copied but the items are not. However, a 'getSafe(listIndex)' function
   * is attached to the array which can be used to make update safe copies of the items in the list.
@@ -73,7 +73,7 @@ const ListManager = class {
         ? this.#items
         : this.#annotateList([...this.#items])
   }
-  
+
   /**
   * Retrieves a singel item by id.
   *
@@ -90,12 +90,12 @@ const ListManager = class {
   getItem(id, { noClone = false, required = false, className = this.#className } = {}) {
     const item = this.#idIndex[id]
     if (item === undefined && required === true) {
-      throw new Error(`No such ${className ? className : 'item'} with id '${id}' found.`)
+      throw new Error(`No such ${className || 'item'} with id '${id}' found.`)
     }
-    
+
     return noClone ? item : structuredClone(item)
   }
-  
+
   /**
   * Returns the index value, which may be a single item (for one-to-one indexes) or a list of items (for one-to-many
   * indexes). In the one-to-one case, the item returned is cloned by default. To avoid unecessary expense, the list is
@@ -124,37 +124,38 @@ const ListManager = class {
     noClone = false,
     required = false,
     cloneAll = false,
-    className = this.#className }) {
+    className = this.#className
+  }) {
     // Note, indicating a valid index is always required and '#getIndex' spec will throw an error if no match is found.
-    const { index: indexActual, relationship, name } = this.#getIndexSpec(index || indexName)
+    const { index: indexActual, name, relationship } = this.#getIndexSpec(index || indexName)
     const value = indexActual[key]
-    
+
     // value requied?
     if (value === undefined && required === true) {
       indexName = indexName || name
-      throw new Error(`Did not find ${className ? `${className} for ` : ''}key '${key}' in index${ indexName ? ` '${indexName}'` : ''}.`)
+      throw new Error(`Did not find ${className ? `${className} for ` : ''}key '${key}' in index${indexName ? ` '${indexName}'` : ''}.`)
     }
-    
+
     // Let's igure out what to return. If 'noClone' is 'true', then we just return the value in any case.
     if (noClone === true && cloneAll === false) { // remember, 'cloneAll' supercedes 'noClone'
       return value
     }
 
-    if (spec.relationship === relationships.ONE_TO_ONE) {
-      value = structuredClone(value)
+    if (relationship === relationships.ONE_TO_ONE) {
+      return structuredClone(value)
     }
     else { // it's ONE_TO_MANY
       if (cloneAll === true) {
-        value = value.map((i) => structuredClone(i))
+        return value.map((i) => structuredClone(i))
       }
       else if (noClone === false) {
-        this.#annotateList(value)
+        return this.#annotateList(value)
       }
     }
-    
+
     return value
   }
-  
+
   addIndex(indexSpec) {
     for (const reqField of ['relationship', 'keyField']) {
       if (indexSpec[reqField] === undefined) {
@@ -169,103 +170,103 @@ const ListManager = class {
       this.#specIndex[indexSpec.name] = indexSpec
     }
     this.rebuild(indexSpec)
-    
+
     return index
   }
-  
+
   getIndex(name) {
     return this.#getIndexSpec(name).index
   }
-  
+
   getNamedIndexCount() { return Object.keys(this.#specIndex).length }
-  
+
   getTotalIndexCount() { return this.#indexSpecs.length }
-  
-  rebuild(specOrName) {
-    const indexSpec = typeof specOrName === 'string' ? this.#getIndexSpec(specOrName) : specOrName
+
+  rebuild(specOrIndex) {
+    const indexSpec = typeof specOrIndex === 'string' ? this.#getIndexSpec(specOrIndex) : specOrIndex
     routeByRelationship({
-      items: this.#items,
+      items        : this.#items,
       indexSpec,
-      one2oneFunc: rebuildOneToOne,
-      one2manyFunc: rebuildOneToMany
+      one2oneFunc  : rebuildOneToOne,
+      one2manyFunc : rebuildOneToMany
     })
   }
-  
+
   rebuildAll() {
     routeByRelationships({
-      items: this.#items,
-      indexSpecs: this.#indexSpecs,
-      one2oneFunc: rebuildOneToOne,
-      one2manyFunc: rebuildOneToMany
+      items        : this.#items,
+      indexSpecs   : this.#indexSpecs,
+      one2oneFunc  : rebuildOneToOne,
+      one2manyFunc : rebuildOneToMany
     })
   }
-  
+
   addItem(item) {
     this.#items.push(item)
-    
+
     routeByRelationships({
       item,
-      indexSpecs: this.#indexSpecs,
-      one2oneFunc: addOneToOne,
-      one2manyFunc: addOneToMany
+      indexSpecs   : this.#indexSpecs,
+      one2oneFunc  : addOneToOne,
+      one2manyFunc : addOneToMany
     })
   }
-  
+
   updateItem(item) {
     this.getItem(item[this.#idIndex])
     // check that this is a valid update
-    this.getItem(item[this.#idField], { required: true, noClone: true })
+    this.getItem(item[this.#idField], { required : true, noClone : true })
     // In future, we could keep the base list sorted by ID and then use quick-sort insertion and update techniques. For
     // now, we just brute force it.
     const itemIndex = this.#items.findIndex((i) => i.id === item.id)
     this.#items.splice(itemIndex, 1, item)
-    
+
     routeByRelationships({
       item,
-      idKey: this.#getIdIndexKey(),
-      idIndex: this.#idIndex,
-      indexSpecs: this.#indexSpecs,
-      one2oneFunc: updateOneToOne,
-      one2manyFunc: updateOneToMany
+      idKey        : this.#getIdIndexKey(),
+      idIndex      : this.#idIndex,
+      indexSpecs   : this.#indexSpecs,
+      one2oneFunc  : updateOneToOne,
+      one2manyFunc : updateOneToMany
     })
   }
-  
+
   deleteItem(item) {
     // check that this is a valid delete
-    this.getItem(item[this.#idField], { required: true, noClone: true })
-    
+    this.getItem(item[this.#idField], { required : true, noClone : true })
+
     const itemIndex = this.#items.findIndex((i) => i.id === item.id)
     this.#items.splice(itemIndex, 1)
-    
+
     routeByRelationships({
       item,
-      idKey: this.#getIdIndexKey(),
-      idIndex: this.#idIndex,
-      indexSpecs: this.#indexSpecs,
-      one2oneFunc: deleteOneToOne,
-      one2manyFunc: deleteOneToMany
+      idKey        : this.#getIdIndexKey(),
+      idIndex      : this.#idIndex,
+      indexSpecs   : this.#indexSpecs,
+      one2oneFunc  : deleteOneToOne,
+      one2manyFunc : deleteOneToMany
     })
   }
-  
+
   #getIndexSpec(nameOrIndex) {
     const indexSpec = typeof nameOrIndex === 'string'
       ? this.#specIndex[nameOrIndex]
-      : this.indexSpecs.find((spec) => spec.index === nameOrIndex )
+      : this.#indexSpecs.find((spec) => spec.index === nameOrIndex)
     if (indexSpec === undefined) {
       const msg = typeof nameOrIndex === 'string'
-        ? `No such index '${name}' found.`
-        : `Could not find matching index.`
+        ? `No such index '${nameOrIndex}' found.`
+        : 'Could not find matching index.'
       throw new Error(msg)
     }
     return indexSpec
   }
-  
+
   #getIdIndexKey() {
     return this.#indexSpecs[0].keyField // the 'ID index' is always first
   }
-  
+
   #annotateList(list) {
-    list.getSafe = (idx) => structuredClone(value[idx])
+    list.getSafe = (idx) => structuredClone(list[idx])
     return list
   }
 }
@@ -275,17 +276,17 @@ const ListManager = class {
 * ### Internal plumbing
 */
 const truncateObject = (o) => {
-  for (const key in o) {
+  for (const key of Object.getOwnPropertyNames(o)) {
     delete o[key]
   }
 }
 
 const routeByRelationship = ({ indexSpec, one2oneFunc, one2manyFunc, ...rest }) => {
   switch (indexSpec.relationship) {
-    case relationships.ONE_TO_ONE: one2oneFunc({ ...indexSpec, ...rest }); break
-    case relationships.ONE_TO_MANY: one2manyFunc({ ...indexSpec, ...rest }); break
+  case relationships.ONE_TO_ONE: one2oneFunc({ ...indexSpec, ...rest }); break
+  case relationships.ONE_TO_MANY: one2manyFunc({ ...indexSpec, ...rest }); break
     // TODO: include this check in 'addIndex'
-    default: throw new Error(`Unknown index relationship spec ('${indexSpec.relationship}')`)
+  default: throw new Error(`Unknown index relationship spec ('${indexSpec.relationship}')`)
   }
 }
 
@@ -301,7 +302,7 @@ const rebuildOneToOne = ({ items, index, keyField }) => {
   truncateObject(index)
   items.reduce((newIdx, item) => { newIdx[item[keyField]] = item; return newIdx }, index)
 }
-  
+
 const rebuildOneToMany = ({ items, index, keyField }) => {
   truncateObject(index)
   items.reduce((newIdx, item) => {
@@ -310,7 +311,7 @@ const rebuildOneToMany = ({ items, index, keyField }) => {
     list.push(item)
     newIdx[indexValue] = list
     return newIdx
-  }, index )
+  }, index)
 }
 
 /**
@@ -374,7 +375,7 @@ const deleteOneToOne = ({ item, keyField, index, idKey, idIndex }) => {
 * `requireClean` parameter.
 */
 const deleteOneToMany = ({ item, keyField, index, idKey, idIndex }) => {
-  const { origItem, origList, origListIndex } = getOrigData({ item, idKey, idIndex, keyField, index })
+  const { origList, origListIndex } = getOrigData({ item, idKey, idIndex, keyField, index })
   origList.splice(origListIndex, 1)
 }
 
@@ -388,7 +389,7 @@ const getOrigData = ({ item, idKey, idIndex, keyField, index }) => {
   // We compare keys rather than objects as returned objects must be copied to preserve the integrity of the original
   // items along with the indexes.
   const origListIndex = origList.findIndex((i) => i[idKey] === origItem[idKey])
-  
+
   return { origItem, origList, origListIndex }
 }
 

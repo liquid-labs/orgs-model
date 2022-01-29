@@ -10,6 +10,7 @@ const testItems = [
   { id: 3, type: 'foo' }
 ]
 
+const oneToOneSpec = { name: 'byId2', relationship: idxRelationships.ONE_TO_ONE, keyField: 'id' }
 const oneToManySpec = { name: 'byType', relationship: idxRelationships.ONE_TO_MANY, keyField: 'type' }
 
 const verifyOneToOneIndex = ({ index, items = testItems }) => {
@@ -89,6 +90,38 @@ describe('ListManager', () => {
     test('performs a deep copy', () => {
       expect(itemGet.nestedObj).toEqual(itemOrig.nestedObj)
       expect(itemGet.nestedObj).not.toBe(itemOrig.nestedObj)
+    })
+  })
+  
+  describe('getByIndex', () => {
+    const items = [...testItems]
+    const listManager = new ListManager({ items })
+    const indexMap = {} // we can't use 'byId', etc. directly in our 'each' arrays because they get eval before before
+    
+    beforeAll(() => {
+      const byId = listManager.getIndex('byId')
+      indexMap['byId'] = byId
+      const oneToOne = listManager.addIndex(oneToOneSpec)
+      indexMap[oneToOneSpec.name] = oneToOne
+      const anonymousSpec = Object.assign({}, oneToManySpec)
+      delete anonymousSpec.name
+      const anonymousOneToMany = listManager.addIndex(anonymousSpec)
+      indexMap['anon'] = anonymousOneToMany
+    })
+    
+    test.each(['byId', oneToOneSpec.name])
+      ("can reference '%s' index by name, getting a copy", (indexName) => {
+      const result = listManager.getByIndex({ indexName, key: 1 })
+      expect(result).toEqual(items[0])
+      expect(result).not.toBe(items[0])
+    })
+    
+    test.each(['byId', oneToOneSpec.name])
+      ("can use '%s' index ref, getting a copy", (indexName) => {
+      const index = indexMap[indexName]
+      const result = listManager.getByIndex({ index, key: 1 })
+      expect(result).toEqual(items[0])
+      expect(result).not.toBe(items[0])
     })
   })
   

@@ -1,5 +1,4 @@
 import { ListManager } from './ListManager.js'
-import * as relationships from './index-relationships.js'
 
 /**
 * Common class for base resources support simple get and list functions.
@@ -7,17 +6,17 @@ import * as relationships from './index-relationships.js'
 const Resources = class {
   #keyField
   #indexById
-  
+
   constructor({ items = [], keyField }) {
     this.#keyField = keyField
     this.items = items || []
     // add standard 'id' field if not present.
     this.items.forEach((item) => { item.id = item.id || item[keyField] })
-    
+
     this.listManager = new ListManager({ items })
     this.#indexById = this.listManager.getIndex('byId')
   }
-  
+
   get keyField() { return this.#keyField }
 
   add(item) {
@@ -27,13 +26,13 @@ const Resources = class {
       }
       item.id = item[this.keyField]
     }
-    
+
     if (this.get(item.id) !== undefined) {
       throw new Error(`Cannot add item with existing key '${item.id}'; try 'update'.`)
     }
 
     this.items.push(item)
-    
+
     this.listManager.addItem(item)
   }
 
@@ -50,29 +49,29 @@ const Resources = class {
       ? undefined
       : Object.assign({}, result)
   }
-  
+
   update(item) {
     if (this.get(item.id) === undefined) {
       throw new Error(`No such item with key '${item.id}' to update; try 'add'.`)
     }
-    
+
     const itemIndex = this.indexOf(item)
     this.items.splice(itemIndex, 1, item)
-    
+
     this.listManager.updateItem(item)
-    
+
     return item
   }
-  
+
   delete(itemId) {
     const item = this.get(itemId)
     if (item === undefined) {
       throw new Error(`No such item with id '${item.id}' found.`)
     }
-    
+
     const itemIndex = this.indexOf((i) => i.id === item.id)
     this.items.splice(itemIndex, 1)
-    
+
     this.listManager.deleteItem(item)
   }
 

@@ -1,5 +1,4 @@
 import { Resources } from '../lib/resources.js'
-import * as idxType from '../lib/index-relationships.js'
 
 const keyField = 'name'
 
