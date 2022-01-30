@@ -5,36 +5,53 @@ import { Evaluator } from '@liquid-labs/condition-eval'
 import { StaffMember } from './StaffMember'
 import { AttachedRole } from '../roles'
 
+// TODO: factor out 'hydration' and convert to standard 'Resources'
 const Staff = class {
-  constructor(fileName) {
+  #changedSinceWrite
+  #requiresValidation
+  #map
+
+  get keyField() { return 'email' }
+  get itemName() { return 'staff member' }
+  get resourceName() { return 'staff' }
+
+  constructor({ fileName, org }) {
     this.fileName = fileName
+    this.org = org
     // console.error(`Loading staff from '${fileName}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
     const data = JSON.parse(fs.readFileSync(fileName))
     this.members = data.map((rec) => new StaffMember(rec))
 
     this.checkCondition = checkCondition
+    this.#indexMembers()
 
-    this.key = 'email'
-
-    this.map = indexMembers(this.members)
+    this.#changedSinceWrite = false
+    this.#requiresValidation = true
+    // must call hydrate after init (can't do before because 'org.staff' will not be available)
   }
 
-  // TODO: depracated
-  getAll() { return this.members.slice() }
   list() { return this.members.slice() }
 
-  get(email) { return this.map[email] }
+  get(email) { return this.#map[email] }
 
   getByRoleName(roleName) { return this.members.filter(s => s.hasRole(roleName)) }
 
-  addData(memberData, { deferHydration = false }) {
+  add(memberData, { deferHydration = false }) {
     this.members.push(new StaffMember(memberData))
-    if (!deferHydration) { this.hydrate(this.org) }
+    this.#changed()
+    if (!deferHydration) { this.hydrate() }
   }
 
-  remove(email) {
+  delete(email) {
     email = email.toLowerCase()
-    const matches = this.getAll().filter(member => member.email === email)
+    let index = -1
+    const matches = this.members.filter((member, i) => {
+      if (member.email === email) {
+        index = i
+        return true
+      }
+      return false
+    })
 
     // TODO: also need to check if this person is a manager and refuse to remove until that's changed
     if (matches.length === 0) {
@@ -44,21 +61,41 @@ const Staff = class {
       throw new Error(`Staff database consistency error. Found multiple entires for '${email}'.`)
     }
 
-    this.members = this.members.filter(member => member.email !== email)
+    this.members.splice(index, 1)
+    this.#changed()
   }
 
-  write() { fs.writeFileSync(this.fileName, this.toString()) }
+  update(item) {
+    if (!(item instanceof StaffMember)) item = new StaffMember(item)
+    else if (item.id === undefined) item.id = item.email.toLowerCase()
+
+    const origItem = this.get(item.id)
+    if (origItem === undefined) {
+      throw new Error(`No such staff member with key '${item.id}' to update; try 'add'.`)
+    }
+    const itemIndex = this.members.indexOf(origItem)
+    this.members.splice(itemIndex, 1, item)
+    this.#map[item.id] = item
+
+    this.#changed()
+    return item
+  }
+
+  write() {
+    fs.writeFileSync(this.fileName, this.toString())
+    this.#changedSinceWrite = false
+  }
 
   /**
    * Swaps out references to roles and managers by name and email (respectively) with the actual role and manager
    * objects.
    */
-  hydrate(org) {
-    this.org = org
+  hydrate() {
+    if (!this.#requiresValidation) return this
+    
+    this.#indexMembers()
 
-    this.map = indexMembers(this.members)
-
-    this.members.forEach((s) => {
+    for (const s of this.members) {
       s.roles = s.roles.reduce((roles, rec) => { // Yes, both maps AND has side effects. Suck it!
         if (rec instanceof AttachedRole) {
           roles.push(rec)
@@ -70,21 +107,21 @@ const Staff = class {
         }
         // Verify rec references a good role. Note, we check the 'orgStructure' because there may be a role defined
         // globally that isn't in use in the org.
-        const role = org.getRoles().get(rec.name,
+        const role = this.org.getRoles().get(rec.name,
           {
             required  : true,
             errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
           })
-
+        
         roles.push(convertRoleToAttached({ staffMember : s, rec, role, org : this.org }))
         processImpliedRoles(roles, s, rec, role, this.org)
         return roles
       }, []) // StaffMember roles reduce
-    }) // StaffMember iteration
+    } // StaffMember iteration
 
     // we need to determine the manager role after everything else has been set up because the manager's role is not
     // determined strictly by the abstract org chart alone, since there may be multiple candidates
-    this.members.forEach((s) => {
+    for (const s of this.members) {
       s.getAttachedRoles().forEach((attachedRole) => {
         let roleManager = attachedRole.getManager()
         if (attachedRole.isTitular()) {
@@ -95,20 +132,20 @@ const Staff = class {
               .getPossibleManagerNodes()
 
             const possibleManagers = possibleManagerNodes.reduce((list, node) => {
-              list.push(...org.staff.getByRoleName(node.name))
+              list.push(...this.getByRoleName(node.name))
               return list
             }, [])
 
             if (possibleManagers.length === 1) {
               const managerEmail = possibleManagers[0].email
               const managedRoleName = attachedRole.getName()
-              roleManager = hydrateManager({ org, staffMember : s, managerEmail, managedRoleName })
+              roleManager = hydrateManager({ org : this.org, staffMember : s, managerEmail, managedRoleName })
               attachedRole.manager = roleManager
             }
           }
           if (roleManager !== null) {
             let managerRole = null
-            const node = org.orgStructure.getNodeByRoleName(attachedRole.name)
+            const node = this.org.orgStructure.getNodeByRoleName(attachedRole.name)
             if (node === undefined) { throw new Error(`Did not find org structure node for '${attachedRole.name}'.`) }
             if (node.primaryManagerNodeName) {
               if (roleManager.hasRole(node.primaryManagerNodeName)) {
@@ -122,8 +159,9 @@ const Staff = class {
           } // has manager check
         } // titular check
       })
-    })
+    }
 
+    this.#requiresValidation = false
     return this
   }
 
@@ -161,16 +199,22 @@ const Staff = class {
 
     return JSON.stringify(flatJson, null, '  ')
   }
-}
 
-const indexMembers = (members) =>
-  members.reduce((acc, member, i) => {
-    if (acc[member.getEmail()] !== undefined) {
-      throw new Error(`Staff member with email '${member.getEmail()}' already exists at entry ${i}.`)
-    }
-    acc[member.getEmail()] = member
-    return acc
-  }, {})
+  #changed() {
+    this.#requiresValidation = true
+    this.#changedSinceWrite = true
+  }
+
+  #indexMembers() {
+    this.#map = this.members.reduce((acc, member, i) => {
+      if (acc[member.getEmail()] !== undefined) {
+        throw new Error(`Staff member with email '${member.getEmail()}' already exists at entry ${i}.`)
+      }
+      acc[member.getEmail()] = member
+      return acc
+    }, {})
+  }
+}
 
 const convertRoleToAttached = ({ staffMember, rec, role, org, impliedBy, display }) => {
   if (role.isTitular()) {

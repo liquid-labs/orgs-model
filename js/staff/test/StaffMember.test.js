@@ -27,7 +27,7 @@ describe('StaffMember', () => {
   ${undefined} | ${'Smith'} | ${{ officialFormat : true }} | ${'Smith'}
   `('given: $givenName, family: $familyName, options: $options -> $fullName',
     ({ givenName, familyName, options, fullName }) => {
-      const staffMember = new StaffMember({ givenName : givenName, familyName : familyName })
+      const staffMember = new StaffMember({ email: 'notused@foo.com', givenName : givenName, familyName : familyName })
       expect(staffMember.getFullName(options)).toBe(fullName)
     }
   )

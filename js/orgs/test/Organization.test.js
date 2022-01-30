@@ -64,7 +64,7 @@ describe('Organization', () => {
 
   describe('getStaff', () => {
     test('returns a list of 4 staff', () => {
-      const staff = org.getStaff().getAll()
+      const staff = org.getStaff().list()
       expect(staff).toHaveLength(4)
       expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
       expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)

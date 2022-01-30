@@ -26,8 +26,8 @@ const Organization = class {
     this.roles = new Roles(this, this.innerState.roles)
     this.roles.hydrate()
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
-    this.staff = new Staff(staffJsonPath)
-    this.staff.hydrate(this)
+    this.staff = new Staff({ fileName : staffJsonPath, org : this })
+    this.staff.hydrate()
 
     // hydrate(this)
 
@@ -74,7 +74,7 @@ const Organization = class {
       const result = []
       // luckily, the google org chart doesn't care whether we specify the nodes in order or not, so it's a simple
       // transform
-      Object.values(this.getStaff().getAll()).forEach(s => {
+      Object.values(this.getStaff().list()).forEach(s => {
         s.getAttachedRoles().forEach(r => {
           if (r.isTitular() && r.display !== false) {
             const myKey = `${s.getEmail()}/${r.getName()}`

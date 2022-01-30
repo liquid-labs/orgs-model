@@ -6,20 +6,21 @@ import { Organization } from '../../orgs'
 
 describe('Staff', () => {
   let testStaff
+  let org
   beforeAll(() => {
-    const org = new Organization('./js/test-data', './js/staff/test/staff.json')
+    org = new Organization('./js/test-data', './js/staff/test/staff.json')
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.getStaff()
   })
 
   test('detects duplicate emails on init', () =>
-    expect(() => new Staff('./js/staff/test/dupe_email_staff.json'))
+    expect(() => new Staff({ fileName: './js/staff/test/dupe_email_staff.json', org }))
       .toThrow(/email.*ceo@foo.com/))
 
-  test('filters header+blank lines', () => expect(testStaff.getAll()).toHaveLength(4))
+  test('filters header+blank lines', () => expect(testStaff.list()).toHaveLength(4))
 
   test('fields', () => {
-    const ceo = testStaff.getAll()[0]
+    const ceo = testStaff.list()[0]
     expect(ceo.getEmail()).toBe('ceo@foo.com')
     expect(ceo.getAttachedRoles()).toHaveLength(2)
     const ceoRole = ceo.getAttachedRoles()[0]
@@ -31,7 +32,7 @@ describe('Staff', () => {
     expect(ctoRole.getManager().getEmail()).toBe('ceo@foo.com')
     expect(ctoRole.isActing()).toBe(true)
     expect(ceo.getEmploymentStatus()).toEqual('employee')
-    const dev = testStaff.getAll()[1]
+    const dev = testStaff.list()[1]
     expect(dev.getAttachedRoles()[0].getName()).toBe('Developer')
     expect(dev.getAttachedRoles()[0].getManager().getEmail()).toBe('ceo@foo.com')
   })
@@ -53,7 +54,7 @@ describe('Staff', () => {
       ${'titular roles'} | ${'HAS_CEO_ROLE'} | ${['ceo@foo.com']}
       ${'designated roles'} | ${'HAS_SENSITIVE_DATA_HANDLER_ROLE'} | ${['dev@foo.com']}
     `('properly evaluates $desc ($condition)', ({ desc, condition, expectation }) => {
-      const members = testStaff.getAll().filter((member) => Staff.checkCondition(condition, member))
+      const members = testStaff.list().filter((member) => Staff.checkCondition(condition, member))
       expect(members.map(e => e.getEmail())).toEqual(expectation)
     })
   })

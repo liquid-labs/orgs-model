@@ -2,6 +2,8 @@ const StaffMember = class {
   constructor(record) {
     Object.assign(this, record)
 
+    this.id = this.email.toLowerCase()
+
     this.attachedRolesByName = {}
     this.reportsByReportRole = {} // roles keyed to reports role names
   }
