@@ -37,7 +37,7 @@ const Roles = class {
   } = {}) {
     // we always try an exact match first
     let result = this.map[name]
-    let qualifier = undefined
+    let qualifier
     // now fuzzy match if desired
     if (result === undefined && fuzzy === true) {
       const matchingRoles = this.items.filter((role) => {
@@ -59,7 +59,7 @@ const Roles = class {
         }
         return false
       })
-      
+
       if (matchingRoles.length === 1) {
         result = matchingRoles[0]
       }
@@ -73,7 +73,7 @@ const Roles = class {
     }
 
     if (includeQualifier === true) {
-      return [ new Role(result), qualifier]
+      return [new Role(result), qualifier]
     }
     else {
       return new Role(result)

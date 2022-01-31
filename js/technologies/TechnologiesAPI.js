@@ -33,7 +33,7 @@ const TechnologiesAPI = class extends Technologies {
         technology.vendor = vendor
       }
     }
-  }*/
+  } */
 }
 
 /**

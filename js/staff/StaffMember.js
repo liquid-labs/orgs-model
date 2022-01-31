@@ -5,14 +5,14 @@ const StaffMember = class {
   #allRoles
   #reportsByRoleName
   #reports
-  
+
   constructor({ data, org }) {
     const errors = StaffMember.validateData({ data, org })
     if (errors.length > 0) {
       throw new Error(`Invalid data while creating 'staff member'; ${errors.join(' ')}`)
     }
     Object.assign(this, structuredClone(data))
-    
+
     this.org = org
     this.id = this.email.toLowerCase()
     this.#reportsByRoleName = {}
@@ -26,7 +26,7 @@ const StaffMember = class {
   * format'. Supports option field 'officialFormat'. The function does NOT currently support i18n variations, so for
   * now 'common format' is '<first> <last>' and 'officialFormat' is '<last>, <first>'.
   */
-  getFullName({ officialFormat = false} = {}) { // TODO: i18n the display order
+  getFullName({ officialFormat = false } = {}) { // TODO: i18n the display order
     const { givenName, familyName } = this
 
     if (familyName && givenName) {
@@ -61,74 +61,72 @@ const StaffMember = class {
   * Returns the role names granted directly.
   */
   getOwnRoleNames() { return this.roles.map((r) => r.name) }
-  
-  getOwnRoles() { return this.roles.map((data) => new StaffRole({ data, memberEmail: this.email, org: this.org })) }
-  
-  getAllRoleNames() { return this.allRolesData.map((r) => r.name )}
+
+  getOwnRoles() { return this.roles.map((data) => new StaffRole({ data, memberEmail : this.email, org : this.org })) }
+
+  getAllRoleNames() { return this.allRolesData.map((r) => r.name) }
 
   hasRole(roleName) {
     return !!this.roles.some((r) => r.name === roleName) // let's avoid building '#allRoles' if we don't have to
       || !!this.allRolesData.some((r) => r.name === roleName)
   }
-  
+
   getRole(roleName) {
     const data = this.roles.find((r) => r.name === roleName) // let's avoid building '#allRoles' if we don't have to
       || this.allRolesData.find((r) => r.name === roleName)
     if (data === undefined) return undefined
-    return new StaffRole({ data, memberEmail: this.email, org: this.org })
+    return new StaffRole({ data, memberEmail : this.email, org : this.org })
   }
 
   getManagers() {
     return [...new Set(this.roles.map((r) => r.manager))]
   }
-  
+
   get allRoles() {
     if (this.#allRoles === undefined) this.#initializeAllRoles()
-    return this.#allRoles.map((data) => new StaffRole({ data, memberEmail: this.email, org: this.org }))
+    return this.#allRoles.map((data) => new StaffRole({ data, memberEmail : this.email, org : this.org }))
   }
-  
+
   get allRolesData() {
     if (this.#allRoles === undefined) this.#initializeAllRoles()
     return structuredClone(this.#allRoles)
   }
-  
-  #initializeAllRoles() {
+
+  #initializeAllRoles({ memberEmail }) {
     this.#allRoles = this.roles.slice()
-    
+
     for (let i = 0; i < this.#allRoles.length; i += 1) {
       const staffRole = this.#allRoles[i]
       // verify the role is valid
       const orgRole = this.org.roles.get(staffRole.name,
         {
           required  : true,
-          errMsgGen : (name) => `Staff member '${s.getEmail()}' claims unknown role '${name}'.`
+          errMsgGen : (name) => `Staff member '${this.email}' claims unknown role '${name}'.`
         })
-      for (const { name: impliedRoleName, mngrProtocol, display } of orgRole.implies || []) {
+      for (const { name: impliedRoleName, mngrProtocol } of orgRole.implies || []) {
         // An implied role can come from multiple sources, so let's check if it's already in place
         const impliedStaffRole = this.#allRoles.find((r) => r.name === impliedRoleName)
         if (impliedStaffRole) {
           // we still want to track the implications, so we update the data
           if (!hasOwn(impliedStaffRole, 'impliedBy')) impliedStaffRole.impliedBy = []
-          if (!impliedStaffRole.impliedBy.includes(staffRole.name))
-            impliedStaffRole.impliedBy.push(staffRole.name)
+          if (!impliedStaffRole.impliedBy.includes(staffRole.name)) { impliedStaffRole.impliedBy.push(staffRole.name) }
           continue
         }
-        
+
         const impliedOrgRole = this.org.roles.get(impliedRoleName,
-            {
-              required  : true,
-              errMsgGen : (name) => {
-                console.error(`Unknown role '${name}'...`)
-                return `Role '${orgRole.name}' implies unknown role '${name}' (triggered while processing staff member '${this.email}').`
-              }
-            })
+          {
+            required  : true,
+            errMsgGen : (name) => {
+              console.error(`Unknown role '${name}'...`)
+              return `Role '${orgRole.name}' implies unknown role '${name}' (triggered while processing staff member '${this.email}').`
+            }
+          })
         const impliedStaffRoleData = {
-          name: impliedOrgRole.name,
-          impliedBy: [staffRole.name]
+          name      : impliedOrgRole.name,
+          impliedBy : [staffRole.name]
         }
-        for (const inheritedField of [ 'acting', 'display', 'tbd' ]) {
-          if (staffRole[inheritedField] !== undefined)
-            impliedStaffRoleData[inheritedField] = staffRole[inheritedField]
+        for (const inheritedField of ['acting', 'display', 'tbd']) {
+          if (staffRole[inheritedField] !== undefined) { impliedStaffRoleData[inheritedField] = staffRole[inheritedField] }
         }
         if (mngrProtocol === 'self') {
           impliedStaffRoleData.manager = this.email
@@ -143,7 +141,7 @@ const StaffMember = class {
       } // implies loop
     }
   }
-  
+
   getReportsByRoleName(roleName) {
     const cachedReports = this.#reportsByRoleName[roleName]
     if (cachedReports !== undefined) return cachedReports.slice()
@@ -159,12 +157,12 @@ const StaffMember = class {
     this.#reportsByRoleName[roleName] = reports
     return reports.slice()
   }
-  
+
   getReports() {
     if (this.#reports === undefined) this.#initializeReports()
     return this.#reports.slice()
   }
-  
+
   #initializeReports() {
     this.#reports = this.org.staff.list().reduce((reports, member) => {
       if (this.email !== member.email
@@ -176,24 +174,23 @@ const StaffMember = class {
   }
 
   getParameters() { return this.parameters }
-  
+
   static validateData({ data, errors = [], org }) {
     if (!data) {
-      errors.push(`Data provided to 'staff member' is not truthy.`)
+      errors.push('Data provided to \'staff member\' is not truthy.')
       return errors
     }
-    
-    ['email', 'familyName', 'givenName', 'roles', 'startDate', 'employmentStatus' ].reduce((acc, field) => {
-      if (data[field] === undefined)
-        acc.push(`Missing required field '${field}' for '${data.email || data.familyName}'`)
+
+    ['email', 'familyName', 'givenName', 'roles', 'startDate', 'employmentStatus'].reduce((acc, field) => {
+      if (data[field] === undefined) { acc.push(`Missing required field '${field}' for '${data.email || data.familyName}'`) }
       return acc
     }, errors)
     if (data.roles) {
       for (const roleData of data.roles) {
-        StaffRole.validateData({ data: roleData, errors, memberEmail: data.email, org })
+        StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
       }
     }
-    
+
     return errors
   }
 }

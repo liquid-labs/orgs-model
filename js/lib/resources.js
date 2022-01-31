@@ -1,3 +1,5 @@
+import * as fs from 'fs'
+
 import { ListManager } from './ListManager.js'
 
 /**
@@ -25,7 +27,7 @@ const Resources = class {
   #requiresValidation
   #resourceName
 
-  constructor({ fileName, itemName, items = [], keyField, resourceName  }) {
+  constructor({ fileName, itemName, items = [], keyField, resourceName }) {
     this.#fileName = fileName
     this.#keyField = keyField
     this.#itemName = itemName
@@ -36,7 +38,7 @@ const Resources = class {
 
     this.listManager = new ListManager({ items })
     this.#indexById = this.listManager.getIndex('byId')
-    
+
     this.#changedSinceWrite = false
     this.#requiresValidation = true
   }
@@ -82,7 +84,7 @@ const Resources = class {
 
     this.listManager.updateItem(item)
     this.#changed()
-    
+
     return item
   }
 
@@ -101,16 +103,16 @@ const Resources = class {
       ? _items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
       : _items
   }
-  
+
   write({ fileName = this.#fileName }) {
     if (!fileName) throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
-    
+
     fs.writeFileSync(fileName, JSON.stringify(this.items, null, '  '))
     if (fileName === this.#fileName) {
       this.#changedSinceWrite = false
     }
   }
-  
+
   #changed() {
     this.#requiresValidation = true
     this.#changedSinceWrite = true
