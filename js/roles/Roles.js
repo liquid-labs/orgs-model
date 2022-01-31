@@ -23,6 +23,12 @@ const Roles = class {
   getAll() { return this.items.slice() }
   list() { return this.items.slice() }
 
+  getData(name) { return this.map[name] }
+  /**
+  * ### Parameters
+  *
+  * - `includeQualifier`: returns an array `'[ role, qualifier ]'`
+  */
   get(name, {
     errMsgGen,
     fuzzy = false,
@@ -53,7 +59,7 @@ const Roles = class {
         }
         return false
       })
-
+      
       if (matchingRoles.length === 1) {
         result = matchingRoles[0]
       }
@@ -67,30 +73,15 @@ const Roles = class {
     }
 
     if (includeQualifier === true) {
-      return [result, qualifier]
+      return [ new Role(result), qualifier]
     }
     else {
-      return result
+      return new Role(result)
     }
   }
 
   getStaffInRole(roleName) {
     return this.org.staff.list().filter((s) => s.roles.some((r) => r.name === roleName))
-  }
-
-  /**
-  * Swaps out the 'super role' name for the actual super role object.
-  */
-  hydrate() {
-    this.items.forEach((role, i) => {
-      if (role.superRole !== undefined) {
-        const superRole = this.get(role.superRole)
-        if (superRole === undefined) { throw new Error(`Could not find super-role '${role.superRole}' for role '${role.getName()}' (entry ${i}).`) }
-        role.superRole = superRole
-      }
-    })
-
-    return this
   }
 }
 

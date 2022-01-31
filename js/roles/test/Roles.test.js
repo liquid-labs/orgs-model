@@ -6,7 +6,7 @@ import { Roles } from '..'
 describe('Roles', () => {
   let testRoles
   beforeAll(() => {
-    testRoles = new Roles({}, JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json'))).hydrate()
+    testRoles = new Roles({}, JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json')))
   })
 
   test('parses test file', () => {

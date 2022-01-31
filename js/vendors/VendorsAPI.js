@@ -12,6 +12,7 @@ const VendorsAPI = class extends Vendors {
     // e.g.: { ref: "bad-audit-name", sourceName: "Acme Vendor", "sourceType": "vendor" }
   }
 
+/*
   hydrate() {
     for (const vendor of this.items) {
       const { auditResponsibilities } = vendor
@@ -30,7 +31,7 @@ const VendorsAPI = class extends Vendors {
         }
       }
     }
-  }
+  }*/
 }
 /**
 * Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Technology targets

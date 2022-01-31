@@ -24,20 +24,15 @@ const Organization = class {
     // 'loadOrgState') and just use the global hydration.
     this.dataPath = dataPath
     this.roles = new Roles(this, this.innerState.roles)
-    this.roles.hydrate()
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff({ fileName : staffJsonPath, org : this })
-    this.staff.hydrate()
-
-    // hydrate(this)
-
     this.accounts = new AccountsAPI(this)
     this.auditRecords = new AuditRecordsAPI(this)
     this.audits = new AuditsAPI(this)
     this.technologies = new TechnologiesAPI(this)
     this.vendors = new VendorsAPI(this)
-
-    this.technologies.hydrate()
+    
+    this.staff.validate()
   }
 
   // TODO: deprecated; just use 'org.roles'
@@ -55,7 +50,7 @@ const Organization = class {
   }
 
   hasStaffInRole(email, roleName) {
-    return this.getStaff().getByRoleName(roleName).some(s => s.getEmail() === email)
+    return this.staff.getByRoleName(roleName).some(s => s.getEmail() === email)
   }
 
   getManagingRolesByManagedRoleName(roleName) {
@@ -74,12 +69,12 @@ const Organization = class {
       const result = []
       // luckily, the google org chart doesn't care whether we specify the nodes in order or not, so it's a simple
       // transform
-      Object.values(this.getStaff().list()).forEach(s => {
-        s.getAttachedRoles().forEach(r => {
+      Object.values(this.staff.list()).forEach(s => {
+        s.getOwnRoles().forEach(r => {
           if (r.isTitular() && r.display !== false) {
             const myKey = `${s.getEmail()}/${r.getName()}`
-            const manager = s.getAttachedRole(r.getName()).getManager()
-            if (!manager) result.push([myKey, '', r.getQualifier()])
+            const manager = s.getRole(r.getName()).getManager()
+            if (!manager) result.push([myKey, '', r.qualifier])
             else {
               const mngrEmail = manager.getEmail()
               const managingRoles = this.getManagingRolesByManagedRoleName(r.getName())
@@ -95,7 +90,7 @@ const Organization = class {
                 throw new Error(`Could not find manager ${managingRoles.map(r => `${mngrEmail}/${r.name}`).join('|')} for ${myKey}.`)
               }
               const managerKey = `${mngrEmail}/${managingRole.getName()}`
-              result.push([myKey, managerKey, r.getQualifier()])
+              result.push([myKey, managerKey, r.qualifier])
             }
           }
         })
@@ -118,20 +113,22 @@ const Organization = class {
             : roleName
           const role = this.roles.get(roleName)
 
-          const staffMember = this.getStaff().get(email)
-          const acting = staffMember.getAttachedRole(roleName).acting
-          const tbd = staffMember.getAttachedRole(roleName).tbd
-          return {
+          const staffMember = this.staff.get(email)
+          const chartDatum = {
             id        : row[0],
             ids       : [row[0]],
             parent_id : row[1],
             email     : email,
             name      : staffMember.getFullName(),
             titles    : [title],
-            roles     : [role],
-            acting,
-            tbd
+            roles     : [role]
           }
+          const staffRole = staffMember.getRole(roleName)
+          for (const optField of [ 'acting', 'tbd' ])
+            if (staffRole[optField] !== undefined)
+              chartDatum[optField] = staffRole[optField]
+
+          return chartDatum
         })
       const data = {}
       const childNodes = []

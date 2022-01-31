@@ -10,7 +10,7 @@ describe('Staff', () => {
   beforeAll(() => {
     org = new Organization('./js/test-data', './js/staff/test/staff.json')
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
-    testStaff = org.getStaff()
+    testStaff = org.staff
   })
 
   test('detects duplicate emails on init', () =>
@@ -22,28 +22,19 @@ describe('Staff', () => {
   test('fields', () => {
     const ceo = testStaff.list()[0]
     expect(ceo.getEmail()).toBe('ceo@foo.com')
-    expect(ceo.getAttachedRoles()).toHaveLength(2)
-    const ceoRole = ceo.getAttachedRoles()[0]
-    expect(ceoRole.getName()).toBe('CEO')
-    expect(ceoRole.getManager()).toBeNull()
-    expect(ceoRole.isActing()).toBe(false)
-    const ctoRole = ceo.getAttachedRoles()[1]
-    expect(ctoRole.getName()).toBe('CTO')
+    expect(ceo.allRoles).toHaveLength(2)
+    const ceoRole = ceo.allRoles[0]
+    expect(ceoRole.name).toBe('CEO')
+    expect(ceoRole.manager).toBe(undefined)
+    expect(ceoRole.acting).toBe(undefined)
+    const ctoRole = ceo.allRoles[1]
+    expect(ctoRole.name).toBe('CTO')
     expect(ctoRole.getManager().getEmail()).toBe('ceo@foo.com')
-    expect(ctoRole.isActing()).toBe(true)
+    expect(ctoRole.acting).toBe(true)
     expect(ceo.getEmploymentStatus()).toEqual('employee')
     const dev = testStaff.list()[1]
-    expect(dev.getAttachedRoles()[0].getName()).toBe('Developer')
-    expect(dev.getAttachedRoles()[0].getManager().getEmail()).toBe('ceo@foo.com')
-  })
-
-  test('toString()', () => {
-    const out = testStaff.toString()
-    // console.log(out)
-    const data = JSON.parse(out)
-    const expected = JSON.parse(fs.readFileSync('./js/staff/test/staff.json'))
-
-    expect(data).toEqual(expected)
+    expect(dev.allRoles[0].name).toBe('Developer')
+    expect(dev.allRoles[0].managerEmail).toBe('ceo@foo.com')
   })
 
   describe('checkCondition', () => {

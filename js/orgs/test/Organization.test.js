@@ -10,7 +10,7 @@ describe('Organization', () => {
   test('detects staff with invalid roles', () => {
     expect(() =>
       new Organization('./js/test-data', './js/staff/test/bad_role_staff.json'))
-      .toThrow(/badrole@foo\.com.*Bad Role/)
+      .toThrow(/Bad Role.*badrole@foo\.com/)
   })
 
   test('detects staff with invalid manaagers', () => {
@@ -22,7 +22,7 @@ describe('Organization', () => {
   test('successfully initializes with good data', () => expect(org).not.toBe(undefined))
 
   test('loads basic staff data', () => {
-    const ceo = org.getStaff().get('ceo@foo.com')
+    const ceo = org.staff.get('ceo@foo.com')
     expect(ceo).not.toBe(undefined)
     expect(ceo.getGivenName()).toEqual('CEO')
   })
@@ -33,13 +33,13 @@ describe('Organization', () => {
     expect(role.getName()).toEqual('CTO')
   })
 
-  describe('hydrates org chart', () => {
+  describe('fills out org chart', () => {
     test.each`
     email | roleName | managerEmail
     ${'ceo@foo.com'} | ${'CTO'} | ${'ceo@foo.com'}
     ${'dev@foo.com'} | ${'Developer'} | ${'ceo@foo.com'}
     `('$email as $roleName managed by $managerName', ({ email, roleName, managerEmail }) => {
-      expect(org.getStaff().get(email).getAttachedRole(roleName).getManager().getEmail()).toEqual(managerEmail)
+      expect(org.staff.get(email).getRole(roleName).getManager().getEmail()).toEqual(managerEmail)
     })
 
     test.each`
@@ -49,7 +49,7 @@ describe('Organization', () => {
     ${'dev@foo.com'} | ${'Developer'} | ${1}
     ${'test@foo.com'} | ${'Developer'} | ${0}
     `('$managerEamil manages $reportCount $roleName staff', ({ managerEmail, roleName, managerName, reportCount }) => {
-      expect(org.getStaff().get(managerEmail).getReportsByRoleName(roleName)).toHaveLength(reportCount)
+      expect(org.staff.get(managerEmail).getReportsByRoleName(roleName)).toHaveLength(reportCount)
     })
 
     test.each`
@@ -58,13 +58,13 @@ describe('Organization', () => {
     ${'dev@foo.com'} | ${1}
     ${'test@foo.com'} | ${0}
     `('$email has $reportCount total reports', ({ email, roleName, managerName, reportCount }) => {
-      expect(org.getStaff().get(email).getReports()).toHaveLength(reportCount)
+      expect(org.staff.get(email).getReports()).toHaveLength(reportCount)
     })
   })
 
   describe('getStaff', () => {
     test('returns a list of 4 staff', () => {
-      const staff = org.getStaff().list()
+      const staff = org.staff.list()
       expect(staff).toHaveLength(4)
       expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
       expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
@@ -73,13 +73,13 @@ describe('Organization', () => {
 
   describe('getByRoleName', () => {
     test('returns array of staff matching role', () => {
-      const staff = org.getStaff().getByRoleName('Developer')
+      const staff = org.staff.getByRoleName('Developer')
       expect(staff).toHaveLength(2)
       expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
       expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
     })
 
-    test('returns empty array with no matching staff', () => expect(org.getStaff().getByRoleName('blah')).toEqual([]))
+    test('returns empty array with no matching staff', () => expect(org.staff.getByRoleName('blah')).toEqual([]))
   })
 
   describe('generateOrgChartData', () => {
