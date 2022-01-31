@@ -12,7 +12,7 @@ const TechnologiesAPI = class extends Technologies {
     super(org.innerState.technologies)
     commonAPIInstanceSetup({ self : this, org, checkCondition })
   }
-
+/*
   hydrate() {
     for (const technology of this.items || []) {
       const { 'Vendor name': vendorName, Name: name } = technology
@@ -33,7 +33,7 @@ const TechnologiesAPI = class extends Technologies {
         technology.vendor = vendor
       }
     }
-  }
+  }*/
 }
 
 /**

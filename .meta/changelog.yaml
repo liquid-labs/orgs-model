@@ -9,10 +9,6 @@
   involvedProjects:
     - "@liquid-labs/liq-core"
     - "@liquid-labs/orgs-model"
-    - "@liquid-labs/liq-vendors"
-    - "@liquid-labs/policies-model"
-    - "@liquid-labs/liq-technologies"
-    - "@liquid-labs/liq-audits"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
@@ -210,6 +206,22 @@
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Support sourcing responsibility for evidence
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- startTimestamp: 2022-01-30T19:17:59.238Z
+  startEpochMillis: 1643570279238
+  issues:
+    - https://github.com/Liquid-Labs/liq-core/issues/39
+  branch: 2022.01.30-zane@liquid-labs.com-encapsulate_the_csv
+  branchFrom: 2bff91d0004e64f28e56da2853fa94bbf043e2ce
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-core"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Encapsulate the CSV <-> JSON functions
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []

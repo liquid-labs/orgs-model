@@ -5,6 +5,8 @@ const Role = class {
 
   getName() { return this.name }
 
+  getManager() { return this.manager }
+
   isTitular() { return !!this.titular }
 
   isDesignated() { return !!this.designated }

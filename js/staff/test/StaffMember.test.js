@@ -11,30 +11,53 @@ describe('StaffMember', () => {
   test.each`
   email | roleName | isActing
   ${'ceo@foo.com'} | ${'CTO'} | ${true}
-  ${'ceo@foo.com'} | ${'CEO'} | ${false}
-  ${'dev@foo.com'} | ${'Developer'} | ${false}
+  ${'ceo@foo.com'} | ${'CEO'} | ${undefined}
+  ${'dev@foo.com'} | ${'Developer'} | ${undefined}
   `('$email is acting in $roleName : $isActing', ({ email, roleName, isActing }) =>
-    expect(org.getStaff().get(email).getAttachedRole(roleName).isActing()).toBe(isActing)
+    expect(org.staff.get(email).getRole(roleName).acting).toBe(isActing)
   )
 
   test.each`
   givenName | familyName | options | fullName
   ${'John'} | ${'Smith'} | ${undefined} | ${'John Smith'}
-  ${'John'} | ${undefined} | ${undefined} | ${'John'}
-  ${undefined} | ${'Smith'} | ${undefined} | ${'Smith'}
   ${'John'} | ${'Smith'} | ${{ officialFormat : true }} | ${'Smith, John'}
-  ${'John'} | ${undefined} | ${{ officialFormat : true }} | ${'John'}
-  ${undefined} | ${'Smith'} | ${{ officialFormat : true }} | ${'Smith'}
   `('given: $givenName, family: $familyName, options: $options -> $fullName',
     ({ givenName, familyName, options, fullName }) => {
-      const staffMember = new StaffMember({ givenName : givenName, familyName : familyName })
+      const staffMember = new StaffMember({ org,
+        data: {
+          email: 'notused@foo.com',
+          givenName,
+          familyName,
+          startDate: '2022-01-01',
+          roles: [ { name: 'Developer' } ],
+          employmentStatus: 'employee'
+        }})
       expect(staffMember.getFullName(options)).toBe(fullName)
     }
   )
+  
+  test.each`
+  givenName | familyName | options
+  ${'John'} | ${undefined} | ${undefined}
+  ${undefined} | ${'Smith'} | ${undefined}
+  ${'John'} | ${undefined} | ${{ officialFormat : true }}
+  ${undefined} | ${'Smith'} | ${{ officialFormat : true }}
+  `('given: $givenName, family: ${familyName}, options: ${options} raises an error',
+    ({ givenName, familyName, options }) => {
+      expect(() => new StaffMember({ org,
+        data: {
+          email: 'notused@foo.com',
+          givenName,
+          familyName,
+          startDate: '2022-01-01',
+          roles: [ { name: 'Developer' } ],
+          employmentStatus: 'employee'
+        }})).toThrow(/Missing required field/)
+    })
 
   test('processes designated role (Sensitive Data Handler)', () => {
-    const dev = org.getStaff().get('dev@foo.com')
-    expect(dev.getRoleNames()).toHaveLength(2)
+    const dev = org.staff.get('dev@foo.com')
+    expect(dev.getOwnRoleNames()).toHaveLength(2)
     expect(dev.hasRole('Sensitive Data Handler')).toBe(true)
   })
 })

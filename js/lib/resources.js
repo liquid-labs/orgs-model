@@ -4,20 +4,46 @@ import { ListManager } from './ListManager.js'
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
-  #keyField
+  /**
+  * Tracks whether the model has changed since the last write operation.
+  */
+  #changedSinceWrite
+  #fileName
+  /**
+  * Internal 'by ID' index.
+  */
   #indexById
+  #itemName
+  /**
+  * Our 'keyField'. We will always annotate incoming objcts with 'id', but the resource may use another field for it's
+  * canonical ID.
+  */
+  #keyField
+  /**
+  * Tracks whether the modl has been validated since the last change.
+  */
+  #requiresValidation
+  #resourceName
 
-  constructor({ items = [], keyField }) {
+  constructor({ fileName, itemName, items = [], keyField, resourceName  }) {
+    this.#fileName = fileName
     this.#keyField = keyField
+    this.#itemName = itemName
+    this.#resourceName = resourceName
     this.items = items || []
     // add standard 'id' field if not present.
     this.items.forEach((item) => { item.id = item.id || item[keyField] })
 
     this.listManager = new ListManager({ items })
     this.#indexById = this.listManager.getIndex('byId')
+    
+    this.#changedSinceWrite = false
+    this.#requiresValidation = true
   }
 
   get keyField() { return this.#keyField }
+  get itemName() { return this.#itemName }
+  get resourceName() { return this.#resourceName }
 
   add(item) {
     if (item.id === undefined) {
@@ -31,9 +57,8 @@ const Resources = class {
       throw new Error(`Cannot add item with existing key '${item.id}'; try 'update'.`)
     }
 
-    this.items.push(item)
-
     this.listManager.addItem(item)
+    this.#changed()
   }
 
   /**
@@ -52,14 +77,12 @@ const Resources = class {
 
   update(item) {
     if (this.get(item.id) === undefined) {
-      throw new Error(`No such item with key '${item.id}' to update; try 'add'.`)
+      throw new Error(`No such ${this.#itemName} with key '${item.id}' to update; try 'add'.`)
     }
 
-    const itemIndex = this.indexOf(item)
-    this.items.splice(itemIndex, 1, item)
-
     this.listManager.updateItem(item)
-
+    this.#changed()
+    
     return item
   }
 
@@ -69,16 +92,28 @@ const Resources = class {
       throw new Error(`No such item with id '${item.id}' found.`)
     }
 
-    const itemIndex = this.indexOf((i) => i.id === item.id)
-    this.items.splice(itemIndex, 1)
-
     this.listManager.deleteItem(item)
+    this.#changed()
   }
 
   list({ sort = 'id', _items = this.items } = {}) {
     return sort
       ? _items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
       : _items
+  }
+  
+  write({ fileName = this.#fileName }) {
+    if (!fileName) throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
+    
+    fs.writeFileSync(fileName, JSON.stringify(this.items, null, '  '))
+    if (fileName === this.#fileName) {
+      this.#changedSinceWrite = false
+    }
+  }
+  
+  #changed() {
+    this.#requiresValidation = true
+    this.#changedSinceWrite = true
   }
 }
 

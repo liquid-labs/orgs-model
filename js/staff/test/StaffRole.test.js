@@ -1,7 +1,9 @@
 /* globals beforeAll describe expect test */
 import { Organization } from '../../orgs'
 
-describe('AttachedRole', () => {
+const ceoEmail = 'ceo@foo.com'
+
+describe('StaffRole', () => {
   let org
   beforeAll(() => {
     org = new Organization('./js/test-data', './js/staff/test/staff.json')
@@ -12,13 +14,13 @@ describe('AttachedRole', () => {
   ${'dev@foo.com'} | ${'Developer'}
   ${'ceo@foo.com'}| ${'CEO'}
   `('\'$email\' role \'$roleName\' presents expected name', ({ email, roleName }) => {
-    expect(org.getStaff().get(email).getAttachedRole(roleName).getName()).toBe(roleName)
+    expect(org.staff.get(email).getRole(roleName).name).toBe(roleName)
   })
 
   describe('qualifiers', () => {
     test('are detected when invalid', () => {
       expect(() => new Organization('./js/test-data', './js/staff/test/invalid_qualifier_staff.json'))
-        .toThrow(/non-qualifiable role.*CTO.*ceo@foo\.com/)
+        .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
     })
 
     test.each`
@@ -26,7 +28,7 @@ describe('AttachedRole', () => {
     ${'dev@foo.com'} | ${'Developer'} | ${true}
     ${'ceo@foo.com'}| ${'CEO'} | ${false}
     `('\'$email\' role \'$roleName\' is qualifiable: $isQualifiable', ({ email, roleName, isQualifiable }) => {
-      expect(org.getStaff().get(email).getAttachedRole(roleName).isQualifiable()).toBe(isQualifiable)
+      expect(org.staff.get(email).getRole(roleName).isQualifiable()).toBe(isQualifiable)
     })
 
     test.each`
@@ -35,7 +37,7 @@ describe('AttachedRole', () => {
     ${'dev@foo.com'} | ${'Developer'} | ${null}
     ${'ceo@foo.com'} | ${'CEO'} | ${null}
     `('\'$email\' role \'$roleName\' has \'$qualifier\' qualifier.', ({ email, roleName, qualifier }) => {
-      expect(org.getStaff().get(email).getAttachedRole(roleName).getQualifier()).toBe(qualifier)
+      expect(org.staff.get(email).getRole(roleName).qualifier).toBe(qualifier)
     })
   })
   
@@ -44,21 +46,21 @@ describe('AttachedRole', () => {
     let ceo
     beforeAll(() => {
       impliedOrg = new Organization('./js/test-data/implied', './js/staff/test/staff.json')
-      ceo = impliedOrg.staff.get('ceo@foo.com')
+      ceo = impliedOrg.staff.get(ceoEmail)
     })
     
     test("implied-CEO has implied titular role 'Head Developer'", () => {
       expect(ceo.hasRole('Head Developer')).toBe(true)
-      expect(ceo.getAttachedRole('Head Developer')).toBeTruthy()
+      expect(ceo.getRole('Head Developer')).toBeTruthy()
     })
     
     test("implied-CEO has implied non-titular role 'Sensitive Data Handler'", () => {
       expect(ceo.hasRole('Sensitive Data Handler')).toBe(true)
-      expect(ceo.getAttachedRole('Sensitive Data Handler')).toBeTruthy()
+      expect(ceo.getRole('Sensitive Data Handler')).toBeTruthy()
     })
     
     test("implied CEO is their own manager as 'Head Developer'", () => {
-      expect(ceo.getAttachedRole('Head Developer').getManager()).toBe(ceo)
+      expect(ceo.getRole('Head Developer').managerEmail).toBe(ceoEmail)
     })
   })
 })

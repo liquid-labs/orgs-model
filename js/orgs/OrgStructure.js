@@ -79,7 +79,7 @@ const OrgStructure = class {
             errMsgGen : (name) => `Could not find implied role '${name}' while building org structure.`
           })
         // console.error(`Processing implied role: ${impRole.name}...`) // DEBUG
-        if (impRole.isTitular() && !nodes.find(n => n.name === impRole.name)) { // only titular roles not already defined are implied into the org structure
+        if (impRole.titular && !nodes.find(n => n.name === impRole.name)) { // only titular roles not already defined are implied into the org structure
           // console.error("I'm in!") // DEBUG
           // TODO: in theroy, I believe if the current node has no manager, then implied role's don't either.
           // Otheriwse, the primary manager is effectively one's self, in the 'super' role or the same manager as the
