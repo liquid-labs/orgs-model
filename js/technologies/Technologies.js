@@ -1,4 +1,5 @@
-import { Resources } from '../lib/resources.js'
+import { Resources } from '../lib/resources'
+import { Technology } from './Technology'
 
 const keyField = 'name'
 
@@ -8,7 +9,7 @@ const keyField = 'name'
 */
 const Technologies = class extends Resources {
   constructor(items) {
-    super({ items, keyField })
+    super({ itemClass: Technology, itemName: 'technology', items, keyField, resourceName: 'technologies' })
   }
 }
 

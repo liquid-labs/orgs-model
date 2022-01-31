@@ -10,7 +10,7 @@ const AuditRecords = class extends Resources {
   #indexByAudit
 
   constructor(items) {
-    super({ items, keyField })
+    super({ itemName: 'audit record', items, keyField, resourceName: 'audit records' })
     this.#indexByAudit = this.listManager.addIndex({
       name         : 'byAudit',
       keyField     : 'auditId',

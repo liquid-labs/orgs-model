@@ -1,46 +1,49 @@
 import * as fs from 'fs'
 
-import { ListManager } from './ListManager.js'
+import { ListManager } from './ListManager'
+import { Item } from './Item'
 
 /**
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
-  /**
-  * Tracks whether the model has changed since the last write operation.
-  */
-  #changedSinceWrite
   #fileName
   /**
   * Internal 'by ID' index.
   */
   #indexById
+  #itemClass
   #itemName
   /**
   * Our 'keyField'. We will always annotate incoming objcts with 'id', but the resource may use another field for it's
   * canonical ID.
   */
   #keyField
-  /**
-  * Tracks whether the modl has been validated since the last change.
-  */
-  #requiresValidation
   #resourceName
 
-  constructor({ fileName, itemName, items = [], keyField, resourceName }) {
+  constructor({ fileName, itemClass = Item, itemName, items = [], keyField, readFromFile = false, resourceName }) {
     this.#fileName = fileName
     this.#keyField = keyField
+    this.#itemClass = itemClass
     this.#itemName = itemName
     this.#resourceName = resourceName
-    this.items = items || []
+    if (readFromFile === true && items && items.length > 0) {
+      throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${resourceName}.`)
+    }
+    if (readFromFile === true && !fileName) {
+      throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${resourceName}.`)
+    }
+    if (readFromFile === true) {
+      this.items = JSON.parse(fs.readFileSync(fileName))
+    }
+    else {
+      this.items = items || []
+    }
     // add standard 'id' field if not present.
     this.items.forEach((item) => { item.id = item.id || item[keyField] })
 
     this.listManager = new ListManager({ items })
     this.#indexById = this.listManager.getIndex('byId')
-
-    this.#changedSinceWrite = false
-    this.#requiresValidation = true
   }
 
   get keyField() { return this.#keyField }
@@ -60,7 +63,6 @@ const Resources = class {
     }
 
     this.listManager.addItem(item)
-    this.#changed()
   }
 
   /**
@@ -83,7 +85,6 @@ const Resources = class {
     }
 
     this.listManager.updateItem(item)
-    this.#changed()
 
     return item
   }
@@ -95,33 +96,36 @@ const Resources = class {
     }
 
     this.listManager.deleteItem(item)
-    this.#changed()
   }
 
-  list({ sort = 'id', _items = this.items } = {}) {
-    return sort
-      ? _items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
-      : _items
+  /**
+  * Returns a list of the resource items.
+  *
+  * ### Parameters
+  *
+  * - `sort`: the field to sort on. Defaults to 'id'. Set to falsy unsorted and slightly faster results.
+  */
+  list({ sort = 'id' } = {}) {
+    // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
+    return this.constructor.sort({ sort, items: this.listManager.getItems({ noClone : true }).slice() })
+      .map((i) => new this.#itemClass(i))
   }
 
   write({ fileName = this.#fileName }) {
     if (!fileName) throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
 
     fs.writeFileSync(fileName, JSON.stringify(this.items, null, '  '))
-    if (fileName === this.#fileName) {
-      this.#changedSinceWrite = false
-    }
   }
-
-  #changed() {
-    this.#requiresValidation = true
-    this.#changedSinceWrite = true
+  
+  static sort({ sort = 'id', items }) {
+    if (sort) items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
+    
+    return items
   }
 }
 
 const commonAPIInstanceSetup = ({ self, org, checkCondition }) => {
   self.org = org
-  self.hydrationErrors = [] // list of: { ref: ..., sourceName: ..., sourceType: ..., advice?: ...}
   // e.g.: { ref: "bad-audit-name", sourceName: "Acme Vendor", "sourceType": "vendor" }
   self.checkCondition = checkCondition
 }
