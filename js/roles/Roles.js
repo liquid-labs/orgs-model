@@ -37,7 +37,7 @@ const Roles = class {
   } = {}) {
     // we always try an exact match first
     let result = this.map[name]
-    let qualifier = null
+    let qualifier = undefined
     // now fuzzy match if desired
     if (result === undefined && fuzzy === true) {
       const matchingRoles = this.items.filter((role) => {
@@ -52,7 +52,7 @@ const Roles = class {
 
             if (qualifierGroup) {
               qualifier = match[qualifierGroup]
-              console.error(`qualifier group: ${qualifierGroup}/${qualifier}`)
+              // console.error(`qualifier group: ${qualifierGroup}/${qualifier}`) // DEBUG
             }
             return true
           }
