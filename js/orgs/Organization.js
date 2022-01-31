@@ -31,7 +31,7 @@ const Organization = class {
     this.audits = new AuditsAPI(this)
     this.technologies = new TechnologiesAPI(this)
     this.vendors = new VendorsAPI(this)
-    
+
     this.staff.validate()
   }
 
@@ -124,9 +124,9 @@ const Organization = class {
             roles     : [role]
           }
           const staffRole = staffMember.getRole(roleName)
-          for (const optField of [ 'acting', 'tbd' ])
-            if (staffRole[optField] !== undefined)
-              chartDatum[optField] = staffRole[optField]
+          for (const optField of ['acting', 'tbd']) {
+            if (staffRole[optField] !== undefined) { chartDatum[optField] = staffRole[optField] }
+          }
 
           return chartDatum
         })

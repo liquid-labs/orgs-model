@@ -31,7 +31,7 @@ const VendorsAPI = class extends Vendors {
         }
       }
     }
-  }*/
+  } */
 }
 /**
 * Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Technology targets

@@ -4,7 +4,6 @@ import structuredClone from 'core-js-pure/actual/structured-clone'
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import { StaffMember } from './StaffMember'
-import { StaffRole } from '../roles'
 
 // TODO: convert to standard 'Resources'
 const Staff = class {
@@ -24,15 +23,15 @@ const Staff = class {
     this.#indexMembers()
   }
 
-  list() { return this.members.map((s) => new StaffMember({ data: s, org: this.org })) }
+  list() { return this.members.map((s) => new StaffMember({ data : s, org : this.org })) }
 
   getData(email) { return structuredClone(this.#map[email]) }
-  
+
   get(email) {
     const data = this.#map[email]
     if (data === undefined) return undefined
-  
-    return new StaffMember({ data: data, org: this.org })
+
+    return new StaffMember({ data : data, org : this.org })
   }
 
   getByRoleName(roleName) {
@@ -44,7 +43,7 @@ const Staff = class {
     const safeItem = structuredClone(item)
     safeItem.id = safeItem.email.toLowerCase()
     this.members.push(structuredClone(safeItem))
-    
+
     return this.get(safeItem.id)
   }
 
@@ -92,18 +91,16 @@ const Staff = class {
     }
     fs.writeFileSync(this.fileName, JSON.stringify(this.members))
   }
-  
+
   validate({ required = false } = {}) {
     const errors = []
-    for (const member of this.members)
-      StaffMember.validateData({ data: member, errors, org: this.org })
-    
-    if (errors.length > 0 && required)
-      throw new Error(`Error${errors.length > 1 ? 's' : ''}: ${errors.join(' ')}`)
-    
-    return errors.length == 0 ? true : errors
+    for (const member of this.members) { StaffMember.validateData({ data : member, errors, org : this.org }) }
+
+    if (errors.length > 0 && required) { throw new Error(`Error${errors.length > 1 ? 's' : ''}: ${errors.join(' ')}`) }
+
+    return errors.length === 0 ? true : errors
   }
-  
+
   #indexMembers() {
     this.#map = this.members.reduce((acc, member, i) => {
       if (acc[member.email] !== undefined) {
