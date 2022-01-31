@@ -67,3 +67,6 @@
 * Support sourcing responsibility for evidence _(zane@liquid-labs.com; 2022-01-11T22:53:12.043Z)_
 * _**hotfix**_: lint and bugfixes _(zane@liquid-labs.com; 2022-01-29T01:37:14.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-29T01:37:30.000Z)_
+
+## Release 1.0.0-beta.62
+* Encapsulate the CSV <-> JSON functions _(zane@liquid-labs.com; 2022-01-30T19:17:59.238Z)_
