@@ -9,10 +9,6 @@
   involvedProjects:
     - "@liquid-labs/liq-core"
     - "@liquid-labs/orgs-model"
-    - "@liquid-labs/liq-vendors"
-    - "@liquid-labs/policies-model"
-    - "@liquid-labs/liq-technologies"
-    - "@liquid-labs/liq-audits"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
