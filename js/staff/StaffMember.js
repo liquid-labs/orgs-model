@@ -92,7 +92,7 @@ const StaffMember = class {
     return structuredClone(this.#allRoles)
   }
 
-  #initializeAllRoles({ memberEmail }) {
+  #initializeAllRoles() {
     this.#allRoles = this.roles.slice()
 
     for (let i = 0; i < this.#allRoles.length; i += 1) {
