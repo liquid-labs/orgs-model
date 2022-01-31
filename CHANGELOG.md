@@ -70,3 +70,5 @@
 
 ## Release 1.0.0-beta.62
 * Encapsulate the CSV <-> JSON functions _(zane@liquid-labs.com; 2022-01-30T19:17:59.238Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-31T17:16:00.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-01-31T17:24:33.000Z)_
