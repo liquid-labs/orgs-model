@@ -73,3 +73,5 @@
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-31T17:16:00.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-01-31T17:24:33.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-31T17:24:40.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-31T17:25:41.000Z)_
+* _**hotfix**_: back out bad fix _(zane@liquid-labs.com; 2022-01-31T17:26:16.000Z)_
