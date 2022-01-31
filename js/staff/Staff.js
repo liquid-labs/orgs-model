@@ -6,7 +6,7 @@ import { Evaluator } from '@liquid-labs/condition-eval'
 import { StaffMember } from './StaffMember'
 import { StaffRole } from '../roles'
 
-// TODO: factor out 'hydration' and convert to standard 'Resources'
+// TODO: convert to standard 'Resources'
 const Staff = class {
   #requiresValidation
   #map
@@ -85,7 +85,13 @@ const Staff = class {
     return this.get(safeItem.id)
   }
 
-  write() { fs.writeFileSync(this.fileName, JSON.stringify(this.members)) }
+  write() {
+    for (const member of this.members) {
+      delete member._sourceFileName
+      delete member.title
+    }
+    fs.writeFileSync(this.fileName, JSON.stringify(this.members))
+  }
   
   validate({ required = false } = {}) {
     const errors = []
