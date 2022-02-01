@@ -10,6 +10,7 @@ import structuredClone from 'core-js-pure/actual/structured-clone'
 const indexAllProperties = (obj, index = {}) => {
   while (obj/* && obj !== Object.prototype <- any use for hiding? */) {
     const propDescriptors = Object.getOwnPropertyDescriptors(obj)
+    // eslint-disable-next-line guard-for-in
     for (const propKey in propDescriptors) {
       index[propKey] = {
         hasGetter : !!propDescriptors[propKey].get,
@@ -18,12 +19,12 @@ const indexAllProperties = (obj, index = {}) => {
     }
     obj = Object.getPrototypeOf(obj)
   }
-  
+
   return index
 }
 
 const handler = (data, overrides) => ({
-  get: (object, key) => {
+  get : (object, key) => {
     // the 'if (key in object)' syntax is nice... but how to distinguish between getters and setters?
     if (overrides[key]?.hasGetter === true) return object[key]
     // else
@@ -32,9 +33,8 @@ const handler = (data, overrides) => ({
       ? structuredClone(value)
       : value
   },
-  set: (object, key, value) => {
-    if (overrides[key]?.hasSetter === true)
-      return object[key] = value
+  set : (object, key, value) => {
+    if (overrides[key]?.hasSetter === true) { object[key] = value }
     // else
     throw new Error(`Setting '${key}' is not supported.`)
   }
@@ -43,25 +43,26 @@ const handler = (data, overrides) => ({
 const Item = class {
   #data
   #keyField
-  
+
   constructor(data, { keyField, ...rest } = {}) {
-    if (keyField === undefined)
-      throw new Error("Key field must be specified. " +
-        "Note, 'Item' is not typically created directly. Create a subclass or specify 'options.keyField' directly.")
+    if (keyField === undefined) {
+      throw new Error('Key field must be specified. '
+        + "Note, 'Item' is not typically created directly. Create a subclass or specify 'options.keyField' directly.")
+    }
     this.#data = data
     this.#keyField = keyField
-    
-    if (!data[keyField]) throw new Exception(`Key field value '${data[keyField]}' is non-truthy!`)
-    
+
+    if (!data[keyField]) throw new Error(`Key field value '${data[keyField]}' is non-truthy!`)
+
     const overrides = indexAllProperties(this)
-    
+
     return new Proxy(this, handler(this.#data, overrides))
   }
-  
-  get id() { return this.#data[this.#keyField]}
-  
+
+  get id() { return this.#data[this.#keyField] }
+
   get data() { return structuredClone(this.#data) }
-  
+
   get rawData() { return this.#data }
 }
 

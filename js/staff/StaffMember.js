@@ -6,7 +6,7 @@ const StaffMember = class {
   #reportsByRoleName
   #reports
 
-  constructor({ data, org }) {
+  constructor(data, { org }) {
     const errors = StaffMember.validateData({ data, org })
     if (errors.length > 0) {
       throw new Error(`Invalid data while creating 'staff member'; ${errors.join(' ')}`)
@@ -185,10 +185,9 @@ const StaffMember = class {
       if (data[field] === undefined) { acc.push(`Missing required field '${field}' for '${data.email || data.familyName}'`) }
       return acc
     }, errors)
-    if (data.roles) {
-      for (const roleData of data.roles) {
-        StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
-      }
+    
+    for (const roleData of data.roles || []) {
+      StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
     }
 
     return errors

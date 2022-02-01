@@ -23,15 +23,15 @@ describe('StaffMember', () => {
   ${'John'} | ${'Smith'} | ${{ officialFormat : true }} | ${'Smith, John'}
   `('given: $givenName, family: $familyName, options: $options -> $fullName',
     ({ givenName, familyName, options, fullName }) => {
-      const staffMember = new StaffMember({ org,
-        data: {
-          email: 'notused@foo.com',
-          givenName,
-          familyName,
-          startDate: '2022-01-01',
-          roles: [ { name: 'Developer' } ],
-          employmentStatus: 'employee'
-        }})
+      const data = {
+        email: 'notused@foo.com',
+        givenName,
+        familyName,
+        startDate: '2022-01-01',
+        roles: [ { name: 'Developer' } ],
+        employmentStatus: 'employee'
+      }
+      const staffMember = new StaffMember(data, { org })
       expect(staffMember.getFullName(options)).toBe(fullName)
     }
   )
@@ -44,15 +44,15 @@ describe('StaffMember', () => {
   ${undefined} | ${'Smith'} | ${{ officialFormat : true }}
   `('given: $givenName, family: ${familyName}, options: ${options} raises an error',
     ({ givenName, familyName, options }) => {
-      expect(() => new StaffMember({ org,
-        data: {
-          email: 'notused@foo.com',
-          givenName,
-          familyName,
-          startDate: '2022-01-01',
-          roles: [ { name: 'Developer' } ],
-          employmentStatus: 'employee'
-        }})).toThrow(/Missing required field/)
+      const data = {
+        email: 'notused@foo.com',
+        givenName,
+        familyName,
+        startDate: '2022-01-01',
+        roles: [ { name: 'Developer' } ],
+        employmentStatus: 'employee'
+      }
+      expect(() => new StaffMember(data, { org })).toThrow(/Missing required field/)
     })
 
   test('processes designated role (Sensitive Data Handler)', () => {

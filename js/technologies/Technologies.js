@@ -9,7 +9,7 @@ const keyField = 'name'
 */
 const Technologies = class extends Resources {
   constructor(items) {
-    super({ itemClass: Technology, itemName: 'technology', items, keyField, resourceName: 'technologies' })
+    super({ itemClass : Technology, itemName : 'technology', items, keyField, resourceName : 'technologies' })
   }
 }
 

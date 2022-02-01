@@ -30,12 +30,12 @@ const StaffRole = class extends Role {
 
   static validateData({ data, errors = [], memberEmail, org }) {
     if (data.name) {
-      const orgRole = org.roles.getData(data.name)
+      const orgRole = org.roles.getData(data.name, { rawData: true })
       if (orgRole === undefined) {
-        throw new Error(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
+        errors.push(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
       }
       else if (orgRole.qualifiable !== true && data.qualifier) {
-        throw new Error(validationMsg({
+        errors.push(validationMsg({
           name   : data.name,
           memberEmail,
           reason : `specifies qualifier '${data.qualifier}', but the role is not qualifiable`
@@ -43,7 +43,7 @@ const StaffRole = class extends Role {
       }
     }
     else {
-      throw new Error(validationMsg({
+      errors.push(validationMsg({
         name   : data.name,
         memberEmail,
         reason : 'is missing required field \'name\''
@@ -51,9 +51,9 @@ const StaffRole = class extends Role {
     }
 
     if (data.manager) {
-      const manager = org.staff.getData(data.manager)
+      const manager = org.staff.get(data.manager, { rawData: true })
       if (manager === undefined) {
-        throw new Error(validationMsg({
+        errors.push(validationMsg({
           name   : data.name,
           memberEmail,
           reason : `references invalid manager '${data.manager}'`

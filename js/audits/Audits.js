@@ -11,7 +11,7 @@ const Audits = class extends Resources {
   #indexByTarget
 
   constructor(items) {
-    super({ itemName: 'audit', items, keyField, rourceName: 'audits' })
+    super({ itemName : 'audit', items, keyField, rourceName : 'audits' })
     this.#indexByTarget = this.listManager.addIndex({
       name         : 'byTarget',
       keyField     : 'target',
@@ -20,8 +20,9 @@ const Audits = class extends Resources {
   }
 
   getByTarget(target, options) {
-    return Resources.sort({ ...options,
-      items: this.#indexByTarget[target] || []
+    return Resources.sort({
+      ...options,
+      items : this.#indexByTarget[target] || []
     })
   }
 }

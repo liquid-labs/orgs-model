@@ -25,14 +25,14 @@ const Organization = class {
     this.dataPath = dataPath
     this.roles = new Roles(this, this.innerState.roles)
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
-    this.staff = new Staff({ fileName : staffJsonPath, org : this })
+    this.staff = new Staff({ fileName : staffJsonPath, org : this, readFromFile: true })
     this.accounts = new AccountsAPI(this)
     this.auditRecords = new AuditRecordsAPI(this)
     this.audits = new AuditsAPI(this)
     this.technologies = new TechnologiesAPI(this)
     this.vendors = new VendorsAPI(this)
 
-    this.staff.validate()
+    this.staff.validate({ required: true })
   }
 
   // TODO: deprecated; just use 'org.roles'

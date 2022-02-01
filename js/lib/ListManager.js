@@ -174,9 +174,7 @@ const ListManager = class {
     return index
   }
 
-  getIndex(name) {
-    return this.#getIndexSpec(name).index
-  }
+  getIndex(name) { return this.#getIndexSpec(name).index }
 
   getNamedIndexCount() { return Object.keys(this.#specIndex).length }
 
