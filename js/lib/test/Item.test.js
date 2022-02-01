@@ -22,6 +22,8 @@ const SubItem = class extends Item {
   }
   
   subFunc() { return 'subfunc' }
+  
+  get bar() { return 'bar' }
 }
 
 const SubSubItem = class extends SubItem {
@@ -91,6 +93,7 @@ describe('Item', () => {
   
   describe('subclasses', () => {
     const subItem = new SubItem(data)
+    const subItemKeys = Object.keys(subItem)
     const trickItem = new TrickItem(data)
     
     basicAccessTests(subItem, SubItem.prototype)
@@ -98,6 +101,14 @@ describe('Item', () => {
     test('defers to override getters/setters', () => expect(trickItem.array).toBe(VAL_OVERRIDE_TRICK))
     
     test('can call subclass functions', () => expect(subItem.subFunc()).toBe('subfunc'))
+    
+    test(`subclass getters are 'in' instances; e.g.: '"bar" in subItem' -> true`, () => {
+      expect('bar' in subItem).toBe(true)
+    })
+    
+    const expectedSubItemKeys = [ 'array', 'integer', 'object', 'string' ]
+    test(`data keys show up as enumerable; e.g. 'Object.subItem(keys) = ${expectedSubItemKeys.sort().join(', ')}'`,
+      () => expect(subItemKeys.sort()).toEqual(expectedSubItemKeys.sort()))
   })
   
   describe('sub-subclasses', () => {
