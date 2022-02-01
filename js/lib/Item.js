@@ -88,7 +88,7 @@ const handler = ({ data, propIndex, methodIndex }) => ({
     // the 'if (key in object)' syntax is nice... but how to distinguish between getters and setters?
     if (propIndex[key]?.hasGetter === true) return object[key]
     // object method calls go through the handler first
-    if (methodIndex[key]) return object[key]// methodIndex[key].value
+    if (methodIndex[key]) return object[key]
     const localValue = object[key]
     // else
     const dataValue = data[key]
@@ -119,15 +119,6 @@ const handler = ({ data, propIndex, methodIndex }) => ({
       // TODO: modify the prop definitions so that the 'data' items are indeed non-configurable
       || Object.assign(Object.getOwnPropertyDescriptor(data, key), { writable: false, configurable: true })
   }
-  /*apply : (func, thisArg, args) => {
-    if (func.name === 'toString') {
-      return `${thisArg.constructor.name} {
-blah
-}`
-    }
-    // else
-    return func.apply(thisArg, args)
-  }*/
 })
 
 const Item = class {
@@ -145,29 +136,6 @@ const Item = class {
     if (!data[keyField]) throw new Error(`Key field value '${data[keyField]}' is non-truthy!`)
 
     const [ propIndex, methodIndex ] = indexAllProperties(this)
-    /*
-    console.log(`prop names: ${Object.keys(propIndex)}\nmethodNames: ${Object.keys(methodIndex)}`)
-    
-    const methodNames = Object.keys(methodIndex)
-    console.log(`method names: ${methodNames}`)
-    console.log(`this properties: ${Object.getOwnPropertyNames(this)}`)
-    for (const methodName of methodNames) {
-      // Object.defineProperty(proxy, methodName, methodIndex[methodName])
-      // Object.defineProperty(Object.getPrototypeOf(this), methodName, methodIndex[methodName])
-      // this[methodName] = methodIndex[methodName].value
-      // this[methodName] = methodIndex[methodName].value.bind(this)
-      Object.getPrototypeOf(this)[methodName] = methodIndex[methodName].value
-    }
-    /*
-    const methodNames = Object.keys(methodIndex)
-    console.log(`method names: ${methodNames}`)
-    for (const methodName of methodNames) {
-      console.log(`found method '${methodName}'; descriptor: ${methodIndex[methodName]}`)
-      // Object.defineProperty(proxy, methodName, methodIndex[methodName])
-      proxy[methodName] = this[methodName]
-    }*/
-
-    // console.log(`this properties (2): ${Object.getOwnPropertyNames(this)}`)
     const proxy = new Proxy(this, handler({ data: this.#data, propIndex, methodIndex }))
 
     return proxy
