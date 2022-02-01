@@ -1,36 +1,28 @@
 import { Role } from '../roles'
 
 const StaffRole = class extends Role {
-  #data
   #memberEmail
   #org
-
+  
   constructor({ org, data, memberEmail }) {
-    super(org.roles.getData(data.name))
-    this.#data = data
+    super(Object.assign(org.roles.get(data.name, { rawData: true }), data))
     this.#memberEmail = memberEmail
     this.#org = org
   }
 
   getManager() { return this.#org.staff.get(this.managerEmail) }
 
-  get managerEmail() { return this.#data.manager }
+  get managerEmail() { return this.rawData.manager }
 
   get memberEmail() { return this.#memberEmail }
 
-  getQualifier() { return this.qualifier }
+  get getQualifiedName() { return `${this.qualifier} ${this.name}` }
 
-  get qualifier() { return this.#data.qualifier ? this.#data.qualifier : null }
-
-  getQualifiedName() { return `${this.#data.qualifier} ${this.#data.name}` }
-
-  isActing() { return this.acting }
-
-  get acting() { return this.#data.acting }
+  get isActing() { return this.rawData.acting }
 
   static validateData({ data, errors = [], memberEmail, org }) {
     if (data.name) {
-      const orgRole = org.roles.getData(data.name, { rawData: true })
+      const orgRole = org.roles.get(data.name, { rawData: true })
       if (orgRole === undefined) {
         errors.push(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
       }

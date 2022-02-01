@@ -129,7 +129,7 @@ const Resources = class {
     // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
     const items = this.constructor.sort({
       sort,
-      items : this.listManager.getItems({ noClone : true }).slice()
+      items : [...this.listManager.getItems({ noClone : true })]
     })
     return this.#dataToList(items, rest)
   }
@@ -159,7 +159,7 @@ const Resources = class {
 
   #dataToItem(data, { required = false, rawData = false, id } = {}) {
     if (required === true && data === undefined) {
-      throw new Error(`Did not find required ${this.#itemName}${id ? `'${id}'` : ''}.`)
+      throw new Error(`Did not find required ${this.#itemName}${id ? ` '${id}'` : ''}.`)
     }
 
     return data === undefined

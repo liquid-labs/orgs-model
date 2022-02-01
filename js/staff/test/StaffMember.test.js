@@ -14,8 +14,7 @@ describe('StaffMember', () => {
   ${'ceo@foo.com'} | ${'CEO'} | ${undefined}
   ${'dev@foo.com'} | ${'Developer'} | ${undefined}
   `('$email is acting in $roleName : $isActing', ({ email, roleName, isActing }) =>
-    expect(org.staff.get(email).getRole(roleName).acting).toBe(isActing)
-  )
+    expect(org.staff.get(email).getRole(roleName).acting).toBe(isActing))
 
   test.each`
   givenName | familyName | options | fullName

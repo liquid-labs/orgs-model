@@ -62,7 +62,11 @@ const StaffMember = class {
   */
   getOwnRoleNames() { return this.roles.map((r) => r.name) }
 
-  getOwnRoles() { return this.roles.map((data) => new StaffRole({ data, memberEmail : this.email, org : this.org })) }
+  getOwnRoles({ rawData = false } = {}) {
+    return rawData === true
+      ? [...this.roles]
+      : this.roles.map((data) => new StaffRole({ data, memberEmail : this.email, org : this.org }))
+  }
 
   getAllRoleNames() { return this.allRolesData.map((r) => r.name) }
 

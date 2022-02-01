@@ -1,46 +1,40 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
+import { Resources } from '../lib/resources'
 import { Role } from './Role'
 
-const Roles = class {
+const Roles = class extends Resources {
   constructor(org, rolesData) {
+    super({
+      // idNormalizer        : (name) => name.toLowerCase(),
+      itemClass           : Role,
+      itemName            : 'role',
+      items: rolesData,
+      keyField            : 'name',
+      resourceName        : 'roles'
+    })
+    
     this.org = org
-
-    this.items = rolesData.map((rec) => new Role(rec))
-    this.map = this.items.reduce((acc, role, i) => {
-      if (acc[role.getName()] !== undefined) {
-        throw new Error(`Role with name '${role.name}' already exists at entry ${i}.`)
-      }
-      acc[role.getName()] = role
-      return acc
-    }, {})
-
     this.checkCondition = checkCondition
-    this.key = 'name'
   }
 
-  // TODO: deprecated
-  getAll() { return this.items.slice() }
-  list() { return this.items.slice() }
-
-  getData(name) { return this.map[name] }
   /**
   * ### Parameters
   *
   * - `includeQualifier`: returns an array `'[ role, qualifier ]'`
   */
-  get(name, {
+  fuzzyGet(name, {
     errMsgGen,
     fuzzy = false,
     includeQualifier = false,
-    required = false
+    rawData = false,
   } = {}) {
     // we always try an exact match first
-    let result = this.map[name]
+    let result = this.get(name, { rawData: true })
     let qualifier
     // now fuzzy match if desired
     if (result === undefined && fuzzy === true) {
-      const matchingRoles = this.items.filter((role) => {
+      const matchingRoles = this.list({ rawData: true }).filter((role) => {
         if (role.matcher !== undefined) {
           const { antiPattern, pattern, qualifierGroup } = role.matcher
           const match = name.match(new RegExp(pattern, 'i'))
@@ -72,16 +66,18 @@ const Roles = class {
       throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
     }
 
+    if (rawData === true) result = new Role(result)
+
     if (includeQualifier === true) {
-      return [new Role(result), qualifier]
+      return [result, qualifier]
     }
     else {
-      return new Role(result)
+      return result
     }
   }
 
   getStaffInRole(roleName) {
-    return this.org.staff.list().filter((s) => s.roles.some((r) => r.name === roleName))
+    return this.org.staff.list({ rawData: true }).filter((s) => s.roles.some((r) => r.name === roleName))
   }
 }
 

@@ -1,6 +1,8 @@
-const Role = class {
+import { Item } from '../lib/Item'
+
+const Role = class extends Item {
   constructor(rec) {
-    Object.assign(this, rec)
+    super(rec, { keyField: 'name' })
   }
 
   getName() { return this.name }

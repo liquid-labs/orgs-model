@@ -21,7 +21,7 @@ describe('Staff', () => {
   test('filters header+blank lines', () => expect(testStaff.list()).toHaveLength(4))
 
   test('fields', () => {
-    const ceo = testStaff.list()[0]
+    const ceo = testStaff.get('ceo@foo.com')
     expect(ceo.getEmail()).toBe('ceo@foo.com')
     expect(ceo.allRoles).toHaveLength(2)
     const ceoRole = ceo.allRoles[0]

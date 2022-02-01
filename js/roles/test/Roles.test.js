@@ -11,8 +11,10 @@ describe('Roles', () => {
 
   test('parses test file', () => {
     expect(testRoles).toBeTruthy()
-    expect(testRoles.getAll()).toHaveLength(8)
+    expect(testRoles.list()).toHaveLength(8)
   })
 
-  test('properly sets fields', () => expect(testRoles.getAll()[0].getName()).toBe('CEO'))
+  // CEO is first in the underlying list
+  test('properly sets fields', () =>
+    expect(testRoles.list({ sort: false }).some((r) => r.name === 'CEO')).toBe(true))
 })

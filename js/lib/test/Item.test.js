@@ -20,6 +20,16 @@ const SubItem = class extends Item {
   constructor(data, options = {}) {
     super(data, Object.assign(options, { keyField: 'integer'}))
   }
+  
+  subFunc() { return 'subfunc' }
+}
+
+const SubSubItem = class extends SubItem {
+  constructor(data, options) {
+    super(data, options)
+  }
+  
+  subSubFunc() { return 'subsubfunc' }
 }
 
 const TrickItem = class extends SubItem {
@@ -35,7 +45,11 @@ const TrickItem = class extends SubItem {
 describe('Item', () => {
   const item = new Item(data, { keyField: 'integer' })
   
-  const basicAccessTests = (target) => {
+  // collection of common tests check access from class and subclass instances
+  const basicAccessTests = (target, targetProto) => {
+    test(`${target.constructor.name} has protoype ${targetProto}`, () =>
+      expect(Object.getPrototypeOf(target)).toBe(targetProto))
+    
     test.each([['string', VAL_STRING], ['integer', VAL_INTEGER]])('item.%s -> $p', (key, value) => {
       expect(target[key]).toBe(value)
     })
@@ -73,14 +87,26 @@ describe('Item', () => {
     expect(() => new Item(data, { hey : 38 })).toThrow()
   })
   
-  basicAccessTests(item)
+  basicAccessTests(item, Item.prototype)
   
   describe('subclasses', () => {
     const subItem = new SubItem(data)
     const trickItem = new TrickItem(data)
     
-    basicAccessTests(subItem)
+    basicAccessTests(subItem, SubItem.prototype)
       
     test('defers to override getters/setters', () => expect(trickItem.array).toBe(VAL_OVERRIDE_TRICK))
+    
+    test('can call subclass functions', () => expect(subItem.subFunc()).toBe('subfunc'))
+  })
+  
+  describe('sub-subclasses', () => {
+    const subSubItem = new SubSubItem(data)
+    
+    basicAccessTests(subSubItem, SubSubItem.prototype)
+    
+    test('can call subclass functions', () => expect(subSubItem.subFunc()).toBe('subfunc'))
+    
+    test('can call sub-sublass functions', () => expect(subSubItem.subSubFunc()).toBe('subsubfunc'))
   })
 })

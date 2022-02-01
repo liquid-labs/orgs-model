@@ -34,8 +34,8 @@ describe('StaffRole', () => {
     test.each`
     email | roleName | qualifier
     ${'uidev@foo.com'} | ${'Developer'} | ${'UI'}
-    ${'dev@foo.com'} | ${'Developer'} | ${null}
-    ${'ceo@foo.com'} | ${'CEO'} | ${null}
+    ${'dev@foo.com'} | ${'Developer'} | ${undefined}
+    ${'ceo@foo.com'} | ${'CEO'} | ${undefined}
     `('\'$email\' role \'$roleName\' has \'$qualifier\' qualifier.', ({ email, roleName, qualifier }) => {
       expect(org.staff.get(email).getRole(roleName).qualifier).toBe(qualifier)
     })
@@ -59,8 +59,7 @@ describe('StaffRole', () => {
       expect(ceo.getRole('Sensitive Data Handler')).toBeTruthy()
     })
     
-    test("implied CEO is their own manager as 'Head Developer'", () => {
-      expect(ceo.getRole('Head Developer').managerEmail).toBe(ceoEmail)
-    })
+    test("implied CEO is their own manager as 'Head Developer'", () =>
+      expect(ceo.getRole('Head Developer').managerEmail).toBe(ceoEmail))
   })
 })
