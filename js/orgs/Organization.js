@@ -7,7 +7,7 @@ import { AuditsAPI } from '../audits'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
 import { Technologies } from '../technologies'
-import { VendorsAPI } from '../vendors'
+import { Vendors } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
@@ -30,7 +30,7 @@ const Organization = class {
     this.auditRecords = new AuditRecords(this)
     this.audits = new AuditsAPI(this)
     this.technologies = new Technologies(this)
-    this.vendors = new VendorsAPI(this)
+    this.vendors = new Vendors(this)
 
     this.staff.validate({ required: true })
   }
