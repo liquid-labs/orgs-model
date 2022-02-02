@@ -133,7 +133,11 @@ const Item = class {
     this.#data = data
     this.#keyField = keyField
 
-    if (!data[keyField]) throw new Error(`Key field value '${data[keyField]}' is non-truthy!`)
+    if (!data[keyField]) {
+      console.log(data)
+      console.log(keyField)
+      throw new Error(`Key field '${keyField}' value '${data[keyField]}' is non-truthy!`)
+    }
 
     const [ propIndex, methodIndex ] = indexAllProperties(this)
     const proxy = new Proxy(this, handler({ data: this.#data, propIndex, methodIndex }))

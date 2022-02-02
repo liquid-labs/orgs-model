@@ -1,1 +1,2 @@
-export * from './AccountsAPI'
+export * from './Account'
+export * from './Accounts'
