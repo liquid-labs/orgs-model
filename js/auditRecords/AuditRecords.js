@@ -1,28 +1,19 @@
 import { Resources } from '../lib/resources.js'
 import * as idxType from '../lib/index-relationships.js'
 
-const keyField = 'id'
-
 /**
 * Basic class for accessing the audit record data.
 */
 const AuditRecords = class extends Resources {
-  #indexByAudit
-
-  constructor(items) {
-    super({ itemName : 'audit record', items, keyField, resourceName : 'audit records' })
-    this.#indexByAudit = this.listManager.addIndex({
-      name         : 'byAudit',
-      keyField     : 'auditId',
-      relationship : idxType.ONE_TO_MANY
-    })
-  }
-
-  getByAudit(auditId, options) {
-    return this.list(Object.assign(
-      { _items : this.#indexByAudit[auditId] || [] },
-      options
-    ))
+  constructor(options) {
+    super(Object.assign(options, {
+      indexes : [ { indexField : 'auditId', relationship: idxType.ONE_TO_MANY },
+        { indexField : 'domain', relationship: idxType.ONE_TO_MANY },
+        { indexField : 'targetId', relationship: idxType.ONE_TO_MANY } ],
+      itemName : 'audit record',
+      keyField : 'id',
+      resourceName : 'audit records'
+    }))
   }
 }
 

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "vendors/vendors-data-audit/AWS CloudTrail",
+    "auditId": "vendors-data-audit",
+    "domain": "vendors",
+    "targetId": "AWS CloudTrail",
+    "status": "COMPLIANT",
+    "info": "AWS CloudTrail data is correct.",
+    "lastCertified": "2021-05-19",
+    "evidence": "Passed automated field check.",
+    "as of": "2021-05-19T21:25:09.327Z"
+  },
+  {
+    "id": "vendors/vendors-data-audit/AWS Config",
+    "auditId": "vendors-data-audit",
+    "domain": "vendors",
+    "targetId": "AWS Config",
+    "status": "NOT REQUIRED",
+    "as of": "2021-05-19T21:25:09.328Z",
+    "info": "AWS Config is not currently in use."
+  },
+  {
+    "id": "vendors/vendors-data-audit/sbt",
+    "auditId": "vendors-data-audit",
+    "domain": "vendors",
+    "targetId": "sbt",
+    "status": "NONCOMPLIANT",
+    "info": "sbt missing required value 'Redundancy standards' for in production critical flow; missing required value 'Monitoring' for in production critical flow",
+    "todo": "Update indicated fields.",
+    "as of": "2021-05-19T21:25:09.331Z"
+  }
+]

@@ -1,7 +1,6 @@
 /* global beforeAll describe expect test */
 
 import { Accounts, Account }  from '../'
-import { loadOrgState } from '../../lib/org-state'
 
 describe('Accounts', () => {
   let accounts
