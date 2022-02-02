@@ -21,10 +21,8 @@ describe('AuditRecords', () => {
   describe('getByDomain', () => {
     test('will retrieve indexed values', () => {
       const group = auditRecords.getByDomain('vendors')
-      console.log(JSON.stringify(group))
       expect(group).toHaveLength(3)
       for (const record of group) {
-        console.log(record)
         expect(record.domain).toBe('vendors')
       }
     })

@@ -4,7 +4,7 @@ import * as idxType from '../lib/index-relationships.js'
 const keyField = 'name'
 
 /**
-* Basic class wrapping technology items. Functionality is split between 'Technology' and 'TechnologiesAPI' to simplify
+* Basic class wrapping technology items. Functionality is split between 'Technology' and 'Technologies' to simplify
 * testing.
 */
 const Audits = class extends Resources {

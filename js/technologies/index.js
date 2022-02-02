@@ -1,1 +1,1 @@
-export * from './TechnologiesAPI'
+export * from './Technologies'

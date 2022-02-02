@@ -134,8 +134,6 @@ const Item = class {
     this.#keyField = keyField
 
     if (!data[keyField]) {
-      console.log(data)
-      console.log(keyField)
       throw new Error(`Key field '${keyField}' value '${data[keyField]}' is non-truthy!`)
     }
 
