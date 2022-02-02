@@ -2,7 +2,7 @@ import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
 import { Accounts } from '../accounts'
-import { AuditRecordsAPI } from '../auditRecords'
+import { AuditRecords } from '../auditRecords'
 import { AuditsAPI } from '../audits'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
@@ -27,7 +27,7 @@ const Organization = class {
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.staff = new Staff({ fileName : staffJsonPath, org : this, readFromFile: true })
     this.accounts = new Accounts(this)
-    this.auditRecords = new AuditRecordsAPI(this)
+    this.auditRecords = new AuditRecords(this)
     this.audits = new AuditsAPI(this)
     this.technologies = new TechnologiesAPI(this)
     this.vendors = new VendorsAPI(this)

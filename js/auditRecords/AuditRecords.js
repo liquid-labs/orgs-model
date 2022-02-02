@@ -14,55 +14,40 @@ const AuditRecords = class extends Resources {
       keyField : 'id',
       resourceName : 'audit records'
     }))
+    
+    this.checkCondition = AuditRecords.checkCondition
   }
 }
 
-// TODO: deprecated; retained for reference
-/*
-const persist = (data, { domain, domains }) => {
-  if (!domains && domain) {
-    domains = [domain]
-  }
-  if (domains && domains.length > 0) {
-    for (domain of domains) {
-      fjson.write({ data, saveFrom : `.auditRecords.${domain}` })
-    }
-  }
-  else {
-    fjson.write({ data, saveFrom : '.auditRecords' })
-  }
+/**
+* Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Account targets in
+* an audit. We do this weird 'defineProperty' thing because it effectively gives us a 'static const'
+*/
+const checkCondition = (condition, productRec) => {
+  const parameters = Object.assign(
+    {
+      SEC_TRIVIAL : 1,
+      ALWAYS      : 1,
+      NEVER       : 0,
+      NONE        : 0,
+      LOW         : 1,
+      MODERATE    : 2,
+      HIGH        : 3,
+      EXISTENTIAL : 4
+    },
+    productRec.parameters
+  )
+
+  const zeroRes = []
+  const evaluator = new Evaluator({ parameters, zeroRes })
+  return evaluator.evalTruth(condition)
 }
 
-const update = (data, auditRecord) => {
-  const { id } = auditRecord
-  const [auditName, targetId] = splitId(id)
-  const [domain] = auditName.split('-')
-
-  if (!data.auditRecords[domain]) {
-    data.auditRecords[domain] = {}
-  }
-  if (!data.auditRecords[domain][auditName]) {
-    data.auditRecords[domain][auditName] = {}
-  }
-
-  const auditRecCopy = Object.assign({}, auditRecord)
-  delete auditRecCopy.id
-  delete auditRecCopy.weight
-  delete auditRecCopy.auditName
-  data.auditRecords[domain][auditName][targetId] = auditRecCopy
-}
-
-// helper/non-exported items
-const splitId = (id) => {
-  if (id === undefined) {
-    throw new Error('Must provide id in call to get audit records.')
-  }
-  const [auditName, targetId] = id.split(/\/(.+)/)
-  if (auditName === undefined || targetId === undefined) {
-    throw new Error(`Malformed audit record ID '${id}'. Should have form '<audit name>/<target ID>'.`)
-  }
-  return [auditName, targetId]
-}
-END deprecated methods */
+Object.defineProperty(AuditRecords, 'checkCondition', {
+  value        : checkCondition,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
+})
 
 export { AuditRecords }
