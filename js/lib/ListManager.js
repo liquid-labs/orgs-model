@@ -70,7 +70,7 @@ const ListManager = class {
     if (cloneAll === true) {
       return structuredClone(this.#items)
     }
-    if (cloneList === true){
+    if (cloneList === true) {
       return [...this.#items]
     }
     if (noClone === true) {
@@ -147,7 +147,7 @@ const ListManager = class {
       else if (noClone === true) return value
       else return structuredClone(value)
     }
-    else { //list
+    else { // list
       if (value === undefined) {
         return []
       }

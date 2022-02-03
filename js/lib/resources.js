@@ -91,7 +91,7 @@ const Resources = class {
   */
   get(name, options) {
     const data = this.#indexById[name]
-    return this.#dataToItem(data, Object.assign({ id : name }, options || {} ))
+    return this.#dataToItem(data, Object.assign({ id : name }, options || {}))
   }
 
   has(name) { return !!this.#indexById[name] }
@@ -161,8 +161,8 @@ const Resources = class {
 
   #dataToItem(data, { required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
     if (required === true && data === undefined) {
-      errMsgGen = errMsgGen ? errMsgGen : () => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`
-      throw new Error( errMsgGen() )
+      errMsgGen = errMsgGen || (() => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`)
+      throw new Error(errMsgGen())
     }
 
     return data === undefined
