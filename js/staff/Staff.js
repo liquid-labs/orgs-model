@@ -8,7 +8,7 @@ const Staff = class extends Resources {
   constructor({ org, ...rest }) {
     super(Object.assign(rest, {
       idNormalizer        : (email) => email.toLowerCase(),
-      indexes             : [ { indexField : 'commonName', relationship : idxType.ONE_TO_MANY } ],
+      indexes             : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }],
       itemClass           : StaffMember,
       itemCreationOptions : { org },
       itemName            : 'staff member',
@@ -19,7 +19,7 @@ const Staff = class extends Resources {
     this.org = org
     this.checkCondition = checkCondition
   }
-  
+
   getByRoleName(role) { return this.list().filter(s => s.hasRole(role)) }
 
   write() {
@@ -32,7 +32,7 @@ const Staff = class extends Resources {
 
   validate({ required = false } = {}) {
     const errors = []
-    const list = this.list({ rawData: true })
+    const list = this.list({ rawData : true })
     for (const data of list) {
       StaffMember.validateData({ data, errors, org : this.org })
     }

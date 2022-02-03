@@ -1,3 +1,6 @@
+import { Evaluator } from '@liquid-labs/condition-eval'
+
+import { AuditRecord } from './AuditRecord.js'
 import { Resources } from '../lib/resources.js'
 import * as idxType from '../lib/index-relationships.js'
 
@@ -7,14 +10,15 @@ import * as idxType from '../lib/index-relationships.js'
 const AuditRecords = class extends Resources {
   constructor(options) {
     super(Object.assign(options, {
-      indexes : [ { indexField : 'auditId', relationship: idxType.ONE_TO_MANY },
-        { indexField : 'domain', relationship: idxType.ONE_TO_MANY },
-        { indexField : 'targetId', relationship: idxType.ONE_TO_MANY } ],
-      itemName : 'audit record',
-      keyField : 'id',
+      indexes : [{ indexField : 'auditId', relationship : idxType.ONE_TO_MANY },
+        { indexField : 'domain', relationship : idxType.ONE_TO_MANY },
+        { indexField : 'targetId', relationship : idxType.ONE_TO_MANY }],
+      itemClass    : AuditRecord,
+      itemName     : 'audit record',
+      keyField     : 'id',
       resourceName : 'audit records'
     }))
-    
+
     this.checkCondition = AuditRecords.checkCondition
   }
 }

@@ -11,12 +11,12 @@ import { Resources } from '../lib/resources'
 const Accounts = class extends Resources {
   constructor(options) {
     super(Object.assign(options, {
-      idNormalizer        : (directEmail) => directEmail.toLowerCase(),
-      indexes : [ { indexField: 'department', relationship: idxType.ONE_TO_MANY }],
-      itemClass           : Account,
-      itemName            : 'third-party account',
-      keyField            : 'directEmail',
-      resourceName        : 'third-party accounts'
+      idNormalizer : (directEmail) => directEmail.toLowerCase(),
+      indexes      : [{ indexField : 'department', relationship : idxType.ONE_TO_MANY }],
+      itemClass    : Account,
+      itemName     : 'third-party account',
+      keyField     : 'directEmail',
+      resourceName : 'third-party accounts'
     }))
     this.checkCondition = Accounts.checkCondition
   }

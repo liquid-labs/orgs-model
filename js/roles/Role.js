@@ -2,7 +2,7 @@ import { Item } from '../lib/Item'
 
 const Role = class extends Item {
   constructor(rec) {
-    super(rec, { keyField: 'name' })
+    super(rec, { keyField : 'name' })
   }
 
   getName() { return this.name }

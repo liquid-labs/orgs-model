@@ -61,8 +61,7 @@ const Resources = class {
     const seen = {}
     items.forEach((item) => {
       item.id = this.#idNormalizer(item.id || item[keyField])
-      if (seen[item.id] === true)
-        throw new Error(`Found duplicate emails '${item.id} in the ${this.resourceName} list.`)
+      if (seen[item.id] === true) { throw new Error(`Found duplicate emails '${item.id} in the ${this.resourceName} list.`) }
       seen[item.id] = true
     })
 
@@ -90,7 +89,10 @@ const Resources = class {
   /**
   * Retrieves a single vendor/product entry by name.
   */
-  get(name, options) { return this.#dataToItem(this.#indexById[name], Object.assign(options || {}, { id : name })) }
+  get(name, options) {
+    const data = this.#indexById[name]
+    return this.#dataToItem(data, Object.assign({ id : name }, options || {} ))
+  }
 
   has(name) { return !!this.#indexById[name] }
 
@@ -137,7 +139,7 @@ const Resources = class {
   write({ fileName = this.#fileName }) {
     if (!fileName) throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
 
-    fs.writeFileSync(fileName, JSON.stringify(this.list({ rawData: true }), null, '  '))
+    fs.writeFileSync(fileName, JSON.stringify(this.list({ rawData : true }), null, '  '))
   }
 
   #addIndexes(indexes) {
@@ -157,9 +159,10 @@ const Resources = class {
     return new this.#itemClass(data, this.#itemCreationOptions)
   }
 
-  #dataToItem(data, { required = false, rawData = false, id } = {}) {
+  #dataToItem(data, { required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
     if (required === true && data === undefined) {
-      throw new Error(`Did not find required ${this.#itemName}${id ? ` '${id}'` : ''}.`)
+      errMsgGen = errMsgGen ? errMsgGen : () => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`
+      throw new Error( errMsgGen() )
     }
 
     return data === undefined

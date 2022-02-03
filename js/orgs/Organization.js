@@ -3,7 +3,7 @@ import { JSONLoop } from './lib/JSONLoop'
 
 import { Accounts } from '../accounts'
 import { AuditRecords } from '../auditRecords'
-import { AuditsAPI } from '../audits'
+import { Audits } from '../audits'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
 import { Technologies } from '../technologies'
@@ -11,28 +11,27 @@ import { Vendors } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
-  constructor(dataPath, staffJsonPath) {
-    // innerState defines:
-    // * thirdPartyAccounts
+  constructor({ dataPath, staffDataPath }) {
     this.innerState = loadOrgState(dataPath)
+    /*
     this.innerState.auditRecords = this.innerState.auditRecords || []
     this.innerState.audits = this.innerState.audits || []
     this.innerState.vendors = this.innerState.vendors || []
-    this.innerState.technologies = this.innerState.technologies || []
+    this.innerState.technologies = this.innerState.technologies || [] */
 
     // TODO: Move all this to 'innerState' (for roles and staff, by loading all with the federated json used in
     // 'loadOrgState') and just use the global hydration.
     this.dataPath = dataPath
-    this.roles = new Roles(this, this.innerState.roles)
+    this.roles = new Roles({ items : this.innerState.roles, org : this })
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
-    this.staff = new Staff({ fileName : staffJsonPath, org : this, readFromFile: true })
-    this.accounts = new Accounts(this)
-    this.auditRecords = new AuditRecords(this)
-    this.audits = new AuditsAPI(this)
+    this.staff = new Staff({ fileName : staffDataPath, org : this, readFromFile : true })
+    this.accounts = new Accounts({ items : this.innerState.auditRecords })
+    this.auditRecords = new AuditRecords({ items : this.innerState.auditRecords })
+    this.audits = new Audits({ items : this.innerState.audits })
     this.technologies = new Technologies(this)
     this.vendors = new Vendors(this)
 
-    this.staff.validate({ required: true })
+    this.staff.validate({ required : true })
   }
 
   // TODO: deprecated; just use 'org.roles'

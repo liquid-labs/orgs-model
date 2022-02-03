@@ -3,9 +3,9 @@ import { Role } from '../roles'
 const StaffRole = class extends Role {
   #memberEmail
   #org
-  
+
   constructor({ org, data, memberEmail }) {
-    super(Object.assign(org.roles.get(data.name, { rawData: true }), data))
+    super(Object.assign(org.roles.get(data.name, { rawData : true }), data))
     this.#memberEmail = memberEmail
     this.#org = org
   }
@@ -22,7 +22,7 @@ const StaffRole = class extends Role {
 
   static validateData({ data, errors = [], memberEmail, org }) {
     if (data.name) {
-      const orgRole = org.roles.get(data.name, { rawData: true })
+      const orgRole = org.roles.get(data.name, { rawData : true })
       if (orgRole === undefined) {
         errors.push(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
       }
@@ -43,7 +43,7 @@ const StaffRole = class extends Role {
     }
 
     if (data.manager) {
-      const manager = org.staff.get(data.manager, { rawData: true })
+      const manager = org.staff.get(data.manager, { rawData : true })
       if (manager === undefined) {
         errors.push(validationMsg({
           name   : data.name,

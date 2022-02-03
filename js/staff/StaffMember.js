@@ -189,7 +189,7 @@ const StaffMember = class {
       if (data[field] === undefined) { acc.push(`Missing required field '${field}' for '${data.email || data.familyName}'`) }
       return acc
     }, errors)
-    
+
     for (const roleData of data.roles || []) {
       StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
     }

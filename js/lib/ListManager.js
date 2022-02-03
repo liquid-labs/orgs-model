@@ -66,12 +66,18 @@ const ListManager = class {
   *      independent. The `getSafe` function is not attached since everything is already cloned.
   * - `noClone`: returns the underlying list itself. `noClone` is ignored if `cloneAll` is `true`.
   */
-  getItems({ cloneAll = false, noClone = false } = {}) {
-    return cloneAll === true
-      ? this.#items.map((i) => structuredClone(i))
-      : noClone === true
-        ? this.#items
-        : this.#annotateList([...this.#items])
+  getItems({ cloneAll, cloneList, noClone } = {}) {
+    if (cloneAll === true) {
+      return structuredClone(this.#items)
+    }
+    if (cloneList === true){
+      return [...this.#items]
+    }
+    if (noClone === true) {
+      return this.#items
+    }
+    // else return default
+    return structuredClone(this.#items)
   }
 
   /**
@@ -123,37 +129,41 @@ const ListManager = class {
     key,
     noClone = false,
     required = false,
-    cloneAll = false,
+    cloneAll = true,
+    cloneList,
     className = this.#className
   }) {
     // Note, indicating a valid index is always required and '#getIndex' spec will throw an error if no match is found.
     const { index: indexActual, name, relationship } = this.#getIndexSpec(index || indexName)
     const value = indexActual[key]
-
     // value requied?
     if (value === undefined && required === true) {
       indexName = indexName || name
       throw new Error(`Did not find ${className ? `${className} for ` : ''}key '${key}' in index${indexName ? ` '${indexName}'` : ''}.`)
     }
 
-    // Let's igure out what to return. If 'noClone' is 'true', then we just return the value in any case.
-    if (noClone === true && cloneAll === false) { // remember, 'cloneAll' supercedes 'noClone'
-      return value
-    }
-
     if (relationship === relationships.ONE_TO_ONE) {
-      return structuredClone(value)
+      if (cloneAll === true) return structuredClone(value)
+      else if (noClone === true) return value
+      else return structuredClone(value)
     }
-    else { // it's ONE_TO_MANY
-      if (cloneAll === true) {
+    else { //list
+      if (value === undefined) {
+        return []
+      }
+      else if (cloneAll === true) {
         return value.map((i) => structuredClone(i))
       }
-      else if (noClone === false) {
-        return this.#annotateList(value)
+      else if (cloneList === true) {
+        return [...value]
+      }
+      else if (noClone === true) {
+        return value
+      }
+      else {
+        return value.map((i) => structuredClone(i))
       }
     }
-
-    return value
   }
 
   addIndex(indexSpec) {

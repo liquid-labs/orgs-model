@@ -9,7 +9,7 @@ describe('Staff', () => {
   let testStaff
   let org
   beforeAll(() => {
-    org = new Organization('./js/test-data', './js/staff/test/staff.json')
+    org = new Organization({ dataPath: './js/test-data', staffDataPath: './js/staff/test/staff.json'})
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.staff
   })

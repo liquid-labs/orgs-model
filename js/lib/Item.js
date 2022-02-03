@@ -46,12 +46,12 @@ import structuredClone from 'core-js-pure/actual/structured-clone'
 */
 
 // TODO: more robust to build from 'Object.prototype'?
-const SKIP_METHODS = [ 'constructor', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__', '__lookupSetter__', '__proto__', 'isPrototypeOf']
+const SKIP_METHODS = ['constructor', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__', '__lookupSetter__', '__proto__', 'isPrototypeOf']
 
 const indexAllProperties = (obj) => {
   const propIndex = {}
   const methodIndex = {}
-  
+
   while (obj/* && obj !== Object.prototype <- any use for hiding? */) {
     const propDescriptors = Object.getOwnPropertyDescriptors(obj)
     // eslint-disable-next-line guard-for-in
@@ -64,10 +64,10 @@ const indexAllProperties = (obj) => {
       const isField = hasGetter || hasSetter
       // probably not necessary, but to keep from confusion we don't override the Proxy functions
       if (!isField && propValue && obj !== Object && isFunction && !SKIP_METHODS.includes(propKey)) {
-        methodIndex[propKey] = descriptor/*{
+        methodIndex[propKey] = descriptor/* {
           func: propValue,
           descriptor:
-        }*/
+        } */
       }
       else if (isField) {
         propIndex[propKey] = {
@@ -79,7 +79,7 @@ const indexAllProperties = (obj) => {
     obj = Object.getPrototypeOf(obj)
   }
 
-  return [ propIndex, methodIndex ]
+  return [propIndex, methodIndex]
 }
 
 const handler = ({ data, propIndex, methodIndex }) => ({
@@ -109,7 +109,7 @@ const handler = ({ data, propIndex, methodIndex }) => ({
     throw new Error(`Setting '${key}' is not supported.`)
   },
   ownKeys : (target) => {
-    return Reflect.ownKeys(target).concat(Reflect.ownKeys(data));
+    return Reflect.ownKeys(target).concat(Reflect.ownKeys(data))
   },
   has : (target, key) => {
     return (key in target) || (key in data)
@@ -117,7 +117,7 @@ const handler = ({ data, propIndex, methodIndex }) => ({
   getOwnPropertyDescriptor : (target, key) => {
     return Object.getOwnPropertyDescriptor(target, key)
       // TODO: modify the prop definitions so that the 'data' items are indeed non-configurable
-      || Object.assign(Object.getOwnPropertyDescriptor(data, key), { writable: false, configurable: true })
+      || Object.assign(Object.getOwnPropertyDescriptor(data, key), { writable : false, configurable : true })
   }
 })
 
@@ -137,8 +137,8 @@ const Item = class {
       throw new Error(`Key field '${keyField}' value '${data[keyField]}' is non-truthy!`)
     }
 
-    const [ propIndex, methodIndex ] = indexAllProperties(this)
-    const proxy = new Proxy(this, handler({ data: this.#data, propIndex, methodIndex }))
+    const [propIndex, methodIndex] = indexAllProperties(this)
+    const proxy = new Proxy(this, handler({ data : this.#data, propIndex, methodIndex }))
 
     return proxy
   }

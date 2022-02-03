@@ -3,6 +3,10 @@ import * as fjson from '@liquid-labs/federated-json'
 import { loadBashSettings } from './bash-env'
 
 const loadOrgState = (dataPath) => {
+  if (!dataPath) {
+    throw new Error('Data path cannot be non-truthy. Must be a string pointing to the root org direcotry.')
+  }
+  
   const liqSettingsPath = `${process.env.HOME}/.liq/settings.sh`
   // console.error(`Loading settings from '${liqSettingsPath}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
   loadBashSettings(liqSettingsPath, 'LIQ_PLAYGROUND')

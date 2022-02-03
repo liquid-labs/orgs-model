@@ -4,16 +4,16 @@ import { Resources } from '../lib/resources'
 import { Role } from './Role'
 
 const Roles = class extends Resources {
-  constructor(org, rolesData) {
-    super({
+  constructor({ org, ...rest }) {
+    super(Object.assign({
+      ...rest,
       // idNormalizer        : (name) => name.toLowerCase(),
-      itemClass           : Role,
-      itemName            : 'role',
-      items: rolesData,
-      keyField            : 'name',
-      resourceName        : 'roles'
-    })
-    
+      itemClass    : Role,
+      itemName     : 'role',
+      keyField     : 'name',
+      resourceName : 'roles'
+    }))
+
     this.org = org
     this.checkCondition = checkCondition
   }
@@ -27,14 +27,15 @@ const Roles = class extends Resources {
     errMsgGen,
     fuzzy = false,
     includeQualifier = false,
-    rawData = false,
+    required = false,
+    rawData = false
   } = {}) {
     // we always try an exact match first
-    let result = this.get(name, { rawData: true })
+    let result = this.get(name, { rawData : true })
     let qualifier
     // now fuzzy match if desired
     if (result === undefined && fuzzy === true) {
-      const matchingRoles = this.list({ rawData: true }).filter((role) => {
+      const matchingRoles = this.list({ rawData : true }).filter((role) => {
         if (role.matcher !== undefined) {
           const { antiPattern, pattern, qualifierGroup } = role.matcher
           const match = name.match(new RegExp(pattern, 'i'))
@@ -77,7 +78,7 @@ const Roles = class extends Resources {
   }
 
   getStaffInRole(roleName) {
-    return this.org.staff.list({ rawData: true }).filter((s) => s.roles.some((r) => r.name === roleName))
+    return this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
   }
 }
 

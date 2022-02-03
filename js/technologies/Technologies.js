@@ -1,3 +1,5 @@
+import { Evaluator } from '@liquid-labs/condition-eval'
+
 import { Resources } from '../lib/resources'
 import { Technology } from './Technology'
 
@@ -7,13 +9,13 @@ import { Technology } from './Technology'
 const Technologies = class extends Resources {
   constructor(options) {
     super(Object.assign(options, {
-      itemClass : Technology,
-      itemName : 'technology',
-      keyField : 'name',
+      itemClass    : Technology,
+      itemName     : 'technology',
+      keyField     : 'name',
       resourceName : 'technologies'
     }))
-    
-    this.checkCondition = Technologies.checkCondition
+
+    this.checkCondition = checkCondition
   }
 }
 
@@ -61,6 +63,5 @@ const checkCondition = (condition, productRec) => {
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
-
 
 export { Technologies }

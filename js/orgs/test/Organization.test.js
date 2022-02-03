@@ -4,18 +4,18 @@ import { Organization } from '../'
 describe('Organization', () => {
   let org
   beforeAll(() => {
-    org = new Organization('./js/test-data', './js/staff/test/staff.json')
+    org = new Organization({ dataPath: './js/test-data', staffDataPath: './js/staff/test/staff.json' })
   })
 
   test('detects staff with invalid roles', () => {
     expect(() =>
-      new Organization('./js/test-data', './js/staff/test/bad_role_staff.json'))
+      new Organization({ dataPath : './js/test-data', staffDataPath : './js/staff/test/bad_role_staff.json'}))
       .toThrow(/Bad Role.*badrole@foo\.com/)
   })
 
   test('detects staff with invalid manaagers', () => {
     expect(() =>
-      new Organization('./js/test-data', './js/staff/test/bad_manager_staff.json'))
+      new Organization({ dataPath : './js/test-data', staffDataPath : './js/staff/test/bad_manager_staff.json'}))
       .toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
   })
 

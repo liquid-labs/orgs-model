@@ -1,3 +1,5 @@
+import { Evaluator } from '@liquid-labs/condition-eval'
+
 import { Resources } from '../lib/resources.js'
 import * as idxType from '../lib/index-relationships.js'
 import { Vendor } from './Vendor'
@@ -11,19 +13,19 @@ const Vendors = class extends Resources {
   constructor(options) {
     super(Object.assign(options,
       {
-        indexes : [ { indexField: 'commonName', relationship: idxType.ONE_TO_MANY } ],
-        itemClass : Vendor,
-        itemName : 'vendor',
-        keyField : 'legalName',
+        indexes      : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }],
+        itemClass    : Vendor,
+        itemName     : 'vendor',
+        keyField     : 'legalName',
         resourceName : 'vendors'
-    }))
+      }))
     this.#indexByCommonName = this.listManager.addIndex({
       name         : 'byCommonName',
       keyField     : 'commonName',
       relationship : idxType.ONE_TO_MANY
     })
-    
-    this.checkCondition = Vendors.checkCondition
+
+    this.checkCondition = checkCondition
   }
 }
 

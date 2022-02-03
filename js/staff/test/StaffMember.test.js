@@ -5,7 +5,7 @@ import { StaffMember } from '../StaffMember'
 describe('StaffMember', () => {
   let org
   beforeAll(() => {
-    org = new Organization('./js/test-data', './js/staff/test/staff.json')
+    org = new Organization({ dataPath: './js/test-data', staffDataPath: './js/staff/test/staff.json'})
   })
 
   test.each`
