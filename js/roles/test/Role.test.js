@@ -6,7 +6,7 @@ import { Roles } from '..'
 describe('Role', () => {
   let roles
   beforeAll(() => {
-    roles = new Roles({}, JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json')))
+    roles = new Roles({ items: JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json')), org: {} })
   })
 
   test.each`
@@ -14,6 +14,5 @@ describe('Role', () => {
   ${'Developer'} | ${true}
   ${'CEO'} | ${false}
   `('Role \'$roleName\' is qualifiable: $isQualifiable', ({ roleName, isQualifiable }) =>
-    expect(roles.get(roleName).isQualifiable()).toBe(isQualifiable)
-  )
+    expect(roles.get(roleName).isQualifiable()).toBe(isQualifiable))
 })

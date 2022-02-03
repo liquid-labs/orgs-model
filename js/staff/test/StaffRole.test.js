@@ -6,7 +6,7 @@ const ceoEmail = 'ceo@foo.com'
 describe('StaffRole', () => {
   let org
   beforeAll(() => {
-    org = new Organization('./js/test-data', './js/staff/test/staff.json')
+    org = new Organization({ dataPath: './js/test-data', staffDataPath: './js/staff/test/staff.json' })
   })
 
   test.each`
@@ -19,7 +19,9 @@ describe('StaffRole', () => {
 
   describe('qualifiers', () => {
     test('are detected when invalid', () => {
-      expect(() => new Organization('./js/test-data', './js/staff/test/invalid_qualifier_staff.json'))
+      expect(() => new Organization({
+        dataPath :'./js/test-data',
+        staffDataPath :'./js/staff/test/invalid_qualifier_staff.json'}))
         .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
     })
 
@@ -34,8 +36,8 @@ describe('StaffRole', () => {
     test.each`
     email | roleName | qualifier
     ${'uidev@foo.com'} | ${'Developer'} | ${'UI'}
-    ${'dev@foo.com'} | ${'Developer'} | ${null}
-    ${'ceo@foo.com'} | ${'CEO'} | ${null}
+    ${'dev@foo.com'} | ${'Developer'} | ${undefined}
+    ${'ceo@foo.com'} | ${'CEO'} | ${undefined}
     `('\'$email\' role \'$roleName\' has \'$qualifier\' qualifier.', ({ email, roleName, qualifier }) => {
       expect(org.staff.get(email).getRole(roleName).qualifier).toBe(qualifier)
     })
@@ -45,7 +47,7 @@ describe('StaffRole', () => {
     let impliedOrg
     let ceo
     beforeAll(() => {
-      impliedOrg = new Organization('./js/test-data/implied', './js/staff/test/staff.json')
+      impliedOrg = new Organization({ dataPath :'./js/test-data/implied', staffDataPath :'./js/staff/test/staff.json'})
       ceo = impliedOrg.staff.get(ceoEmail)
     })
     
@@ -59,8 +61,7 @@ describe('StaffRole', () => {
       expect(ceo.getRole('Sensitive Data Handler')).toBeTruthy()
     })
     
-    test("implied CEO is their own manager as 'Head Developer'", () => {
-      expect(ceo.getRole('Head Developer').managerEmail).toBe(ceoEmail)
-    })
+    test("implied CEO is their own manager as 'Head Developer'", () =>
+      expect(ceo.getRole('Head Developer').managerEmail).toBe(ceoEmail))
   })
 })

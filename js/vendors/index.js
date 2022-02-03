@@ -1,1 +1,1 @@
-export * from './VendorsAPI'
+export * from './Vendors'

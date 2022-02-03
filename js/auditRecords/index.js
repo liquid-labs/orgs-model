@@ -1,1 +1,2 @@
-export * from './AuditRecordsAPI'
+export * from './AuditRecord'
+export * from './AuditRecords'

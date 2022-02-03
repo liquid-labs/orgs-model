@@ -61,11 +61,11 @@ describe('ListManager', () => {
     const defaultItems = listManager.getItems()
     const clonedItems = listManager.getItems({ cloneAll: true })
     
-    test('returns a copy of the list containing the original items by default', () => {
+    test('returns fully cloned list + items by default', () => {
       delete defaultItems.getSafe
       expect(items).toEqual(defaultItems)
       expect(items).not.toBe(defaultItems)
-      expect(items[0]).toBe(defaultItems[0])
+      expect(items[0]).not.toBe(defaultItems[0])
     })
     
     test("'cloneAll : true' results in unique list and items", () => {

@@ -5,7 +5,7 @@ import { StaffMember } from '../StaffMember'
 describe('StaffMember', () => {
   let org
   beforeAll(() => {
-    org = new Organization('./js/test-data', './js/staff/test/staff.json')
+    org = new Organization({ dataPath: './js/test-data', staffDataPath: './js/staff/test/staff.json'})
   })
 
   test.each`
@@ -14,8 +14,7 @@ describe('StaffMember', () => {
   ${'ceo@foo.com'} | ${'CEO'} | ${undefined}
   ${'dev@foo.com'} | ${'Developer'} | ${undefined}
   `('$email is acting in $roleName : $isActing', ({ email, roleName, isActing }) =>
-    expect(org.staff.get(email).getRole(roleName).acting).toBe(isActing)
-  )
+    expect(org.staff.get(email).getRole(roleName).acting).toBe(isActing))
 
   test.each`
   givenName | familyName | options | fullName
@@ -23,15 +22,15 @@ describe('StaffMember', () => {
   ${'John'} | ${'Smith'} | ${{ officialFormat : true }} | ${'Smith, John'}
   `('given: $givenName, family: $familyName, options: $options -> $fullName',
     ({ givenName, familyName, options, fullName }) => {
-      const staffMember = new StaffMember({ org,
-        data: {
-          email: 'notused@foo.com',
-          givenName,
-          familyName,
-          startDate: '2022-01-01',
-          roles: [ { name: 'Developer' } ],
-          employmentStatus: 'employee'
-        }})
+      const data = {
+        email: 'notused@foo.com',
+        givenName,
+        familyName,
+        startDate: '2022-01-01',
+        roles: [ { name: 'Developer' } ],
+        employmentStatus: 'employee'
+      }
+      const staffMember = new StaffMember(data, { org })
       expect(staffMember.getFullName(options)).toBe(fullName)
     }
   )
@@ -44,15 +43,15 @@ describe('StaffMember', () => {
   ${undefined} | ${'Smith'} | ${{ officialFormat : true }}
   `('given: $givenName, family: ${familyName}, options: ${options} raises an error',
     ({ givenName, familyName, options }) => {
-      expect(() => new StaffMember({ org,
-        data: {
-          email: 'notused@foo.com',
-          givenName,
-          familyName,
-          startDate: '2022-01-01',
-          roles: [ { name: 'Developer' } ],
-          employmentStatus: 'employee'
-        }})).toThrow(/Missing required field/)
+      const data = {
+        email: 'notused@foo.com',
+        givenName,
+        familyName,
+        startDate: '2022-01-01',
+        roles: [ { name: 'Developer' } ],
+        employmentStatus: 'employee'
+      }
+      expect(() => new StaffMember(data, { org })).toThrow(/Missing required field/)
     })
 
   test('processes designated role (Sensitive Data Handler)', () => {

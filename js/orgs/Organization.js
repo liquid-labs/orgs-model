@@ -1,38 +1,37 @@
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
-import { AccountsAPI } from '../accounts'
-import { AuditRecordsAPI } from '../auditRecords'
-import { AuditsAPI } from '../audits'
+import { Accounts } from '../accounts'
+import { AuditRecords } from '../auditRecords'
+import { Audits } from '../audits'
 import { Roles } from '../roles'
 import { Staff } from '../staff'
-import { TechnologiesAPI } from '../technologies'
-import { VendorsAPI } from '../vendors'
+import { Technologies } from '../technologies'
+import { Vendors } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
-  constructor(dataPath, staffJsonPath) {
-    // innerState defines:
-    // * thirdPartyAccounts
+  constructor({ dataPath, staffDataPath }) {
     this.innerState = loadOrgState(dataPath)
+    /*
     this.innerState.auditRecords = this.innerState.auditRecords || []
     this.innerState.audits = this.innerState.audits || []
     this.innerState.vendors = this.innerState.vendors || []
-    this.innerState.technologies = this.innerState.technologies || []
+    this.innerState.technologies = this.innerState.technologies || [] */
 
     // TODO: Move all this to 'innerState' (for roles and staff, by loading all with the federated json used in
     // 'loadOrgState') and just use the global hydration.
     this.dataPath = dataPath
-    this.roles = new Roles(this, this.innerState.roles)
+    this.roles = new Roles({ items : this.innerState.roles, org : this })
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
-    this.staff = new Staff({ fileName : staffJsonPath, org : this })
-    this.accounts = new AccountsAPI(this)
-    this.auditRecords = new AuditRecordsAPI(this)
-    this.audits = new AuditsAPI(this)
-    this.technologies = new TechnologiesAPI(this)
-    this.vendors = new VendorsAPI(this)
+    this.staff = new Staff({ fileName : staffDataPath, org : this, readFromFile : true })
+    this.accounts = new Accounts({ items : this.innerState.auditRecords })
+    this.auditRecords = new AuditRecords({ items : this.innerState.auditRecords })
+    this.audits = new Audits({ items : this.innerState.audits })
+    this.technologies = new Technologies(this)
+    this.vendors = new Vendors(this)
 
-    this.staff.validate()
+    this.staff.validate({ required : true })
   }
 
   // TODO: deprecated; just use 'org.roles'

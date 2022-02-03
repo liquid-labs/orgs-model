@@ -1,127 +1,204 @@
+import structuredClone from 'core-js-pure/actual/structured-clone'
+
 import * as fs from 'fs'
 
-import { ListManager } from './ListManager.js'
+import { ListManager } from './ListManager'
+import { Item } from './Item'
 
 /**
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
   /**
-  * Tracks whether the model has changed since the last write operation.
+  * Used to transform incoming ID into a standard format. Must be a function that takes a single argument of the raw ID
+  * and returns a normalized ID. This can be used, for example, to lowercase string IDs.
   */
-  #changedSinceWrite
+  #idNormalizer
+  #itemCreationOptions
   #fileName
   /**
   * Internal 'by ID' index.
   */
   #indexById
+  #itemClass
   #itemName
   /**
   * Our 'keyField'. We will always annotate incoming objcts with 'id', but the resource may use another field for it's
   * canonical ID.
   */
   #keyField
-  /**
-  * Tracks whether the modl has been validated since the last change.
-  */
-  #requiresValidation
   #resourceName
 
-  constructor({ fileName, itemName, items = [], keyField, resourceName }) {
+  constructor({
+    fileName,
+    idNormalizer = (id) => id,
+    indexes = [],
+    itemClass = Item,
+    itemCreationOptions = {},
+    itemName,
+    items = [],
+    keyField,
+    readFromFile = false,
+    resourceName
+  }) {
     this.#fileName = fileName
-    this.#keyField = keyField
+    this.#idNormalizer = idNormalizer
+    this.#itemClass = itemClass
     this.#itemName = itemName
+    this.#keyField = keyField
     this.#resourceName = resourceName
-    this.items = items || []
+    if (readFromFile === true && items && items.length > 0) {
+      throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${resourceName}.`)
+    }
+    if (readFromFile === true && !fileName) {
+      throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${resourceName}.`)
+    }
+    if (readFromFile === true) {
+      items = JSON.parse(fs.readFileSync(fileName))
+    }
     // add standard 'id' field if not present.
-    this.items.forEach((item) => { item.id = item.id || item[keyField] })
+    items = items || []
+    const seen = {}
+    items.forEach((item) => {
+      item.id = this.#idNormalizer(item.id || item[keyField])
+      if (seen[item.id] === true) { throw new Error(`Found duplicate emails '${item.id} in the ${this.resourceName} list.`) }
+      seen[item.id] = true
+    })
 
     this.listManager = new ListManager({ items })
     this.#indexById = this.listManager.getIndex('byId')
-
-    this.#changedSinceWrite = false
-    this.#requiresValidation = true
+    this.#itemCreationOptions = Object.assign({}, itemCreationOptions, { keyField })
+    this.#addIndexes(indexes)
   }
 
   get keyField() { return this.#keyField }
   get itemName() { return this.#itemName }
   get resourceName() { return this.#resourceName }
 
-  add(item) {
-    if (item.id === undefined) {
-      if (item[this.keyField] === undefined) {
-        throw new Error(`Cannot add item '${item}' with no 'id' or ${this.keyField}`)
-      }
-      item.id = item[this.keyField]
+  add(data) {
+    data = ensureRaw(data)
+    if (data.id === undefined) data.id = this.#idNormalizer(data[this.keyField])
+
+    if (this.has(data.id)) {
+      throw new Error(`Cannot add ${this.itemName} with existing key '${data.id}'; try 'update'.`)
     }
 
-    if (this.get(item.id) !== undefined) {
-      throw new Error(`Cannot add item with existing key '${item.id}'; try 'update'.`)
-    }
-
-    this.listManager.addItem(item)
-    this.#changed()
+    this.listManager.addItem(data)
   }
 
   /**
   * Retrieves a single vendor/product entry by name.
   */
-  get(name, { required = false } = {}) {
-    const result = this.#indexById[name]
-    if (required === true && result === undefined) {
-      throw new Error(`Did not find required vendor '${name}'.`)
-    }
-
-    return result === undefined
-      ? undefined
-      : Object.assign({}, result)
+  get(name, options) {
+    const data = this.#indexById[name]
+    return this.#dataToItem(data, Object.assign({ id : name }, options || {}))
   }
 
-  update(item) {
-    if (this.get(item.id) === undefined) {
-      throw new Error(`No such ${this.#itemName} with key '${item.id}' to update; try 'add'.`)
+  has(name) { return !!this.#indexById[name] }
+
+  update(data, { skipGet = false, ...rest } = {}) {
+    data = ensureRaw(data)
+    const id = data[this.#keyField]
+    if (!this.has(id) === undefined) {
+      throw new Error(`No such ${this.#itemName} with key '${id}' to update; try 'add'.`)
     }
 
-    this.listManager.updateItem(item)
-    this.#changed()
+    this.listManager.updateItem(data)
 
-    return item
+    if (skipGet === true) return
+    // else
+    return this.get(id, rest)
   }
 
-  delete(itemId) {
-    const item = this.get(itemId)
-    if (item === undefined) {
+  delete(itemId, { required = false }) {
+    itemId = this.#idNormalizer(itemId)
+    const item = this.#indexById[itemId]
+    if (required === true && item === undefined) {
       throw new Error(`No such item with id '${item.id}' found.`)
     }
 
     this.listManager.deleteItem(item)
-    this.#changed()
   }
 
-  list({ sort = 'id', _items = this.items } = {}) {
-    return sort
-      ? _items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
-      : _items
+  /**
+  * Returns a list of the resource items.
+  *
+  * ### Parameters
+  *
+  * - `sort`: the field to sort on. Defaults to 'id'. Set to falsy unsorted and slightly faster results.
+  */
+  list({ sort = 'id', ...rest } = {}) {
+    // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
+    const items = this.constructor.sort({
+      sort,
+      items : [...this.listManager.getItems({ noClone : true })]
+    })
+    return this.#dataToList(items, rest)
   }
 
   write({ fileName = this.#fileName }) {
     if (!fileName) throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
 
-    fs.writeFileSync(fileName, JSON.stringify(this.items, null, '  '))
-    if (fileName === this.#fileName) {
-      this.#changedSinceWrite = false
+    fs.writeFileSync(fileName, JSON.stringify(this.list({ rawData : true }), null, '  '))
+  }
+
+  #addIndexes(indexes) {
+    for (const { indexField, relationship } of indexes) {
+      this.listManager.addIndex({
+        name     : indexField,
+        keyField : indexField,
+        relationship
+      })
+
+      const functionName = `getBy${indexField[0].toUpperCase() + indexField.slice(1)}`
+      this[functionName] = this.#getByIndex.bind(this, indexField)
     }
   }
 
-  #changed() {
-    this.#requiresValidation = true
-    this.#changedSinceWrite = true
+  #createItem(data) {
+    return new this.#itemClass(data, this.#itemCreationOptions)
+  }
+
+  #dataToItem(data, { required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
+    if (required === true && data === undefined) {
+      errMsgGen = errMsgGen || (() => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`)
+      throw new Error(errMsgGen())
+    }
+
+    return data === undefined
+      ? undefined
+      : rawData
+        ? structuredClone(data)
+        : this.#createItem(data)
+  }
+
+  #dataToList(data, { rawData = false } = {}) {
+    return rawData === true
+      ? structuredClone(data)
+      : data.map((data) => this.#createItem(data))
+  }
+
+  #getByIndex(indexName, key, options) {
+    const result = this.listManager.getByIndex({ indexName, key, noClone : true })
+    if (Array.isArray(result)) {
+      return this.#dataToList(result, options)
+    }
+    else {
+      return this.#dataToItem(result, Object.assign(options || {}, { id : key }))
+    }
+  }
+
+  static sort({ sort = 'id', items }) {
+    if (sort) items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
+
+    return items
   }
 }
 
+const ensureRaw = (data) => data instanceof Item ? data.rawData : structuredClone(data)
+
 const commonAPIInstanceSetup = ({ self, org, checkCondition }) => {
   self.org = org
-  self.hydrationErrors = [] // list of: { ref: ..., sourceName: ..., sourceType: ..., advice?: ...}
   // e.g.: { ref: "bad-audit-name", sourceName: "Acme Vendor", "sourceType": "vendor" }
   self.checkCondition = checkCondition
 }

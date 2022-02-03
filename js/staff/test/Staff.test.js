@@ -2,25 +2,26 @@
 import * as fs from 'fs'
 
 import { Staff } from '../Staff'
+import { StaffMember } from '../StaffMember'
 import { Organization } from '../../orgs'
 
 describe('Staff', () => {
   let testStaff
   let org
   beforeAll(() => {
-    org = new Organization('./js/test-data', './js/staff/test/staff.json')
+    org = new Organization({ dataPath: './js/test-data', staffDataPath: './js/staff/test/staff.json'})
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.staff
   })
 
   test('detects duplicate emails on init', () =>
-    expect(() => new Staff({ fileName: './js/staff/test/dupe_email_staff.json', org }))
+    expect(() => new Staff({ fileName: './js/staff/test/dupe_email_staff.json', org, readFromFile: true }))
       .toThrow(/email.*ceo@foo.com/))
 
   test('filters header+blank lines', () => expect(testStaff.list()).toHaveLength(4))
 
   test('fields', () => {
-    const ceo = testStaff.list()[0]
+    const ceo = testStaff.get('ceo@foo.com')
     expect(ceo.getEmail()).toBe('ceo@foo.com')
     expect(ceo.allRoles).toHaveLength(2)
     const ceoRole = ceo.allRoles[0]
@@ -36,6 +37,24 @@ describe('Staff', () => {
     expect(dev.allRoles[0].name).toBe('Developer')
     expect(dev.allRoles[0].managerEmail).toBe('ceo@foo.com')
   })
+  
+  describe('list', () => {
+    test('by default provides a list of objects which is safe to manipulate', () => {
+      const result = testStaff.list()
+      expect(result[0] instanceof StaffMember).toBe(true)
+      const origLength = result.length
+      result.splice(0, 1)
+      expect(testStaff.list({ rawData: true })).toHaveLength(origLength)
+    })
+    
+    test('can provide raw data which is safe to manipulate', () => {
+      const result = testStaff.list({ rawData: true })
+      expect(result instanceof StaffMember).toBe(false)
+      const origLength = result.length
+      result.splice(0, 1)
+      expect(testStaff.list({ rawData: true })).toHaveLength(origLength)
+    })
+  })
 
   describe('checkCondition', () => {
     test.each`
@@ -46,7 +65,7 @@ describe('Staff', () => {
       ${'designated roles'} | ${'HAS_SENSITIVE_DATA_HANDLER_ROLE'} | ${['dev@foo.com']}
     `('properly evaluates $desc ($condition)', ({ desc, condition, expectation }) => {
       const members = testStaff.list().filter((member) => Staff.checkCondition(condition, member))
-      expect(members.map(e => e.getEmail())).toEqual(expectation)
+      expect(members.map(e => e.email).sort()).toEqual(expectation.sort())
     })
   })
 })

@@ -1,26 +1,35 @@
-{
-  "networks/acme-co": {
-    "loginId": "acmeadmin@test-company.com",
-    "emails": [ { "type": "main", "address": "acmeadmin@test-company.com" } ],
-    "access": [
-      { "route": "role", "name": "Acme Admin" }
+[
+  {
+    "directEmail" : "jim@foo.com",
+    "department": "Operations",
+    "access" : [
+      { "to": "ZenDesk support", "login": "support82@test-company.com", "sensitivity": "HIGH" },
+      { "to": "Acme Co administration", "login": "Acme Admin", "sensivity": "STANDARD" },
+      { "to": "FaxCo.co", "login": "faxcoadmin@test-company.com", "sensitivity": "LOW" }
     ],
-    "sensitivity": "EXISTENTIAL",
+    "companyEmails": [
+      { "puprose": "company managed vendor account", "email": "zenadmin@test-company.com", "type": "user" }
+    ],
+    "groups": [ "customersupport@test-company.com" ],
     "parameters": {
       "REVIEW_PERIOD": 90,
       "NETWORKING": 1
     }
   },
-  "business/fax-co": {
-    "loginId": "faxcoadmin@test-company.com",
-    "emails": [ { "type": "main", "address": "faxcoadmin@test-company.com" } ],
+  {
+    "directEmail": "sue@foo.com",
+    "department": "DevOps",
     "access": [
-      { "route": "role", "name": "Internal Support Admin" }
+      { "to": "AWS", "login": "sue@test-company.com", "sesnitivity": "CRITICAL" }
     ],
-    "sensitivity": "LOW",
+    "companyEmails" : [
+      { "purpose": "main", "email": "sue@test-company.com", "type": "user" },
+      { "purpose": "company managed vendor account", "email": "faxcoadmin@test-company.com", "type": "alias" }
+    ],
+    "groups": [ "awsadmin@test-company.com" ],
     "parameters": {
       "REVIEW_PERIOD": 360,
       "BUSINESS": 1
     }
   }
-}
+]

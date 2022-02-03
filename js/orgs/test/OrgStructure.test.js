@@ -7,7 +7,7 @@ describe('OrgStructure', () => {
   let roles
   let orgStructure
   beforeAll(() => {
-    roles = new Roles({}, JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json')))
+    roles = new Roles({ items: JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json')), org: {} })
     orgStructure = new OrgStructure('./js/test-data/orgs/org_structure.json', roles)
   })
 

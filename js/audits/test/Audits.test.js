@@ -7,12 +7,11 @@ describe('Audits', () => {
   let audits = null
   
   beforeAll(() => {
-    const auditData = JSON.parse(fs.readFileSync('./js/test-data/orgs/audits.json'))
-    audits = new Audits(auditData)
+    audits = new Audits({ fileName: './js/test-data/orgs/audits.json', readFromFile : true })
   })
   
   describe('getByTarget', () => {
-    test('should return only matching audits', () => {
+    test('should return only distinct matching audits ]by default', () => {
       const target = 'repository'
       const matches = audits.getByTarget(target)
       expect(matches).toHaveLength(2)
