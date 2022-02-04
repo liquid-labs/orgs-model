@@ -119,7 +119,7 @@ const Resources = class {
     if (required === true && item === undefined) {
       throw new Error(`No such item with id '${item.id}' found.`)
     }
-    
+
     this.listManager.deleteItem(item)
   }
 
@@ -168,7 +168,7 @@ const Resources = class {
 
   #dataToItem(data, { clean = false, required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
     if (clean === true && rawData === false) {
-      throw new Error(`Incompatible options; 'clean = true' requires 'raw data = true'`)
+      throw new Error('Incompatible options; \'clean = true\' requires \'raw data = true\'')
     }
     if (required === true && data === undefined) {
       errMsgGen = errMsgGen || (() => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`)

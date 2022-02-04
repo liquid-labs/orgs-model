@@ -51,7 +51,7 @@ const ListManager = class {
     })
     this.#className = className
   }
-  
+
   get idField() { return this.#idField }
 
   /**
@@ -233,7 +233,7 @@ const ListManager = class {
 
     routeByRelationships({
       item,
-      idField        : this.#idField,
+      idField      : this.#idField,
       idIndex      : this.#idIndex,
       indexSpecs   : this.#indexSpecs,
       one2oneFunc  : updateOneToOne,
@@ -394,7 +394,7 @@ const deleteOneToMany = ({ item, idField, idIndex, index, keyField }) => {
 */
 const getOrigData = ({ item, idField, idIndex, index, keyField }) => {
   const origItem = idIndex[item[idField]]
-  
+
   const origIndexValue = origItem[keyField]
   const origList = index[origIndexValue]
   // We compare keys rather than objects as returned objects must be copied to preserve the integrity of the original
