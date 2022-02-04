@@ -40,7 +40,7 @@
   "devDependencies": {
     "@liquid-labs/bash-rollup": "^1.0.0-alpha.5",
     "@liquid-labs/bash-toolkit": "^1.0.0-alpha.52",
-    "@liquid-labs/catalyst-scripts": "file:.yalc/@liquid-labs/catalyst-scripts"
+    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.51"
   },
   "dependencies": {
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
