@@ -53,7 +53,7 @@
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2021-11-12T23:00:19.000Z)_
 
 ## Release 1.0.0-beta.58
-* _**hotfix**_: actually use the Audits _(zane@liquid-labs.com; 2021-11-12T23:06:48.000Z)_
+* _**hotfix**_: actually use the AuditsAPI _(zane@liquid-labs.com; 2021-11-12T23:06:48.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2021-11-12T23:07:06.000Z)_
 
 ## Release 1.0.0-beta.59
@@ -75,3 +75,6 @@
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-31T17:24:40.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-01-31T17:25:41.000Z)_
 * _**hotfix**_: back out bad fix _(zane@liquid-labs.com; 2022-01-31T17:26:16.000Z)_
+
+## Release 1.0.0-beta.63
+* Extend all resources from Resource class _(zane@liquid-labs.com; 2022-01-31T22:36:32.509Z)_
