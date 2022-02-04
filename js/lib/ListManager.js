@@ -52,6 +52,8 @@ const ListManager = class {
     this.#className = className
   }
 
+  get idField() { return this.#idField }
+
   /**
   * ## Retriewal functions
   */
@@ -89,7 +91,7 @@ const ListManager = class {
   * - className: (optional) the name item class; e.g. 'car', 'animal', etc. Used to produce error messages and defaults *     to the class name set when creating listManager Generally, it's recommended to set the class name when
   *     creating the ListManager instance rather than here, though there may be some cases where it is useful to
   *     override the default value.
-  * - noClone: (optional) when set `true', skips cloning the returned item. This should generally only be used when it
+  * - noClone: (optional) when set 'true', skips cloning the returned item. This should generally only be used when it
   *     can be guaranteed that the returned object will not be modified in any way.
   * - requried: (optional) when set `true`, causes an error to be thrown if no item is found with the given `id`.
   */
@@ -221,7 +223,7 @@ const ListManager = class {
   }
 
   updateItem(item) {
-    this.getItem(item[this.#idIndex])
+    // this.getItem(item[this.#idIndex])
     // check that this is a valid update
     this.getItem(item[this.#idField], { required : true, noClone : true })
     // In future, we could keep the base list sorted by ID and then use quick-sort insertion and update techniques. For
@@ -231,7 +233,7 @@ const ListManager = class {
 
     routeByRelationships({
       item,
-      idKey        : this.#getIdIndexKey(),
+      idField      : this.#idField,
       idIndex      : this.#idIndex,
       indexSpecs   : this.#indexSpecs,
       one2oneFunc  : updateOneToOne,
@@ -248,7 +250,7 @@ const ListManager = class {
 
     routeByRelationships({
       item,
-      idKey        : this.#getIdIndexKey(),
+      idField      : this.#idField,
       idIndex      : this.#idIndex,
       indexSpecs   : this.#indexSpecs,
       one2oneFunc  : deleteOneToOne,
@@ -342,10 +344,10 @@ const addOneToMany = ({ item, index, keyField }) => {
 /**
 * Any "is this a valid update" checks are assumed to be performed by the caller.
 */
-const updateOneToOne = ({ item, index, keyField, idKey, idIndex }) => {
+const updateOneToOne = ({ item, index, keyField, idField, idIndex }) => {
   if (idIndex !== index) {
     // then we have to remove the original entry before adding the new entry
-    const origItem = idIndex[item[idKey]]
+    const origItem = idIndex[item[idField]]
     delete index[origItem[keyField]]
   }
   index[item[keyField]] = item
@@ -354,8 +356,8 @@ const updateOneToOne = ({ item, index, keyField, idKey, idIndex }) => {
 /**
 * Any "is this a valid update" checks are assumed to be performed by the caller.
 */
-const updateOneToMany = ({ item, keyField, index, idKey, idIndex }) => {
-  const { origItem, origList, origListIndex } = getOrigData({ item, idKey, idIndex, keyField, index })
+const updateOneToMany = ({ item, keyField, index, idField, idIndex }) => {
+  const { origItem, origList, origListIndex } = getOrigData({ item, idField, idIndex, keyField, index })
   if (origItem[keyField] === item[keyField]) {
     // then the key value of this index hasn't changed and we can simply replace
     origList.splice(origListIndex, 1, item)
@@ -369,10 +371,10 @@ const updateOneToMany = ({ item, keyField, index, idKey, idIndex }) => {
 /**
 * Any "is this a valid delete" checks are assumed to be performed by the caller. Currently, deletion just looks at the
 * ID field and will happily delete an item from the index even if it is changed. Future versions will suport a
-* `requireClean` parameter.
+* 'requireClean' parameter.
 */
-const deleteOneToOne = ({ item, keyField, index, idKey, idIndex }) => {
-  const origItem = idIndex[item[idKey]]
+const deleteOneToOne = ({ item, keyField, index, idField, idIndex }) => {
+  const origItem = idIndex[item[idField]]
   // the current item may have had the index value changed, so we delete based on the origItem
   delete index[origItem[keyField]]
 }
@@ -380,23 +382,24 @@ const deleteOneToOne = ({ item, keyField, index, idKey, idIndex }) => {
 /**
 * Any "is this a valid delete" checks are assumed to be performed by the caller. Currently, deletion just looks at the
 * ID field and will happily delete an item from the index even if it is changed. Future versions will suport a
-* `requireClean` parameter.
+* 'requireClean' parameter.
 */
-const deleteOneToMany = ({ item, keyField, index, idKey, idIndex }) => {
-  const { origList, origListIndex } = getOrigData({ item, idKey, idIndex, keyField, index })
+const deleteOneToMany = ({ item, idField, idIndex, index, keyField }) => {
+  const { origList, origListIndex } = getOrigData({ item, idField, idIndex, keyField, index })
   origList.splice(origListIndex, 1)
 }
 
 /**
 * Helper for update and delete 'one2many' functions.
 */
-const getOrigData = ({ item, idKey, idIndex, keyField, index }) => {
-  const origItem = idIndex[item[idKey]]
+const getOrigData = ({ item, idField, idIndex, index, keyField }) => {
+  const origItem = idIndex[item[idField]]
+
   const origIndexValue = origItem[keyField]
   const origList = index[origIndexValue]
   // We compare keys rather than objects as returned objects must be copied to preserve the integrity of the original
   // items along with the indexes.
-  const origListIndex = origList.findIndex((i) => i[idKey] === origItem[idKey])
+  const origListIndex = origList.findIndex((i) => i[idField] === origItem[idField])
 
   return { origItem, origList, origListIndex }
 }

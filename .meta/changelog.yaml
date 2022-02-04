@@ -7,6 +7,7 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
+    - "@liquid-labs/liq-core"
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Add change flow and lifecycle diagrams
@@ -236,6 +237,22 @@
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Extend all resources from Resource class
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- startTimestamp: 2022-02-04T05:43:49.097Z
+  startEpochMillis: 1643953429097
+  issues:
+    - https://github.com/Liquid-Labs/liq-core/issues/42
+  branch: 2022.02.03-zane@liquid-labs.com-fix_data_cleaning
+  branchFrom: 0bfcbd45b461b1fa23ff84788c4ec85719e2b0f5
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-core"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Fix data cleaning
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
