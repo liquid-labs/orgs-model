@@ -40,13 +40,13 @@
   "devDependencies": {
     "@liquid-labs/bash-rollup": "^1.0.0-alpha.5",
     "@liquid-labs/bash-toolkit": "^1.0.0-alpha.52",
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.50",
-    "core-js-pure": "^3.20.3"
+    "@liquid-labs/catalyst-scripts": "file:.yalc/@liquid-labs/catalyst-scripts"
   },
   "dependencies": {
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.20",
     "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.6",
+    "core-js-pure": "^3.21.0",
     "dotenv": "^10.0.0",
     "fs": "^0.0.2"
   },

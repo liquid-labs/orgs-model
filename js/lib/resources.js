@@ -27,6 +27,7 @@ const Resources = class {
   * canonical ID.
   */
   #keyField
+  #dataCleaner
   #resourceName
 
   constructor({
@@ -38,6 +39,7 @@ const Resources = class {
     itemName,
     items = [],
     keyField,
+    dataCleaner,
     readFromFile = false,
     resourceName
   }) {
@@ -47,6 +49,7 @@ const Resources = class {
     this.#itemName = itemName
     this.#keyField = keyField
     this.#resourceName = resourceName
+    this.#dataCleaner = dataCleaner
     if (readFromFile === true && items && items.length > 0) {
       throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${resourceName}.`)
     }
@@ -65,7 +68,7 @@ const Resources = class {
       seen[item.id] = true
     })
 
-    this.listManager = new ListManager({ items })
+    this.listManager = new ListManager({ items, idField : keyField, className : resourceName })
     this.#indexById = this.listManager.getIndex('byId')
     this.#itemCreationOptions = Object.assign({}, itemCreationOptions, { keyField })
     this.#addIndexes(indexes)
@@ -110,13 +113,13 @@ const Resources = class {
     return this.get(id, rest)
   }
 
-  delete(itemId, { required = false }) {
+  delete(itemId, { required = false } = {}) {
     itemId = this.#idNormalizer(itemId)
     const item = this.#indexById[itemId]
     if (required === true && item === undefined) {
       throw new Error(`No such item with id '${item.id}' found.`)
     }
-
+    
     this.listManager.deleteItem(item)
   }
 
@@ -136,10 +139,14 @@ const Resources = class {
     return this.#dataToList(items, rest)
   }
 
-  write({ fileName = this.#fileName }) {
+  write({ fileName = this.#fileName } = {}) {
     if (!fileName) throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
 
-    fs.writeFileSync(fileName, JSON.stringify(this.list({ rawData : true }), null, '  '))
+    let itemList = this.list({ rawData : true })
+    if (this.#dataCleaner) {
+      itemList = itemList.map((i) => this.#dataCleaner(i))
+    }
+    fs.writeFileSync(fileName, JSON.stringify(itemList, null, '  '))
   }
 
   #addIndexes(indexes) {
@@ -159,23 +166,30 @@ const Resources = class {
     return new this.#itemClass(data, this.#itemCreationOptions)
   }
 
-  #dataToItem(data, { required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
+  #dataToItem(data, { clean = false, required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
+    if (clean === true && rawData === false) {
+      throw new Error(`Incompatible options; 'clean = true' requires 'raw data = true'`)
+    }
     if (required === true && data === undefined) {
       errMsgGen = errMsgGen || (() => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`)
       throw new Error(errMsgGen())
     }
 
-    return data === undefined
-      ? undefined
-      : rawData
-        ? structuredClone(data)
-        : this.#createItem(data)
+    if (data === undefined) return undefined
+    if (rawData) {
+      data = structuredClone(data)
+      return clean === true ? this.#dataCleaner(data) : data
+    }
+    // else
+    return this.#createItem(data)
   }
 
-  #dataToList(data, { rawData = false } = {}) {
-    return rawData === true
-      ? structuredClone(data)
-      : data.map((data) => this.#createItem(data))
+  #dataToList(data, { clean = false, rawData = false } = {}) {
+    return rawData !== true
+      ? data.map((data) => this.#createItem(data))
+      : clean === true
+        ? data.map((i) => structuredClone(this.#dataCleaner(i)))
+        : structuredClone(data)
   }
 
   #getByIndex(indexName, key, options) {

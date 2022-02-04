@@ -8,11 +8,12 @@ const Staff = class extends Resources {
   constructor({ org, ...rest }) {
     super(Object.assign(rest, {
       idNormalizer        : (email) => email.toLowerCase(),
-      indexes             : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }],
+      indexes             : [{ indexField : 'employmentStatus', relationship : idxType.ONE_TO_MANY }],
       itemClass           : StaffMember,
       itemCreationOptions : { org },
       itemName            : 'staff member',
       keyField            : 'email',
+      dataCleaner         : (item) => { delete item._sourceFileName; delete item.title; return item },
       resourceName        : 'staff'
     }))
 
@@ -21,14 +22,6 @@ const Staff = class extends Resources {
   }
 
   getByRoleName(role) { return this.list().filter(s => s.hasRole(role)) }
-
-  write() {
-    for (const member of this.list({ noClone : true })) {
-      delete member._sourceFileName
-      delete member.title
-    }
-    super.write()
-  }
 
   validate({ required = false } = {}) {
     const errors = []
