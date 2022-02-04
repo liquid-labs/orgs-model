@@ -78,3 +78,6 @@
 
 ## Release 1.0.0-beta.63
 * Extend all resources from Resource class _(zane@liquid-labs.com; 2022-01-31T22:36:32.509Z)_
+
+## Release 1.0.0-beta.64
+* Fix data cleaning _(zane@liquid-labs.com; 2022-02-04T05:43:49.097Z)_
