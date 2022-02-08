@@ -7,7 +7,6 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
-    - "@liquid-labs/liq-core"
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Add change flow and lifecycle diagrams
