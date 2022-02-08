@@ -81,3 +81,6 @@
 
 ## Release 1.0.0-beta.64
 * Fix data cleaning _(zane@liquid-labs.com; 2022-02-04T05:43:49.097Z)_
+
+## Release 1.0.0-beta.65
+* Refactor staff to be like the rest of the data _(zane@liquid-labs.com; 2022-02-08T18:14:23.318Z)_
