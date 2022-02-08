@@ -12,7 +12,7 @@ import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
   #innerState
-  
+
   constructor({ dataPath, ...rest }) {
     this.#innerState = loadOrgState({ dataPath, ...rest })
 
