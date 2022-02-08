@@ -256,3 +256,18 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2022-02-08T18:14:23.318Z
+  startEpochMillis: 1644344063318
+  issues:
+    - https://github.com/Liquid-Labs/orgs-model/issues/73
+  branch: 2022.02.08-zane@liquid-labs.com-refactor_staff_to_be
+  branchFrom: 7a11f66f6770ebe2903e828d124d401062f002ab
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Refactor staff to be like the rest of the data
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []

@@ -15,6 +15,10 @@
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/roles/roles.json"
         },
         {
+          "path": ".staff",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/staff/test/staff.json"
+        },
+        {
           "path": ".technologies",
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/technologies.json"
         }
@@ -23,6 +27,7 @@
   },
   "audits": null,
   "roles": null,
+  "staff": null,
   "thirdPartyAccounts": null,
   "technologies": null
 }

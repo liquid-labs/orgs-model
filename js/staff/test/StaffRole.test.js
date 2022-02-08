@@ -5,9 +5,7 @@ const ceoEmail = 'ceo@foo.com'
 
 describe('StaffRole', () => {
   let org
-  beforeAll(() => {
-    org = new Organization({ dataPath: './js/test-data', staffDataPath: './js/staff/test/staff.json' })
-  })
+  beforeAll(() => { org = new Organization({ dataPath: './js/test-data' }) })
 
   test.each`
   email | roleName
@@ -21,8 +19,9 @@ describe('StaffRole', () => {
     test('are detected when invalid', () => {
       expect(() => new Organization({
         dataPath :'./js/test-data',
-        staffDataPath :'./js/staff/test/invalid_qualifier_staff.json'}))
-        .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
+        overrides: { '.staff' : 'file:./js/staff/test/invalid_qualifier_staff.json' }
+      }))
+      .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
     })
 
     test.each`
@@ -47,7 +46,7 @@ describe('StaffRole', () => {
     let impliedOrg
     let ceo
     beforeAll(() => {
-      impliedOrg = new Organization({ dataPath :'./js/test-data/implied', staffDataPath :'./js/staff/test/staff.json'})
+      impliedOrg = new Organization({ dataPath :'./js/test-data/implied' })
       ceo = impliedOrg.staff.get(ceoEmail)
     })
     
