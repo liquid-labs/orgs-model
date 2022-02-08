@@ -2,7 +2,7 @@ import * as fjson from '@liquid-labs/federated-json'
 
 import { loadBashSettings } from './bash-env'
 
-const loadOrgState = (dataPath) => {
+const loadOrgState = ({ dataPath, ...fjsonOptions }) => {
   if (!dataPath) {
     throw new Error('Data path cannot be non-truthy. Must be a string pointing to the root org direcotry.')
   }
@@ -20,7 +20,7 @@ const loadOrgState = (dataPath) => {
   // and here's the prototype new approach; the read function handles the 'exists' check
   const rootJsonPath = `${dataPath}/orgs/${process.env.ORG_ID}.json`
   // console.error(`Loading root JSON from '${rootJsonPath}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
-  return fjson.read(rootJsonPath)
+  return fjson.read(rootJsonPath, fjsonOptions)
 }
 
 export { loadOrgState }
