@@ -52,12 +52,14 @@ const JSONLoop = class {
         this.count = this.total + 0
         callback(new Error('the node does not exist'))
       }
-      this.count--
-      if (obj[this.children]) {
-        const that = this
-        obj[this.children].forEach(function(node) {
-          that.findNodeById(node, id, callback)
-        })
+      else {
+        this.count--
+        if (obj[this.children]) {
+          const that = this
+          obj[this.children].forEach(function(node) {
+            that.findNodeById(node, id, callback)
+          })
+        }
       }
     }
   }
