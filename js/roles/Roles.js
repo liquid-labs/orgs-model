@@ -18,63 +18,66 @@ const Roles = class extends Resources {
     this.checkCondition = checkCondition
   }
 
-  /**
-  * ### Parameters
-  *
-  * - `includeQualifier`: returns an array `'[ role, qualifier ]'`
-  */
-  fuzzyGet(name, {
-    errMsgGen,
-    fuzzy = false,
-    includeQualifier = false,
-    required = false,
-    rawData = false
-  } = {}) {
-    // we always try an exact match first
-    let result = this.get(name, { rawData : true })
-    let qualifier
-    // now fuzzy match if desired
-    if (result === undefined && fuzzy === true) {
-      const matchingRoles = this.list({ rawData : true }).filter((role) => {
-        if (role.matcher !== undefined) {
-          const { antiPattern, pattern, qualifierGroup } = role.matcher
-          const match = name.match(new RegExp(pattern, 'i'))
-          if (match) {
-            // check anti-pattern first and bail out to avoid setting qualifier for disqualified match
-            if (antiPattern && name.match(new RegExp(antiPattern, 'i'))) {
-              return false
-            }
+  get(name, { fuzzy = false, ...options } = {}) {
+    const superOptions = fuzzy === true
+      ? Object.assign({}, options, { required: false })
+      : options
+    
+    let result = super.get(name, superOptions)
+    const {
+      errMsgGen,
+      includeQualifier = false,
+      required = false,
+      rawData = false
+    } = options
+    
+    if (includeQualifier === true || (result === undefined && fuzzy === true)) {
+      let qualifier
+      // now fuzzy match if desired
+      if (result === undefined && fuzzy === true) {
+        const matchingRoles = this.list({ rawData : true }).filter((role) => {
+          if (role.matcher !== undefined) {
+            const { antiPattern, pattern, qualifierGroup } = role.matcher
+            const match = name.match(new RegExp(pattern, 'i'))
+            if (match) {
+              // check anti-pattern first and bail out to avoid setting qualifier for disqualified match
+              if (antiPattern && name.match(new RegExp(antiPattern, 'i'))) {
+                return false
+              }
 
-            if (qualifierGroup) {
-              qualifier = match[qualifierGroup]
-              // console.error(`qualifier group: ${qualifierGroup}/${qualifier}`) // DEBUG
+              if (qualifierGroup) {
+                qualifier = match[qualifierGroup]
+                // console.error(`qualifier group: ${qualifierGroup}/${qualifier}`) // DEBUG
+              }
+              return true
             }
-            return true
           }
+          return false
+        })
+
+        if (matchingRoles.length === 1) {
+          result = matchingRoles[0]
         }
-        return false
-      })
-
-      if (matchingRoles.length === 1) {
-        result = matchingRoles[0]
+        else if (matchingRoles.length > 1) {
+          throw new Error(`Ambiguous role '${name}' matched to '${matchingRoles.map((r) => r.name).join("', '")}'`)
+        }
       }
-      else if (matchingRoles.length > 1) {
-        throw new Error(`Ambiguous role '${name}' matched to '${matchingRoles.map((r) => r.name).join("', '")}'`)
+
+      if (result === undefined && required === true) {
+        throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
+      }
+
+      if (rawData !== true) result = new Role(result)
+
+      if (includeQualifier === true) {
+        return [result, qualifier]
+      }
+      else {
+        return result
       }
     }
-
-    if (result === undefined && required === true) {
-      throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
-    }
-
-    if (rawData === true) result = new Role(result)
-
-    if (includeQualifier === true) {
-      return [result, qualifier]
-    }
-    else {
-      return result
-    }
+    
+    return result
   }
 
   getStaffInRole(roleName) {
