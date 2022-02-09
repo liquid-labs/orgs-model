@@ -51,7 +51,7 @@ describe('StaffMember', () => {
         roles: [ { name: 'Developer' } ],
         employmentStatus: 'employee'
       }
-      expect(() => new StaffMember(data, { org })).toThrow(/Missing required field/)
+      expect(() => new StaffMember(data, { org })).toThrow(new RegExp(`missing field.*(givenName|familyName)`))
     })
 
   test('processes designated role (Sensitive Data Handler)', () => {
