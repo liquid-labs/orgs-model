@@ -84,3 +84,13 @@
 
 ## Release 1.0.0-beta.65
 * Refactor staff to be like the rest of the data _(zane@liquid-labs.com; 2022-02-08T18:14:23.318Z)_
+
+## Release 1.0.0-beta.66
+* _**hotfix**_: fixed missing 'else' block bug _(zane@liquid-labs.com; 2022-02-09T21:06:37.000Z)_
+* _**hotfix**_: tested parameter for literal true per style guidelines _(zane@liquid-labs.com; 2022-02-09T21:07:08.000Z)_
+* _**hotfix**_: fix graph building logic _(zane@liquid-labs.com; 2022-02-09T21:10:22.000Z)_
+* _**hotfix**_: merged 'fuzzyGet' logic with standard get _(zane@liquid-labs.com; 2022-02-09T21:10:57.000Z)_
+* _**hotfix**_: Small bugfix and validation update change _(zane@liquid-labs.com; 2022-02-09T21:14:39.000Z)_
+* _**hotfix**_: updated test expectation after change of wording _(zane@liquid-labs.com; 2022-02-09T21:15:31.000Z)_
+* _**hotfix**_: fuzzy search roles for robustness _(zane@liquid-labs.com; 2022-02-09T21:19:44.000Z)_
+* _**hotfix**_: automated lint fixes _(zane@liquid-labs.com; 2022-02-09T21:21:11.000Z)_
