@@ -130,25 +130,34 @@ const Organization = class {
 
       // build out the full tree with each titualar role being it's own thing
       let item
+      let countSinceUpdate = 0
+      // Builds up data by finding the root (no parent_id) and then adding children until everything is added into the
+      // graph.
       while ((item = seedData.shift()) !== undefined) {
+        const jsonloop = new JSONLoop(data, 'id', 'children')
         if (!item.parent_id) {
+          // jsonloop counts the {} as one
+          if (jsonloop.count > 1) throw new Error(`Found multiple roots. data: ${JSON.stringify(data, null, '  ')}; item: ${JSON.stringify(item, null, '  ')}`)
           Object.assign(data, item)
         }
         else {
-          const jsonloop = new JSONLoop(data, 'id', 'children')
+          if (!('ids' in data)) {
+            data.ids = []
+          }
+          // Search the built up data graph for a matching parent. If found, attach item into data. If not, stick it
+          // back on the seedData and process the next item.
           jsonloop.findNodeById(data, item.parent_id, function(err, node) {
-            if (err) { // try deferring the processing till the needed node is defined...
-              if (item._deferredMarker === true) {
-                throw new Error(`Error finding '${item.parent_id}'; ${err}`)
+            if (err) { // try deferring the processing till the needed node is added...
+              countSinceUpdate += 1
+              if (countSinceUpdate === seedData.length) {
+                throw new Error(`${seedData.length} entries could not be connected to parent. ${JSON.stringify(seedData, null, '  ')}\ndata: ${JSON.stringify(seedData, null, '  ')}`)
               }
-              else {
-                item._deferredMarker = true
-                seedData.push(item)
-              }
+              seedData.push(item)
             }
             else {
+              countSinceUpdate = 0
               childNodes.push(item)
-              if (node.children) {
+              if ('children' in node) {
                 node.children.push(item)
               }
               else {
