@@ -5,7 +5,7 @@ const StaffRole = class extends Role {
   #org
 
   constructor({ org, data, memberEmail }) {
-    super(Object.assign(org.roles.get(data.name, { rawData : true }), data))
+    super(Object.assign(org.roles.get(data.name, { fuzzy : true, rawData : true }), data))
     this.#memberEmail = memberEmail
     this.#org = org
   }
@@ -22,7 +22,7 @@ const StaffRole = class extends Role {
 
   static validateData({ data, errors = [], memberEmail, org }) {
     if (data.name) {
-      const orgRole = org.roles.get(data.name, { rawData : true })
+      const orgRole = org.roles.get(data.name, { fuzzy : true, rawData : true })
       if (orgRole === undefined) {
         errors.push(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
       }
