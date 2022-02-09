@@ -176,8 +176,9 @@ const Resources = class {
     }
 
     if (data === undefined) return undefined
-    if (rawData) {
+    if (rawData === true) {
       data = structuredClone(data)
+      data.id = data[this.#keyField]
       return clean === true ? this.#dataCleaner(data) : data
     }
     // else
