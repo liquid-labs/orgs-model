@@ -20,9 +20,9 @@ const Roles = class extends Resources {
 
   get(name, { fuzzy = false, ...options } = {}) {
     const superOptions = fuzzy === true
-      ? Object.assign({}, options, { required: false })
+      ? Object.assign({}, options, { required : false })
       : options
-    
+
     let result = super.get(name, superOptions)
     const {
       errMsgGen,
@@ -30,7 +30,7 @@ const Roles = class extends Resources {
       required = false,
       rawData = false
     } = options
-    
+
     if (includeQualifier === true || (result === undefined && fuzzy === true)) {
       let qualifier
       // now fuzzy match if desired
@@ -76,7 +76,7 @@ const Roles = class extends Resources {
         return result
       }
     }
-    
+
     return result
   }
 

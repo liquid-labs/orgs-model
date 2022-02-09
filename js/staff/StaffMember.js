@@ -201,7 +201,7 @@ const StaffMember = class {
     )
 
     const { employmentStatus, roles } = data
-    
+
     if (employmentStatus !== 'logical') {
       requireFields(
         ['familyName', 'givenName', 'roles', 'startDate'],
