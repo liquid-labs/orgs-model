@@ -78,7 +78,9 @@ const StaffMember = class {
   getRole(roleName) {
     const data = this.roles.find((r) => r.name === roleName) // let's avoid building '#allRoles' if we don't have to
       || this.allRolesData.find((r) => r.name === roleName)
-    if (data === undefined) return undefined
+    if (data === undefined) {
+      return undefined
+    }
     return new StaffRole({ data, memberEmail : this.email, org : this.org })
   }
 
@@ -104,6 +106,7 @@ const StaffMember = class {
       // verify the role is valid
       const orgRole = this.org.roles.get(staffRole.name,
         {
+          fuzzy     : true,
           required  : true,
           errMsgGen : (name) => `Staff member '${this.email}' claims unknown role '${name}'.`
         })
@@ -185,12 +188,29 @@ const StaffMember = class {
       return errors
     }
 
-    ['email', 'familyName', 'givenName', 'roles', 'startDate', 'employmentStatus'].reduce((acc, field) => {
-      if (data[field] === undefined) { acc.push(`Missing required field '${field}' for '${data.email || data.familyName}'`) }
-      return acc
-    }, errors)
+    const requireFields = (fields, errMsgFunc) => {
+      fields.reduce((acc, field) => {
+        if (data[field] === undefined) acc.push(errMsgFunc(field, data))
+        return acc
+      }, errors)
+    }
 
-    for (const roleData of data.roles || []) {
+    requireFields(
+      ['email', 'employmentStatus'],
+      (field, data) => `'${data.email || data.familyName}' is missing required field '${field}'.`
+    )
+
+    const { employmentStatus, roles } = data
+    
+    if (employmentStatus !== 'logical') {
+      requireFields(
+        ['familyName', 'givenName', 'roles', 'startDate'],
+        (field, data) =>
+          `'${data.email || data.familyName}' is missing field '${field}' required for non-logical staff.`
+      )
+    }
+
+    for (const roleData of roles || []) {
       StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
     }
 
