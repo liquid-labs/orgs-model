@@ -94,3 +94,6 @@
 * _**hotfix**_: updated test expectation after change of wording _(zane@liquid-labs.com; 2022-02-09T21:15:31.000Z)_
 * _**hotfix**_: fuzzy search roles for robustness _(zane@liquid-labs.com; 2022-02-09T21:19:44.000Z)_
 * _**hotfix**_: automated lint fixes _(zane@liquid-labs.com; 2022-02-09T21:21:11.000Z)_
+
+## Release 1.0.0-beta.67
+* _**hotfix**_: improve error messages _(zane@liquid-labs.com; 2022-02-10T19:25:21.000Z)_
