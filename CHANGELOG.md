@@ -97,3 +97,4 @@
 
 ## Release 1.0.0-beta.67
 * _**hotfix**_: improve error messages _(zane@liquid-labs.com; 2022-02-10T19:25:21.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-02-10T19:25:39.000Z)_
