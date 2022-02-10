@@ -172,7 +172,7 @@ const Resources = class {
     }
     if (required === true && data === undefined) {
       errMsgGen = errMsgGen || (() => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`)
-      throw new Error(errMsgGen())
+      throw new Error(errMsgGen(data[this.#keyField]))
     }
 
     if (data === undefined) return undefined
