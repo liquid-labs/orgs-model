@@ -1,6 +1,7 @@
 import structuredClone from 'core-js-pure/actual/structured-clone'
-
 import * as fs from 'fs'
+
+import { getSourceFile } from '@liquid-labs/federated-json'
 
 import { ListManager } from './ListManager'
 import { Item } from './Item'
@@ -36,14 +37,15 @@ const Resources = class {
     indexes = [],
     itemClass = Item,
     itemCreationOptions = {},
-    itemName,
+    // TODO: if itemName not specified, deduce from 'itemClass'
+    itemName, // TODO: really more 'itemTypeName' or 'itemClassName' or something
     items = [],
     keyField,
     dataCleaner,
     readFromFile = false,
     resourceName
   }) {
-    this.#fileName = fileName
+    this.#fileName = fileName || getSourceFile(items)
     this.#idNormalizer = idNormalizer
     this.#itemClass = itemClass
     this.#itemName = itemName
@@ -69,9 +71,14 @@ const Resources = class {
       seen[item.id] = true
     })
 
-    this.listManager = new ListManager({ items, idField : keyField, className : resourceName })
+    this.listManager = new ListManager({
+      className : resourceName,
+      idField : keyField,
+      idNormalizer,
+      items
+    })
     this.#indexById = this.listManager.getIndex('byId')
-    this.#itemCreationOptions = Object.assign({}, itemCreationOptions, { keyField })
+    this.#itemCreationOptions = Object.assign({}, itemCreationOptions, { idNormalizer, itemName, keyField })
     this.#addIndexes(indexes)
   }
 
@@ -93,9 +100,9 @@ const Resources = class {
   /**
   * Retrieves a single vendor/product entry by name.
   */
-  get(name, options) {
-    const data = this.#indexById[name]
-    return this.#dataToItem(data, Object.assign({ id : name }, options || {}))
+  get(id, options) {
+    const data = this.#indexById[id]
+    return this.#dataToItem(data, Object.assign({}, options || {}, { id }))
   }
 
   has(name) { return !!this.#indexById[name] }
@@ -141,7 +148,8 @@ const Resources = class {
   }
 
   write({ fileName = this.#fileName } = {}) {
-    if (!fileName) throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
+    if (!fileName)
+      throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
 
     let itemList = this.list({ rawData : true })
     if (this.#dataCleaner) {
