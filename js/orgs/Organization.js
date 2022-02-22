@@ -19,13 +19,15 @@ const Organization = class {
     this.dataPath = dataPath
     this.roles = new Roles({ items : this.#innerState.roles, org : this })
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
-    // console.log(this.#innerState.staff)
     this.staff = new Staff({ items : this.#innerState.staff, org : this })
     this.accounts = new Accounts({ items : this.#innerState.auditRecords })
     this.auditRecords = new AuditRecords({ items : this.#innerState.auditRecords })
     this.audits = new Audits({ items : this.#innerState.audits })
-    this.technologies = new Technologies(this)
-    this.vendors = new Vendors(this)
+    this.technologies = new Technologies({ items: this.#innerState.technologies })
+    this.vendors = new Vendors({ items: this.#innerState.vendors })
+    
+    // TODO: quick workaround; need to implement model plugins
+    this.alerts = this.#innerState.alerts
 
     this.staff.validate({ required : true })
   }

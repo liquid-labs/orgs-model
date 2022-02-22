@@ -64,7 +64,8 @@ const Resources = class {
     const seen = {}
     items.forEach((item) => {
       item.id = this.#idNormalizer(item.id || item[keyField])
-      if (seen[item.id] === true) { throw new Error(`Found duplicate emails '${item.id} in the ${this.resourceName} list.`) }
+      if (seen[item.id] === true)
+        throw new Error(`Found items with duplicate key field '${keyField}' values ('${item.id}') in the ${this.resourceName} list.`)
       seen[item.id] = true
     })
 

@@ -143,7 +143,11 @@ const Item = class {
     return proxy
   }
 
-  get id() { return this.#data[this.#keyField] }
+  get id() {
+    // the 'id' is set at the resource level which gives us a chance to do a quick duplicate check
+    return this.#data['id']
+    // this.#data[this.#keyField]
+  }
 
   get data() { return structuredClone(this.#data) }
 

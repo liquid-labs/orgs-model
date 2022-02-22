@@ -7,6 +7,7 @@ import { Technology } from './Technology'
 * Basic class wrapping technology items.
 */
 const Technologies = class extends Resources {
+  // add (and override) basic 'tehnology' item configurations
   constructor(options) {
     super(Object.assign(options, {
       itemClass    : Technology,

@@ -11,14 +11,17 @@ const Vendors = class extends Resources {
   #indexByCommonName
 
   constructor(options) {
+    // add (and override) basic 'vendor' item configurations
     super(Object.assign(options,
       {
+        idNormalizer : (id) => id.toLowerCase(),
         indexes      : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }],
         itemClass    : Vendor,
         itemName     : 'vendor',
         keyField     : 'legalName',
         resourceName : 'vendors'
       }))
+    
     this.#indexByCommonName = this.listManager.addIndex({
       name         : 'byCommonName',
       keyField     : 'commonName',
