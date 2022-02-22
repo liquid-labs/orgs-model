@@ -21,7 +21,7 @@ const loadOrgState = ({ dataPath, ...fjsonOptions }) => {
   const rootJsonPath = `${dataPath}/orgs/${process.env.ORG_ID}.json`
   process.env.ORG_DATA_PATH = dataPath
   process.env.ORG_ROOT_JSON_PATH = rootJsonPath
-  
+
   // console.error(`Loading root JSON from '${rootJsonPath}'.`) // DEBUG / TODO: this is useful, but we can't output
   // blindly to stdout because sometimes that output is being captured.
   fjsonOptions = Object.assign({}, fjsonOptions, { rememberSource : true })

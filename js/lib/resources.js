@@ -66,14 +66,13 @@ const Resources = class {
     const seen = {}
     items.forEach((item) => {
       item.id = this.#idNormalizer(item.id || item[keyField])
-      if (seen[item.id] === true)
-        throw new Error(`Found items with duplicate key field '${keyField}' values ('${item.id}') in the ${this.resourceName} list.`)
+      if (seen[item.id] === true) { throw new Error(`Found items with duplicate key field '${keyField}' values ('${item.id}') in the ${this.resourceName} list.`) }
       seen[item.id] = true
     })
 
     this.listManager = new ListManager({
       className : resourceName,
-      idField : keyField,
+      idField   : keyField,
       idNormalizer,
       items
     })
@@ -148,8 +147,7 @@ const Resources = class {
   }
 
   write({ fileName = this.#fileName } = {}) {
-    if (!fileName)
-      throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`)
+    if (!fileName) { throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`) }
 
     let itemList = this.list({ rawData : true })
     if (this.#dataCleaner) {

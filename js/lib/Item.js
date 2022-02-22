@@ -144,7 +144,7 @@ const Item = class {
       data.id = idNormalizer(data[keyField])
     }
     else if (data.id !== idNormalizer(data[keyField])) {
-      throw new Error(`Error creating${itemName === undefined ? '' : ` '${itemName}'`} item; 'id' (${data.id}) and${ idNormalizer === defaultNormalizer ? '' : ' normalized'} key field (${idNormalizer === defaultNormalizer ? '' : 'raw: '}${data[keyField]}) do not match.`)
+      throw new Error(`Error creating${itemName === undefined ? '' : ` '${itemName}'`} item; 'id' (${data.id}) and${idNormalizer === defaultNormalizer ? '' : ' normalized'} key field (${idNormalizer === defaultNormalizer ? '' : 'raw: '}${data[keyField]}) do not match.`)
     }
 
     const [propIndex, methodIndex] = indexAllProperties(this)
@@ -153,7 +153,7 @@ const Item = class {
     return proxy
   }
 
-  get id() { return this.#data['id'] }
+  get id() { return this.#data.id }
 
   get data() { return structuredClone(this.#data) }
 

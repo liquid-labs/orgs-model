@@ -21,7 +21,7 @@ const Vendors = class extends Resources {
         keyField     : 'legalName',
         resourceName : 'vendors'
       }))
-    
+
     this.#indexByCommonName = this.listManager.addIndex({
       name         : 'byCommonName',
       keyField     : 'commonName',

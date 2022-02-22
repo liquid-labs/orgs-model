@@ -23,9 +23,9 @@ const Organization = class {
     this.accounts = new Accounts({ items : this.#innerState.auditRecords })
     this.auditRecords = new AuditRecords({ items : this.#innerState.auditRecords })
     this.audits = new Audits({ items : this.#innerState.audits })
-    this.technologies = new Technologies({ items: this.#innerState.technologies })
-    this.vendors = new Vendors({ items: this.#innerState.vendors })
-    
+    this.technologies = new Technologies({ items : this.#innerState.technologies })
+    this.vendors = new Vendors({ items : this.#innerState.vendors })
+
     // TODO: quick workaround; need to implement model plugins
     this.alerts = this.#innerState.alerts
 
