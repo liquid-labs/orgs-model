@@ -106,7 +106,8 @@ describe('Item', () => {
       expect('bar' in subItem).toBe(true)
     })
     
-    const expectedSubItemKeys = [ 'array', 'integer', 'object', 'string' ]
+    // notice 'id' which is implicitly created if not specified
+    const expectedSubItemKeys = [ 'array', 'id', 'integer', 'object', 'string' ]
     test(`data keys show up as enumerable; e.g. 'Object.subItem(keys) = ${expectedSubItemKeys.sort().join(', ')}'`,
       () => expect(subItemKeys.sort()).toEqual(expectedSubItemKeys.sort()))
   })

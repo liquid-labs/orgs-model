@@ -19,7 +19,12 @@ const loadOrgState = ({ dataPath, ...fjsonOptions }) => {
 
   // and here's the prototype new approach; the read function handles the 'exists' check
   const rootJsonPath = `${dataPath}/orgs/${process.env.ORG_ID}.json`
-  // console.error(`Loading root JSON from '${rootJsonPath}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
+  process.env.ORG_DATA_PATH = dataPath
+  process.env.ORG_ROOT_JSON_PATH = rootJsonPath
+
+  // console.error(`Loading root JSON from '${rootJsonPath}'.`) // DEBUG / TODO: this is useful, but we can't output
+  // blindly to stdout because sometimes that output is being captured.
+  fjsonOptions = Object.assign({}, fjsonOptions, { rememberSource : true })
   return fjson.read(rootJsonPath, fjsonOptions)
 }
 
