@@ -121,11 +121,13 @@ const handler = ({ data, propIndex, methodIndex }) => ({
   }
 })
 
+const defaultNormalizer = (id) => id
+
 const Item = class {
   #data
   #keyField
 
-  constructor(data, { keyField, ...rest } = {}) {
+  constructor(data, { idNormalizer = defaultNormalizer, itemName, keyField, ...rest } = {}) {
     if (keyField === undefined) {
       throw new Error('Key field must be specified. '
         + "Note, 'Item' is not typically created directly. Create a subclass or specify 'options.keyField' directly.")
@@ -136,6 +138,14 @@ const Item = class {
     if (!data[keyField]) {
       throw new Error(`Key field '${keyField}' value '${data[keyField]}' is non-truthy!`)
     }
+    // The 'id' is normally set at the resource level which gives us a chance to do a quick duplicate check. However,
+    // if an item is created through some other route, let's support setting an explicit ID
+    if (!data.id) {
+      data.id = idNormalizer(data[keyField])
+    }
+    else if (data.id !== idNormalizer(data[keyField])) {
+      throw new Error(`Error creating${itemName === undefined ? '' : ` '${itemName}'`} item; 'id' (${data.id}) and${ idNormalizer === defaultNormalizer ? '' : ' normalized'} key field (${idNormalizer === defaultNormalizer ? '' : 'raw: '}${data[keyField]}) do not match.`)
+    }
 
     const [propIndex, methodIndex] = indexAllProperties(this)
     const proxy = new Proxy(this, handler({ data : this.#data, propIndex, methodIndex }))
@@ -143,11 +153,7 @@ const Item = class {
     return proxy
   }
 
-  get id() {
-    // the 'id' is set at the resource level which gives us a chance to do a quick duplicate check
-    return this.#data['id']
-    // this.#data[this.#keyField]
-  }
+  get id() { return this.#data['id'] }
 
   get data() { return structuredClone(this.#data) }
 
