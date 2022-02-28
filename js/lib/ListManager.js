@@ -397,6 +397,7 @@ const getOrigData = ({ item, idField, idIndex, index, keyField }) => {
 
   const origIndexValue = origItem[keyField]
   const origList = index[origIndexValue]
+  if (!origList) console.log(index, origItem, origIndexValue) // debug
   // We compare keys rather than objects as returned objects must be copied to preserve the integrity of the original
   // items along with the indexes.
   const origListIndex = origList.findIndex((i) => i[idField] === origItem[idField])

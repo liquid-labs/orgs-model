@@ -87,7 +87,7 @@ const Resources = class {
 
   add(data) {
     data = ensureRaw(data)
-    if (data.id === undefined) data.id = this.#idNormalizer(data[this.keyField])
+    if (data.id === undefined) data.id = this.#idNormalizer(data[this.#keyField])
 
     if (this.has(data.id)) {
       throw new Error(`Cannot add ${this.itemName} with existing key '${data.id}'; try 'update'.`)
@@ -137,7 +137,7 @@ const Resources = class {
   *
   * - `sort`: the field to sort on. Defaults to 'id'. Set to falsy unsorted and slightly faster results.
   */
-  list({ sort = 'id', ...rest } = {}) {
+  list({ sort = this.#keyField, ...rest } = {}) {
     // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
     const items = this.constructor.sort({
       sort,
@@ -149,7 +149,7 @@ const Resources = class {
   write({ fileName = this.#fileName } = {}) {
     if (!fileName) { throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`) }
 
-    let itemList = this.list({ rawData : true })
+    let itemList = this.list({ rawData : true }) // now we have a deep copy, so we don't have to worry about changes
     if (this.#dataCleaner) {
       itemList = itemList.map((i) => this.#dataCleaner(i))
     }

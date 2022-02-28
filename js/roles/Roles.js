@@ -20,6 +20,8 @@ const Roles = class extends Resources {
 
   get(name, { fuzzy = false, ...options } = {}) {
     const superOptions = fuzzy === true
+      // then we need to generate matching options but with required guaranteed false because if there's not an exact
+      // match, we'll use the fuzzy matching logic.
       ? Object.assign({}, options, { required : false })
       : options
 
@@ -67,7 +69,7 @@ const Roles = class extends Resources {
         throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
       }
 
-      if (rawData !== true) result = new Role(result)
+      if (rawData !== true && result) result = new Role(result)
 
       if (includeQualifier === true) {
         return [result, qualifier]
