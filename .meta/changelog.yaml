@@ -10,6 +10,7 @@
     - "@liquid-labs/liq-alerts"
     - "@liquid-labs/liq-core"
     - "@liquid-labs/orgs-model"
+    - "@liquid-labs/liq-cli"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
