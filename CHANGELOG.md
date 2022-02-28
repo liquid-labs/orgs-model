@@ -105,3 +105,6 @@
 ## Release 1.0.0-beta.69
 
 ## Release 1.0.0-beta.70
+
+## Release 1.0.0-beta.71
+* Initial implementation _(zane@liquid-labs.com; 2022-02-28T19:31:14.758Z)_
