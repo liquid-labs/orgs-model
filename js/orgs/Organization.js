@@ -32,6 +32,9 @@ const Organization = class {
     this.staff.validate({ required : true })
   }
 
+  // TODO: some external code relies on access to inner state; remove this once that's fixed
+  get innerState() { return this.#innerState }
+
   // TODO: deprecated; just use 'org.roles'
   getRoles() { return this.roles }
 
