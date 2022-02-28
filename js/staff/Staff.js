@@ -13,7 +13,7 @@ const Staff = class extends Resources {
       itemCreationOptions : { org },
       itemName            : 'staff member',
       keyField            : 'email',
-      dataCleaner         : (item) => { delete item._sourceFileName; delete item.title; return item },
+      dataCleaner         : (item) => { delete item._sourceFileName; delete item.id; return item },
       resourceName        : 'staff'
     }))
 

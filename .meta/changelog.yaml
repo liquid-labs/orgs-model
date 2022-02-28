@@ -9,8 +9,9 @@
   involvedProjects:
     - "@liquid-labs/liq-alerts"
     - "@liquid-labs/liq-core"
-    - "@liquid-labs/orgs-model"
     - "@liquid-labs/liq-cli"
+    - "@liquid-labs/orgs-model"
+    - "@liquid-labs/policy-core"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
@@ -306,6 +307,29 @@
   involvedProjects:
     - "@liquid-labs/liq-alerts"
     - "@liquid-labs/liq-core"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Initial implementation
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
+- startTimestamp: 2022-02-28T19:31:14.758Z
+  startEpochMillis: 1646076674758
+  issues:
+    - https://github.com/Liquid-Labs/liq-alerts/issues/1
+    - https://github.com/Liquid-Labs/liq-core/issues/44
+    - https://github.com/Liquid-Labs/federated-json/issues/15
+    - https://github.com/Liquid-Labs/liq-core/issues/45
+    - https://github.com/Liquid-Labs/liq-core/issues/46
+    - https://github.com/liquid-labs/liq-cli/issues/269
+  branch: 2022.02.21-zane@liquid-labs.com-initial_implementation
+  branchFrom: 6645a1e45146ae6712973e2876fd18056bb2cfc4
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-alerts"
+    - "@liquid-labs/liq-core"
+    - "@liquid-labs/liq-cli"
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Initial implementation
