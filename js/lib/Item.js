@@ -41,7 +41,7 @@ import structuredClone from 'core-js-pure/actual/structured-clone'
 *
 * ## Credits
 *
-* The inspiration for this implementation came from [this post](https://stackoverflow.com/a/40714458/929494) by
+* The basic Proxy technique came from [this post](https://stackoverflow.com/a/40714458/929494) by
 * [John L.](https://stackoverflow.com/users/2437716/john-l). I'm blown away this technique isn't more widely cited.
 */
 
@@ -121,7 +121,7 @@ const handler = ({ data, propIndex, methodIndex }) => ({
   }
 })
 
-const defaultNormalizer = (id) => id
+const defaultNormalizer = (id) => id.toLowerCase()
 
 const Item = class {
   #data
@@ -140,18 +140,20 @@ const Item = class {
     }
     // The 'id' is normally set at the resource level which gives us a chance to do a quick duplicate check. However,
     // if an item is created through some other route, let's support setting an explicit ID
+    const normalizedKey = idNormalizer(data[keyField])
     if (!data.id) {
-      data.id = idNormalizer(data[keyField])
+      data.id = normalizedKey
     }
-    else if (data.id !== idNormalizer(data[keyField])) {
-      throw new Error(`Error creating${itemName === undefined ? '' : ` '${itemName}'`} item; 'id' (${data.id}) and${idNormalizer === defaultNormalizer ? '' : ' normalized'} key field (${idNormalizer === defaultNormalizer ? '' : 'raw: '}${data[keyField]}) do not match.`)
+    else if (data.id !== normalizedKey) {
+      console.log(`id/key field mismatch: ${this.constructor.name}`)
+      throw new Error(`Error creating${itemName === undefined ? '' : ` '${itemName}'`} item; 'id' (${data.id}) and normalized key field (${normalizedKey}) do not match.`)
     }
 
     const [propIndex, methodIndex] = indexAllProperties(this)
     const proxy = new Proxy(this, handler({ data : this.#data, propIndex, methodIndex }))
 
-    return proxy
-  }
+    return proxy // Note, this overrides the default + implicit 'return this'
+  } // end constructor
 
   get id() { return this.#data.id }
 

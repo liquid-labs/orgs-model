@@ -1,8 +1,8 @@
 import { Item } from '../lib/Item'
 
 const Role = class extends Item {
-  constructor(rec) {
-    super(rec, { keyField : 'name' })
+  constructor(rec, options) {
+    super(rec, options)
   }
 
   getName() { return this.name }

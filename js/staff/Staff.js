@@ -7,7 +7,6 @@ import { StaffMember } from './StaffMember'
 const Staff = class extends Resources {
   constructor({ org, ...rest }) {
     super(Object.assign(rest, {
-      idNormalizer        : (email) => email.toLowerCase(),
       indexes             : [{ indexField : 'employmentStatus', relationship : idxType.ONE_TO_MANY }],
       itemClass           : StaffMember,
       itemCreationOptions : { org },

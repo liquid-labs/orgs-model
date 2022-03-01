@@ -77,7 +77,10 @@ const Resources = class {
       items
     })
     this.#indexById = this.listManager.getIndex('byId')
-    this.#itemCreationOptions = Object.assign({}, itemCreationOptions, { idNormalizer, itemName, keyField })
+    this.#itemCreationOptions = Object.assign({},
+      itemCreationOptions,
+      { idNormalizer, itemName, keyField, resourceName }
+    )
     this.#addIndexes(indexes)
   }
 

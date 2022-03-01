@@ -1,12 +1,13 @@
+import { Item } from '../lib/Item'
 import structuredClone from 'core-js-pure/actual/structured-clone'
 import { StaffRole } from './StaffRole'
 
-const StaffMember = class {
+const StaffMember = class extends Item {
   #allRoles
   #reportsByRoleName
   #reports
 
-  constructor(data, { org }) {
+  constructor(data, { org, ...rest }) {
     const errors = StaffMember.validateData({ data, org })
     if (errors.length > 0) {
       throw new Error(`Invalid data while creating 'staff member'; ${errors.join(' ')}`)
@@ -17,9 +18,6 @@ const StaffMember = class {
     this.id = this.email.toLowerCase()
     this.#reportsByRoleName = {}
   }
-
-  getEmail() { return this.email }
-  setEmail(v) { this.email = v }
 
   /**
   * Combines the given and family name (if any) to produce the full name. The default is to display using 'common
@@ -44,18 +42,6 @@ const StaffMember = class {
       return givenName
     }
   }
-
-  getFamilyName() { return this.familyName }
-  setFamilyName(v) { this.familyName = v }
-
-  getGivenName() { return this.givenName }
-  setGivenName(v) { this.givenName = v }
-
-  getStartDate() { return this.startDate }
-  setStartDate(v) { this.startDate = v }
-
-  getEmploymentStatus() { return this.employmentStatus }
-  setEmploymentStatus(v) { this.employmentStatus = v }
 
   /**
   * Returns the role names granted directly.
@@ -93,6 +79,7 @@ const StaffMember = class {
     return this.#allRoles.map((data) => new StaffRole({ data, memberEmail : this.email, org : this.org }))
   }
 
+  // TODO: take 'rawData' option in 'allRoles'
   get allRolesData() {
     if (this.#allRoles === undefined) this.#initializeAllRoles()
     return structuredClone(this.#allRoles)
@@ -179,8 +166,6 @@ const StaffMember = class {
       return reports
     }, [])
   }
-
-  getParameters() { return this.parameters }
 
   static validateData({ data, errors = [], org }) {
     if (!data) {
