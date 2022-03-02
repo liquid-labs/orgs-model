@@ -82,7 +82,7 @@ describe('Item', () => {
       expect(rawData).toEqual(data)
       expect(rawData).toBe(data)
     })
-  }
+  } // end 'basicAcessTests' test builder
   
   test("'new Item(data)' with to options or no 'options.keyField' raises an exception", () => {
     expect(() => new Item(data)).toThrow()

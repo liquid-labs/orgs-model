@@ -1,28 +1,27 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
-import { Account } from './Account'
-import * as idxType from '../lib/index-relationships.js'
-import { Resources } from '../lib/resources'
+import { Source } from './Source'
+import * as idxType from '../../lib/index-relationships.js'
+import { Resources } from '../../lib/resources'
 
 /**
-* Public API for managing third-party account records. Uses the `Accounts` library, which actually implements the
+* Public API for managing third-party account records. Uses the `Sources` library, which actually implements the
 * functions. The library is split like this to make testing easier.
 */
-const Accounts = class extends Resources {
+const Sources = class extends Resources {
   constructor(options) {
     super(Object.assign(options, {
-      indexes      : [{ indexField : 'department', relationship : idxType.ONE_TO_MANY }],
-      itemClass    : Account,
-      itemName     : 'third-party account',
-      keyField     : 'directEmail',
-      resourceName : 'third-party accounts'
+      itemClass    : Source,
+      itemName     : 'vendor alert sources',
+      keyField     : 'entityLegalName',
+      resourceName : 'sources'
     }))
-    this.checkCondition = Accounts.checkCondition
+    this.checkCondition = Sources.checkCondition
   }
 }
 
 /**
-* Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Account targets in
+* Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Source targets in
 * an audit. We do this weird 'defineProperty' thing because it effectively gives us a 'static const'
 */
 const checkCondition = (condition, acct) => {
@@ -58,18 +57,15 @@ const checkCondition = (condition, acct) => {
     throw new Error(`Unknown sensitivity code: '${sensitivityCode}'.`)
   }
 
-  // configure the non-existent tags to 'zero' out
-  const zeroRes = [/BUSINESS|NETWORKING/]
-
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
 
-Object.defineProperty(Accounts, 'checkCondition', {
+Object.defineProperty(Sources, 'checkCondition', {
   value        : checkCondition,
   writable     : false,
   enumerable   : false,
   configurable : false
 })
 
-export { Accounts }
+export { Sources }

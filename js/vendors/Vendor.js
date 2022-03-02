@@ -1,8 +1,8 @@
 import { Item } from '../lib/Item'
 
 const Vendor = class extends Item {
-  constructor(data) {
-    super(data, { keyField : 'legalName' })
+  constructor(data, options) {
+    super(data, options)
   }
 }
 

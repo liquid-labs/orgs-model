@@ -5,6 +5,7 @@ import { Accounts } from '../accounts'
 import { AuditRecords } from '../auditRecords'
 import { Audits } from '../audits'
 import { Roles } from '../roles'
+import { Sources } from '../alerts/sources'
 import { Staff } from '../staff'
 import { Technologies } from '../technologies'
 import { Vendors } from '../vendors'
@@ -25,9 +26,9 @@ const Organization = class {
     this.audits = new Audits({ items : this.#innerState.audits })
     this.technologies = new Technologies({ items : this.#innerState.technologies })
     this.vendors = new Vendors({ items : this.#innerState.vendors })
-
-    // TODO: quick workaround; need to implement model plugins
-    this.alerts = this.#innerState.alerts
+    this.alerts = {
+      sources : new Sources({ items: this.#innerState.alerts.sources })
+    }
 
     this.staff.validate({ required : true })
   }
@@ -50,7 +51,7 @@ const Organization = class {
   }
 
   hasStaffInRole(email, roleName) {
-    return this.staff.getByRoleName(roleName).some(s => s.getEmail() === email)
+    return this.staff.getByRoleName(roleName).some(s => s.email === email)
   }
 
   getManagingRolesByManagedRoleName(roleName) {
@@ -72,11 +73,11 @@ const Organization = class {
       Object.values(this.staff.list()).forEach(s => {
         s.getOwnRoles().forEach(r => {
           if (r.isTitular() && r.display !== false) {
-            const myKey = `${s.getEmail()}/${r.getName()}`
+            const myKey = `${s.email}/${r.getName()}`
             const manager = s.getRole(r.getName()).getManager()
             if (!manager) result.push([myKey, '', r.qualifier])
             else {
-              const mngrEmail = manager.getEmail()
+              const mngrEmail = manager.email
               const managingRoles = this.getManagingRolesByManagedRoleName(r.getName())
               const managingRole = managingRoles.find(mngrRole =>
                 this.hasStaffInRole(mngrEmail, mngrRole.getName())

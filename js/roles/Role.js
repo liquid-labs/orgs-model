@@ -1,8 +1,8 @@
 import { Item } from '../lib/Item'
 
 const Role = class extends Item {
-  constructor(rec) {
-    super(rec, { keyField : 'name' })
+  constructor(rec, options) {
+    super(rec, Object.assign({}, creationOptions, options))
   }
 
   getName() { return this.name }
@@ -15,5 +15,19 @@ const Role = class extends Item {
 
   isQualifiable() { return !!this.qualifiable }
 }
+
+const creationOptions = {
+  itemClass    : Role,
+  itemName     : 'role',
+  keyField     : 'name',
+  resourceName : 'roles'
+}
+Object.freeze(creationOptions)
+Object.defineProperty(Role, 'creationOptions', {
+  value: creationOptions,
+  writable: false,
+  enumerable: true,
+  configurable: false
+})
 
 export { Role }

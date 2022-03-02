@@ -3,9 +3,12 @@ import { Role } from '../roles'
 const StaffRole = class extends Role {
   #memberEmail
   #org
-
-  constructor({ org, data, memberEmail }) {
-    super(Object.assign(org.roles.get(data.name, { fuzzy : true, rawData : true }), data))
+  
+  constructor(data, { org, memberEmail, ...rest }) {
+    super(
+      Object.assign(org.roles.get(data.name, { fuzzy : true, rawData : true }), data), // data
+      Object.assign({}, StaffRole.creationOptions, rest) // options
+    )
     this.#memberEmail = memberEmail
     this.#org = org
   }
@@ -59,5 +62,21 @@ const StaffRole = class extends Role {
 
 const validationMsg = ({ memberEmail, name, reason }) =>
   `Staff role ${name} ${reason}${memberEmail ? ` for member '${memberEmail}'` : ''}.`
+
+const creationOptions = Object.assign(
+  {},
+  Role.creationOptions,
+  {
+    itemClass    : StaffRole,
+    itemName     : 'staff role',
+  }
+)
+Object.freeze(creationOptions)
+Object.defineProperty(StaffRole, 'creationOptions', {
+  value: creationOptions,
+  writable: false,
+  enumerable: true,
+  configurable: false
+})
 
 export { StaffRole }

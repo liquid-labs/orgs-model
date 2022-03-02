@@ -5,14 +5,11 @@ import { Role } from './Role'
 
 const Roles = class extends Resources {
   constructor({ org, ...rest }) {
-    super(Object.assign({
-      ...rest,
-      // idNormalizer        : (name) => name.toLowerCase(),
-      itemClass    : Role,
-      itemName     : 'role',
-      keyField     : 'name',
-      resourceName : 'roles'
-    }))
+    super(Object.assign(
+      {},
+      rest,
+      Role.creationOptions
+    ))
 
     this.org = org
     this.checkCondition = checkCondition

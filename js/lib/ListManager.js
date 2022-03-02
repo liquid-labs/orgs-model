@@ -30,7 +30,7 @@ const ListManager = class {
   #specIndex = {}
   #items
   #idIndex
-  #idField
+  #keyField
   #className
 
   /**
@@ -41,18 +41,18 @@ const ListManager = class {
   *     the incoming list with something like `items: [...items]` unless you can guarantee that the array will not be
   *     modified.
   */
-  constructor({ items, idField = 'id', idIndexName = 'byId', className }) {
+  constructor({ items, keyField = 'id', idIndexName = 'byId', className }) {
     this.#items = items
-    this.#idField = idField
+    this.#keyField = keyField
     this.#idIndex = this.addIndex({
       name         : 'byId',
-      keyField     : idField,
+      indexField   : keyField,
       relationship : relationships.ONE_TO_ONE
     })
     this.#className = className
   }
 
-  get idField() { return this.#idField }
+  get keyField() { return this.#keyField }
 
   /**
   * ## Retriewal functions
@@ -169,7 +169,7 @@ const ListManager = class {
   }
 
   addIndex(indexSpec) {
-    for (const reqField of ['relationship', 'keyField']) {
+    for (const reqField of ['relationship', 'indexField']) {
       if (indexSpec[reqField] === undefined) {
         throw new Error(`Index spec lacks required field '${reqField}'.`)
       }
@@ -206,6 +206,7 @@ const ListManager = class {
     routeByRelationships({
       items        : this.#items,
       indexSpecs   : this.#indexSpecs,
+      keyField     : this.#keyField,
       one2oneFunc  : rebuildOneToOne,
       one2manyFunc : rebuildOneToMany
     })
@@ -225,7 +226,7 @@ const ListManager = class {
   updateItem(item) {
     // this.getItem(item[this.#idIndex])
     // check that this is a valid update
-    this.getItem(item[this.#idField], { required : true, noClone : true })
+    this.getItem(item[this.#keyField], { required : true, noClone : true })
     // In future, we could keep the base list sorted by ID and then use quick-sort insertion and update techniques. For
     // now, we just brute force it.
     const itemIndex = this.#items.findIndex((i) => i.id === item.id)
@@ -233,7 +234,7 @@ const ListManager = class {
 
     routeByRelationships({
       item,
-      idField      : this.#idField,
+      keyField      : this.#keyField,
       idIndex      : this.#idIndex,
       indexSpecs   : this.#indexSpecs,
       one2oneFunc  : updateOneToOne,
@@ -243,14 +244,14 @@ const ListManager = class {
 
   deleteItem(item) {
     // check that this is a valid delete
-    this.getItem(item[this.#idField], { required : true, noClone : true })
+    this.getItem(item[this.#keyField], { required : true, noClone : true })
 
     const itemIndex = this.#items.findIndex((i) => i.id === item.id)
     this.#items.splice(itemIndex, 1)
 
     routeByRelationships({
       item,
-      idField      : this.#idField,
+      keyField      : this.#keyField,
       idIndex      : this.#idIndex,
       indexSpecs   : this.#indexSpecs,
       one2oneFunc  : deleteOneToOne,
@@ -308,15 +309,15 @@ const routeByRelationships = ({ indexSpecs, ...args }) => {
 }
 
 // ### Rebuild helpers
-const rebuildOneToOne = ({ items, index, keyField }) => {
+const rebuildOneToOne = ({ items, index, indexField }) => {
   truncateObject(index)
-  items.reduce((newIdx, item) => { newIdx[item[keyField]] = item; return newIdx }, index)
+  items.reduce((newIdx, item) => { newIdx[item[indexField]] = item; return newIdx }, index)
 }
 
-const rebuildOneToMany = ({ items, index, keyField }) => {
+const rebuildOneToMany = ({ items, index, indexField }) => {
   truncateObject(index)
   items.reduce((newIdx, item) => {
-    const indexValue = item[keyField]
+    const indexValue = item[indexField]
     const list = newIdx[indexValue] || []
     list.push(item)
     newIdx[indexValue] = list
@@ -327,15 +328,15 @@ const rebuildOneToMany = ({ items, index, keyField }) => {
 /**
 * Any "is this a valid add" checks are assumed to be performed by the caller.
 */
-const addOneToOne = ({ item, index, keyField }) => {
-  index[item[keyField]] = item
+const addOneToOne = ({ item, index, indexField }) => {
+  index[item[indexField]] = item
 }
 
 /**
 * Any "is this a valid add" checks are assumed to be performed by the caller.
 */
-const addOneToMany = ({ item, index, keyField }) => {
-  const indexValue = item[keyField]
+const addOneToMany = ({ item, index, indexField }) => {
+  const indexValue = item[indexField]
   const list = index[indexValue] || []
   list.push(item)
   index[indexValue] = list
@@ -344,27 +345,27 @@ const addOneToMany = ({ item, index, keyField }) => {
 /**
 * Any "is this a valid update" checks are assumed to be performed by the caller.
 */
-const updateOneToOne = ({ item, index, keyField, idField, idIndex }) => {
+const updateOneToOne = ({ item, index, indexField, idIndex }) => {
   if (idIndex !== index) {
     // then we have to remove the original entry before adding the new entry
-    const origItem = idIndex[item[idField]]
-    delete index[origItem[keyField]]
+    const origItem = idIndex[item[indexField]]
+    delete index[origItem[indexField]]
   }
-  index[item[keyField]] = item
+  index[item[indexField]] = item
 }
 
 /**
 * Any "is this a valid update" checks are assumed to be performed by the caller.
 */
-const updateOneToMany = ({ item, keyField, index, idField, idIndex }) => {
-  const { origItem, origList, origListIndex } = getOrigData({ item, idField, idIndex, keyField, index })
-  if (origItem[keyField] === item[keyField]) {
+const updateOneToMany = ({ item, keyField, index, indexField, idIndex }) => {
+  const { origItem, origList, origListIndex } = getOrigData({ item, keyField, indexField, idIndex, index })
+  if (origItem[indexField] === item[indexField]) {
     // then the key value of this index hasn't changed and we can simply replace
     origList.splice(origListIndex, 1, item)
   }
   else { // the key value has changed and we need to delete the original and re-add the new value
     origList.splice(origListIndex, 1)
-    addOneToMany({ item, keyField, index })
+    addOneToMany({ item, indexField, index })
   }
 }
 
@@ -373,10 +374,10 @@ const updateOneToMany = ({ item, keyField, index, idField, idIndex }) => {
 * ID field and will happily delete an item from the index even if it is changed. Future versions will suport a
 * 'requireClean' parameter.
 */
-const deleteOneToOne = ({ item, keyField, index, idField, idIndex }) => {
-  const origItem = idIndex[item[idField]]
+const deleteOneToOne = ({ item, indexField, index, idIndex }) => {
+  const origItem = idIndex[item[indexField]]
   // the current item may have had the index value changed, so we delete based on the origItem
-  delete index[origItem[keyField]]
+  delete index[origItem[indexField]]
 }
 
 /**
@@ -384,23 +385,22 @@ const deleteOneToOne = ({ item, keyField, index, idField, idIndex }) => {
 * ID field and will happily delete an item from the index even if it is changed. Future versions will suport a
 * 'requireClean' parameter.
 */
-const deleteOneToMany = ({ item, idField, idIndex, index, keyField }) => {
-  const { origList, origListIndex } = getOrigData({ item, idField, idIndex, keyField, index })
+const deleteOneToMany = ({ item, idIndex, index, indexField, keyField }) => {
+  const { origList, origListIndex } = getOrigData({ item, idIndex, indexField, keyField, index })
   origList.splice(origListIndex, 1)
 }
 
 /**
 * Helper for update and delete 'one2many' functions.
 */
-const getOrigData = ({ item, idField, idIndex, index, keyField }) => {
-  const origItem = idIndex[item[idField]]
+const getOrigData = ({ item, keyField, indexField, idIndex, index }) => {
+  const origItem = idIndex[item[keyField]]
 
-  const origIndexValue = origItem[keyField]
+  const origIndexValue = origItem[indexField]
   const origList = index[origIndexValue]
-  if (!origList) console.log(index, origItem, origIndexValue) // debug
   // We compare keys rather than objects as returned objects must be copied to preserve the integrity of the original
   // items along with the indexes.
-  const origListIndex = origList.findIndex((i) => i[idField] === origItem[idField])
+  const origListIndex = origList.findIndex((i) => i[keyField] === origItem[keyField])
 
   return { origItem, origList, origListIndex }
 }

@@ -3,7 +3,6 @@
   "version": "1.0.0-beta.71",
   "description": "Liquid organizations model.",
   "main": "dist/orgs-model.js",
-  "type": "es",
   "files": [
     "bin/",
     "dist/"
@@ -40,7 +39,7 @@
   "devDependencies": {
     "@liquid-labs/bash-rollup": "^1.0.0-alpha.5",
     "@liquid-labs/bash-toolkit": "^1.0.0-alpha.52",
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.52",
+    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.53",
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.22",
     "core-js-pure": "^3.21.1",

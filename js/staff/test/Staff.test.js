@@ -22,7 +22,7 @@ describe('Staff', () => {
 
   test('fields', () => {
     const ceo = testStaff.get('ceo@foo.com')
-    expect(ceo.getEmail()).toBe('ceo@foo.com')
+    expect(ceo.email).toBe('ceo@foo.com')
     expect(ceo.allRoles).toHaveLength(2)
     const ceoRole = ceo.allRoles[0]
     expect(ceoRole.name).toBe('CEO')
@@ -30,9 +30,9 @@ describe('Staff', () => {
     expect(ceoRole.acting).toBe(undefined)
     const ctoRole = ceo.allRoles[1]
     expect(ctoRole.name).toBe('CTO')
-    expect(ctoRole.getManager().getEmail()).toBe('ceo@foo.com')
+    expect(ctoRole.getManager().email).toBe('ceo@foo.com')
     expect(ctoRole.acting).toBe(true)
-    expect(ceo.getEmploymentStatus()).toEqual('employee')
+    expect(ceo.employmentStatus).toEqual('employee')
     const dev = testStaff.list()[1]
     expect(dev.allRoles[0].name).toBe('Developer')
     expect(dev.allRoles[0].managerEmail).toBe('ceo@foo.com')

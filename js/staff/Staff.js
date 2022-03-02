@@ -5,17 +5,18 @@ import { Resources } from '../lib/resources'
 import { StaffMember } from './StaffMember'
 
 const Staff = class extends Resources {
-  constructor({ org, ...rest }) {
-    super(Object.assign(rest, {
-      idNormalizer        : (email) => email.toLowerCase(),
-      indexes             : [{ indexField : 'employmentStatus', relationship : idxType.ONE_TO_MANY }],
-      itemClass           : StaffMember,
-      itemCreationOptions : { org },
-      itemName            : 'staff member',
-      keyField            : 'email',
-      dataCleaner         : (item) => { delete item._sourceFileName; delete item.id; return item },
-      resourceName        : 'staff'
-    }))
+  constructor({ org, additionalItemCreationOptions, ...rest }) {
+    super(Object.assign(
+      {},
+      rest,
+      {
+        indexes : [{ indexField : 'employmentStatus', relationship : idxType.ONE_TO_MANY }],
+      },
+      StaffMember.creationOptions,
+      { additionalItemCreationOptions: Object.assign({}, additionalItemCreationOptions, { org }) }
+    ))
+    
+    if (!org) throw new Error("Must define 'org' for staff creation.")
 
     this.org = org
     this.checkCondition = checkCondition

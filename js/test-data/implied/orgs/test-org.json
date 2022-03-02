@@ -3,6 +3,14 @@
     "com.liquid-labs.federated-json": {
       "mountSpecs": [
         {
+          "path": ".alerts.reviews",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/alerts/reviews.json"
+        },
+        {
+          "path": ".alerts.sources",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/alerts/sources.json"
+        },
+        {
           "path": ".thirdPartyAccounts",
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/third-party-accounts.json"
         },
@@ -20,6 +28,10 @@
         }
       ]
     }
+  },
+  "alerts": {
+    "reviews": null,
+    "sources": null
   },
   "roles": null,
   "staff": null,
