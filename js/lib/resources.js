@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import { getSourceFile } from '@liquid-labs/federated-json'
 
 import { ListManager } from './ListManager'
-import { Item } from './Item'
+import { Item, defaultIdNormalizer } from './Item'
 
 /**
 * Common class for base resources support simple get and list functions.
@@ -12,7 +12,7 @@ import { Item } from './Item'
 const Resources = class {
   /**
   * Used to transform incoming ID into a standard format. Must be a function that takes a single argument of the raw ID
-  * and returns a normalized ID. This can be used, for example, to lowercase string IDs.
+  * and returns a normalized ID. The default normalizer expects a string and will lowercase it.
   */
   #idNormalizer
   #itemCreationOptions
@@ -33,10 +33,10 @@ const Resources = class {
 
   constructor({
     fileName,
-    idNormalizer = (id) => id,
+    idNormalizer,
     indexes = [],
     itemClass = Item,
-    itemCreationOptions = {},
+    additionalItemCreationOptions = {},
     // TODO: if itemName not specified, deduce from 'itemClass'
     itemName, // TODO: really more 'itemTypeName' or 'itemClassName' or something
     items = [],
@@ -46,7 +46,7 @@ const Resources = class {
     resourceName
   }) {
     this.#fileName = fileName || getSourceFile(items)
-    this.#idNormalizer = idNormalizer
+    this.#idNormalizer = idNormalizer || itemClass.creationOptions?.idNormalizer || defaultIdNormalizer
     this.#itemClass = itemClass
     this.#itemName = itemName
     this.#keyField = keyField
@@ -65,20 +65,22 @@ const Resources = class {
     items = items || []
     const seen = {}
     items.forEach((item) => {
-      item.id = this.#idNormalizer(item.id || item[keyField])
-      if (seen[item.id] === true) { throw new Error(`Found items with duplicate key field '${keyField}' values ('${item.id}') in the ${this.resourceName} list.`) }
+      item.id = this.#idNormalizer(item.id || item[this.#keyField])
+      if (seen[item.id] === true) {
+        throw new Error(`Found items with duplicate key field '${keyField}' values ('${item.id}') in the ${this.resourceName} list.`)
+      }
       seen[item.id] = true
     })
 
     this.listManager = new ListManager({
       className : resourceName,
-      idField   : keyField,
+      keyField,
       idNormalizer,
       items
     })
     this.#indexById = this.listManager.getIndex('byId')
     this.#itemCreationOptions = Object.assign({},
-      itemCreationOptions,
+      additionalItemCreationOptions,
       { idNormalizer, itemName, keyField, resourceName }
     )
     this.#addIndexes(indexes)
@@ -163,7 +165,7 @@ const Resources = class {
     for (const { indexField, relationship } of indexes) {
       this.listManager.addIndex({
         name     : indexField,
-        keyField : indexField,
+        indexField,
         relationship
       })
 
@@ -172,7 +174,11 @@ const Resources = class {
     }
   }
 
-  #createItem(data) {
+  /**
+  * A 'safe' creation method that guarantees the creation options defined in the resource constructor will override the
+  * the incoming options.
+  */
+  createItem(data) {
     return new this.#itemClass(data, this.#itemCreationOptions)
   }
 
@@ -192,12 +198,12 @@ const Resources = class {
       return clean === true ? this.#dataCleaner(data) : data
     }
     // else
-    return this.#createItem(data)
+    return this.createItem(data)
   }
 
   #dataToList(data, { clean = false, rawData = false } = {}) {
     return rawData !== true
-      ? data.map((data) => this.#createItem(data))
+      ? data.map((data) => this.createItem(data))
       : clean === true
         ? data.map((i) => structuredClone(this.#dataCleaner(i)))
         : structuredClone(data)
@@ -222,13 +228,4 @@ const Resources = class {
 
 const ensureRaw = (data) => data instanceof Item ? data.rawData : structuredClone(data)
 
-const commonAPIInstanceSetup = ({ self, org, checkCondition }) => {
-  self.org = org
-  // e.g.: { ref: "bad-audit-name", sourceName: "Acme Vendor", "sourceType": "vendor" }
-  self.checkCondition = checkCondition
-}
-
-export {
-  commonAPIInstanceSetup,
-  Resources
-}
+export { Resources }
