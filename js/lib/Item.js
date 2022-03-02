@@ -70,10 +70,10 @@ const indexAllProperties = (obj) => {
         } */
       }
       else if (isField) {
-        propIndex[propKey] = {
+        propIndex[propKey] = Object.assign({
           hasGetter : !!descriptor.get,
           hasSetter : !!descriptor.set
-        }
+        }, descriptor)
       }
     }
     obj = Object.getPrototypeOf(obj)
@@ -82,31 +82,39 @@ const indexAllProperties = (obj) => {
   return [propIndex, methodIndex]
 }
 
-const handler = ({ data, propIndex, methodIndex }) => ({
-  get : (object, key) => {
+const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
+  get : (object, key, reciever) => {
     if (key === 'isProxy') return true
-    // the 'if (key in object)' syntax is nice... but how to distinguish between getters and setters?
-    if (propIndex[key]?.hasGetter === true) return object[key]
-    // object method calls go through the handler first
-    if (methodIndex[key]) return object[key]
-    const localValue = object[key]
-    // else
-    const dataValue = data[key]
-    const value = localValue || dataValue // TODO: try switch
-    return value && typeof value === 'object'
-      ? structuredClone(value)
-      : value
+    // object method calls can go through the handler first
+    // TODO: the 'private' thing is a workaround for a Babel bug (?) that messes up private calls
+    else if (methodIndex[key] || propIndex[key] || key.match(/private/)) {
+      return object[key]
+    }
+    else {
+      const value = data[key]
+      return value && typeof value === 'object'
+        ? structuredClone(value)
+        : value
+    }
   },
   set : (object, key, value) => {
-    if (propIndex[key]?.hasSetter === true) {
-      object[key] = value && (typeof value === 'object')
-        ? object[key] = structuredClone(value)
-        : object[key] = value
-    }
-    if (methodIndex[key]) {
+    // propIndex of object (not data) are allowed to be set
+    if (propIndex[key] || key.match(/private/)) {
       object[key] = value
+      return true
     }
-    throw new Error(`Setting '${key}' is not supported.`)
+    else if (allowSet && allowSet.indexOf(key) !== -1) {
+      const setValue = value && typeof value === 'object'
+        ? structuredClone(value)
+        : value
+      data[key] = setValue
+      return true
+    }
+    /* TODO: suppport 'setXXX' style?
+    else if (methodIndex[`set${key.ucfirst()`]) {
+      object[key] = value
+    } */
+    else throw new Error(`Setting '${key}' is not supported.`)
   },
   ownKeys : (target) => {
     return Reflect.ownKeys(target).concat(Reflect.ownKeys(data))
@@ -115,51 +123,57 @@ const handler = ({ data, propIndex, methodIndex }) => ({
     return (key in target) || (key in data)
   },
   getOwnPropertyDescriptor : (target, key) => {
+    // TODO: really, theh property as percieved by the user is not configurable; but if we set that false, the proxy complains that it doesn't match the underlying data property...
     return Object.getOwnPropertyDescriptor(target, key)
-      // TODO: modify the prop definitions so that the 'data' items are indeed non-configurable
       || Object.assign(Object.getOwnPropertyDescriptor(data, key), { writable : false, configurable : true })
   }
 })
 
-const defaultNormalizer = (id) => id.toLowerCase()
+const defaultIdNormalizer = (id) => typeof id === 'string' ? id.toLowerCase() : id
 
 const Item = class {
   #data
+  #idNormalizer
   #keyField
+  #hasExplicitId
 
-  constructor(data, { idNormalizer = defaultNormalizer, itemName, keyField, ...rest } = {}) {
+  constructor(data, { idNormalizer = defaultIdNormalizer, allowSet, itemName, keyField, ...rest } = {}) {
     if (keyField === undefined) {
       throw new Error('Key field must be specified. '
         + "Note, 'Item' is not typically created directly. Create a subclass or specify 'options.keyField' directly.")
     }
     this.#data = data
+    this.#idNormalizer = idNormalizer
     this.#keyField = keyField
 
     if (!data[keyField]) {
       throw new Error(`Key field '${keyField}' value '${data[keyField]}' is non-truthy!`)
     }
-    // The 'id' is normally set at the resource level which gives us a chance to do a quick duplicate check. However,
-    // if an item is created through some other route, let's support setting an explicit ID
-    const normalizedKey = idNormalizer(data[keyField])
-    if (!data.id) {
-      data.id = normalizedKey
-    }
-    else if (data.id !== normalizedKey) {
-      console.log(`id/key field mismatch: ${this.constructor.name}`)
-      throw new Error(`Error creating${itemName === undefined ? '' : ` '${itemName}'`} item; 'id' (${data.id}) and normalized key field (${normalizedKey}) do not match.`)
+    
+    if ('id' in data) this.#hasExplicitId = true
+    else {
+      data.id = idNormalizer(data[keyField])
+      this.#hasExplicitId = false
     }
 
     const [propIndex, methodIndex] = indexAllProperties(this)
-    const proxy = new Proxy(this, handler({ data : this.#data, propIndex, methodIndex }))
+    const proxy = new Proxy(this, handler({
+      data : this.#data,
+      propIndex,
+      methodIndex
+    }))
 
     return proxy // Note, this overrides the default + implicit 'return this'
   } // end constructor
 
-  get id() { return this.#data.id }
+  // get id() { return this.#data.id || this.#idNormalizer(this.#data[this.#keyField]) }
 
   get data() { return structuredClone(this.#data) }
 
+  // TODO: drop this
   get rawData() { return this.#data }
 }
 
-export { Item }
+const PrivateStamper = class { constructor(o) { return o } }
+
+export { Item, defaultIdNormalizer }
