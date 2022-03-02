@@ -1,6 +1,6 @@
 /* globals beforeAll describe expect test */
 
-import { Item } from '../Item'
+import { Item, bindCreationConfig } from '../Item'
 
 const VAL_STRING = 'a string'
 const VAL_INTEGER = 1

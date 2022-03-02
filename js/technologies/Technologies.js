@@ -9,12 +9,11 @@ import { Technology } from './Technology'
 const Technologies = class extends Resources {
   // add (and override) basic 'tehnology' item configurations
   constructor(options) {
-    super(Object.assign(options, {
-      itemClass    : Technology,
-      itemName     : 'technology',
-      keyField     : 'name',
-      resourceName : 'technologies'
-    }))
+    super(Object.assign(
+      {},
+      options,
+      Technology.creationOptions
+    ))
 
     this.checkCondition = checkCondition
   }

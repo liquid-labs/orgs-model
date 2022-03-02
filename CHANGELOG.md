@@ -108,3 +108,8 @@
 
 ## Release 1.0.0-beta.71
 * Initial implementation _(zane@liquid-labs.com; 2022-02-28T19:31:14.758Z)_
+
+## Release 1.0.0-beta.72
+* Initial implementation _(zane@liquid-labs.com; 2022-03-01T02:49:04.197Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-03-02T17:01:31.000Z)_
+* _**hotfix**_: used new standard 'creationOptions' flow; lint fixes _(zane@liquid-labs.com; 2022-03-02T18:42:18.000Z)_

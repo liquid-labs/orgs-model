@@ -10,13 +10,12 @@ import { Resources } from '../lib/resources'
 */
 const Accounts = class extends Resources {
   constructor(options) {
-    super(Object.assign(options, {
-      indexes      : [{ indexField : 'department', relationship : idxType.ONE_TO_MANY }],
-      itemClass    : Account,
-      itemName     : 'third-party account',
-      keyField     : 'directEmail',
-      resourceName : 'third-party accounts'
-    }))
+    super(Object.assign(
+      {},
+      options,
+      { indexes : [{ indexField : 'department', relationship : idxType.ONE_TO_MANY }] },
+      Account.creationOptions
+    ))
     this.checkCondition = Accounts.checkCondition
   }
 }

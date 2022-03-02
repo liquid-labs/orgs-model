@@ -1,11 +1,13 @@
+import { bindCreationConfig } from '../lib/Item'
 import { Role } from '../roles'
 
 const StaffRole = class extends Role {
   #memberEmail
   #org
-  
+
   constructor(data, { org, memberEmail, ...rest }) {
     super(
+      // the 'data' is just the staff role data, which is incomplete; so we retrieve the 'Role' data and merge
       Object.assign(org.roles.get(data.name, { fuzzy : true, rawData : true }), data), // data
       Object.assign({}, StaffRole.creationOptions, rest) // options
     )
@@ -63,20 +65,13 @@ const StaffRole = class extends Role {
 const validationMsg = ({ memberEmail, name, reason }) =>
   `Staff role ${name} ${reason}${memberEmail ? ` for member '${memberEmail}'` : ''}.`
 
-const creationOptions = Object.assign(
+bindCreationConfig(Object.assign(
   {},
   Role.creationOptions,
   {
-    itemClass    : StaffRole,
-    itemName     : 'staff role',
+    itemClass : StaffRole,
+    itemName  : 'staff role'
   }
-)
-Object.freeze(creationOptions)
-Object.defineProperty(StaffRole, 'creationOptions', {
-  value: creationOptions,
-  writable: false,
-  enumerable: true,
-  configurable: false
-})
+))
 
 export { StaffRole }

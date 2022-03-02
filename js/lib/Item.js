@@ -149,7 +149,7 @@ const Item = class {
     if (!data[keyField]) {
       throw new Error(`Key field '${keyField}' value '${data[keyField]}' is non-truthy!`)
     }
-    
+
     if ('id' in data) this.#hasExplicitId = true
     else {
       data.id = idNormalizer(data[keyField])
@@ -174,6 +174,34 @@ const Item = class {
   get rawData() { return this.#data }
 }
 
-const PrivateStamper = class { constructor(o) { return o } }
+/**
+* Creates a frozen resource 'creationOptions' and immutably binds it to the resource class.
+*
+* #### Parameters
+*
+* - `itemClass`: The class used to create new resource items. This is also where the class `creationOptions' is bound.
+* - `itemName`: The name by which to refer resource items.
+* - `keyField`: The key field used as or to generate an ID.
+* - `resourceName`: The name by which to refer to the resource as a wole and multiple resource items.
+* - `idNormalizer`: (opt) A function used to normalize the key field when creating implied IDs. Will default to the
+*     `defaultIdNormalizer` if not specified.
+*/
+const bindCreationConfig = ({ itemClass, itemName, keyField, resourceName, idNormalizer }) => {
+  // create basic, minimal options
+  const creationOptions = { itemClass, itemName, keyField, resourceName }
+  // add optional configurations
+  if (idNormalizer) creationOptions.idNormalizer = idNormalizer
+  // lock it down
+  Object.freeze(creationOptions)
+  // bind it
+  Object.defineProperty(itemClass, 'creationOptions', {
+    value        : creationOptions,
+    writable     : false,
+    enumerable   : true,
+    configurable : false
+  })
 
-export { Item, defaultIdNormalizer }
+  return creationOptions
+}
+
+export { Item, defaultIdNormalizer, bindCreationConfig }

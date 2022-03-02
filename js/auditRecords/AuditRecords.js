@@ -9,15 +9,17 @@ import * as idxType from '../lib/index-relationships.js'
 */
 const AuditRecords = class extends Resources {
   constructor(options) {
-    super(Object.assign(options, {
-      indexes : [{ indexField : 'auditId', relationship : idxType.ONE_TO_MANY },
-        { indexField : 'domain', relationship : idxType.ONE_TO_MANY },
-        { indexField : 'targetId', relationship : idxType.ONE_TO_MANY }],
-      itemClass    : AuditRecord,
-      itemName     : 'audit record',
-      keyField     : 'id',
-      resourceName : 'audit records'
-    }))
+    super(Object.assign(
+      {},
+      options,
+      AuditRecord.creationOptions,
+      {
+        indexes : [
+          { indexField : 'auditId', relationship : idxType.ONE_TO_MANY },
+          { indexField : 'domain', relationship : idxType.ONE_TO_MANY },
+          { indexField : 'targetId', relationship : idxType.ONE_TO_MANY }]
+      }
+    ))
 
     this.checkCondition = AuditRecords.checkCondition
   }

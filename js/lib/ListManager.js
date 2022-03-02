@@ -234,7 +234,7 @@ const ListManager = class {
 
     routeByRelationships({
       item,
-      keyField      : this.#keyField,
+      keyField     : this.#keyField,
       idIndex      : this.#idIndex,
       indexSpecs   : this.#indexSpecs,
       one2oneFunc  : updateOneToOne,
@@ -251,7 +251,7 @@ const ListManager = class {
 
     routeByRelationships({
       item,
-      keyField      : this.#keyField,
+      keyField     : this.#keyField,
       idIndex      : this.#idIndex,
       indexSpecs   : this.#indexSpecs,
       one2oneFunc  : deleteOneToOne,

@@ -10,12 +10,11 @@ import { Resources } from '../../lib/resources'
 */
 const Sources = class extends Resources {
   constructor(options) {
-    super(Object.assign(options, {
-      itemClass    : Source,
-      itemName     : 'vendor alert sources',
-      keyField     : 'entityLegalName',
-      resourceName : 'sources'
-    }))
+    super(Object.assign(
+      {},
+      options,
+      Source.creationOptions
+    ))
     this.checkCondition = Sources.checkCondition
   }
 }

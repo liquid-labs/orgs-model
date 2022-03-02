@@ -1,3 +1,4 @@
+import { Audit } from './Audit'
 import { Resources } from '../lib/resources.js'
 import * as idxType from '../lib/index-relationships.js'
 
@@ -7,12 +8,12 @@ import * as idxType from '../lib/index-relationships.js'
 */
 const Audits = class extends Resources {
   constructor(options) {
-    super(Object.assign(options, {
-      indexes      : [{ indexField : 'target', relationship : idxType.ONE_TO_MANY }],
-      itemName     : 'audit',
-      keyField     : 'name',
-      resourceName : 'audits'
-    }))
+    super(Object.assign(
+      {},
+      options,
+      Audit.creationOptions,
+      { indexes : [{ indexField : 'target', relationship : idxType.ONE_TO_MANY }] }
+    ))
   }
 }
 

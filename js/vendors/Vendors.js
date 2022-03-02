@@ -12,20 +12,14 @@ const Vendors = class extends Resources {
 
   constructor(options) {
     // add (and override) basic 'vendor' item configurations
-    super(Object.assign(options,
-      {
-        indexes      : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }],
-        itemClass    : Vendor,
-        itemName     : 'vendor',
-        keyField     : 'legalName',
-        resourceName : 'vendors'
-      }))
+    super(Object.assign(
+      {},
+      options,
+      Vendor.creationOptions,
+      { indexes : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }] }
+    ))
 
-    this.#indexByCommonName = this.listManager.addIndex({
-      name         : 'byCommonName',
-      indexField   : 'commonName',
-      relationship : idxType.ONE_TO_MANY
-    })
+    this.#indexByCommonName = this.listManager.getIndex('commonName')
 
     this.checkCondition = checkCondition
   }
