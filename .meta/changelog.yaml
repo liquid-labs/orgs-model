@@ -11,7 +11,6 @@
     - "@liquid-labs/liq-core"
     - "@liquid-labs/liq-cli"
     - "@liquid-labs/orgs-model"
-    - "@liquid-labs/policy-core"
   changeNotes:
     - Add change flow and lifecycle diagrams
   securityNotes: []
