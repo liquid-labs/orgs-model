@@ -9,13 +9,13 @@ const Staff = class extends Resources {
     super(Object.assign(
       {},
       rest,
-      {
-        indexes : [{ indexField : 'employmentStatus', relationship : idxType.ONE_TO_MANY }],
-      },
       StaffMember.creationOptions,
-      { additionalItemCreationOptions: Object.assign({}, additionalItemCreationOptions, { org }) }
+      {
+        additionalItemCreationOptions : Object.assign({}, additionalItemCreationOptions, { org }),
+        indexes                       : [{ indexField : 'employmentStatus', relationship : idxType.ONE_TO_MANY }]
+      }
     ))
-    
+
     if (!org) throw new Error("Must define 'org' for staff creation.")
 
     this.org = org

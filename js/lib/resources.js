@@ -164,7 +164,7 @@ const Resources = class {
   #addIndexes(indexes) {
     for (const { indexField, relationship } of indexes) {
       this.listManager.addIndex({
-        name     : indexField,
+        name : indexField,
         indexField,
         relationship
       })

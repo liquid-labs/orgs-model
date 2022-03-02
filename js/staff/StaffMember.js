@@ -1,4 +1,4 @@
-import { Item, PrivateStamper } from '../lib/Item'
+import { Item, bindCreationConfig } from '../lib/Item'
 import structuredClone from 'core-js-pure/actual/structured-clone'
 import { StaffRole } from './StaffRole'
 
@@ -7,7 +7,7 @@ const StaffMember = class extends Item {
   #org
   #reportsByRoleName
   #reports
-  
+
   constructor(data, { org, ...rest }) {
     super(data, Object.assign({}, creationOptions, rest))
     const errors = StaffMember.validateData({ data, org })
@@ -77,16 +77,16 @@ const StaffMember = class extends Item {
   }
 
   get allRoles() {
-    if (this.#allRoles.length === 0)
+    if (this.#allRoles.length === 0) {
       // because this is a getter, it apparently breaks the proxy chain...
-      initializeAllRoles({ self: this, roles: this.data.roles, allRoles: this.#allRoles, org: this.#org })
+      initializeAllRoles({ self : this, roles : this.data.roles, allRoles : this.#allRoles, org : this.#org })
+    }
     return this.#allRoles.map((data) => new StaffRole(data, { memberEmail : this.email, org : this.#org }))
   }
 
   // TODO: take 'rawData' option in 'allRoles'
   get allRolesData() {
-    if (this.#allRoles.length === 0)
-      initializeAllRoles({ self: this, roles: this.data.roles, allRoles: this.#allRoles, org: this.#org })
+    if (this.#allRoles.length === 0) { initializeAllRoles({ self : this, roles : this.data.roles, allRoles : this.#allRoles, org : this.#org }) }
     return structuredClone(this.#allRoles)
   }
 
@@ -208,21 +208,13 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
   }
 }
 
-const creationOptions = {
-  allowSet    : [ 'familyName', 'givenName' ],
-  dataCleaner         : (item) => { delete item._sourceFileName; delete item.id; return item },
-  itemClass           : StaffMember,
-  itemName            : 'staff member',
-  keyField            : 'email',
-  org : null, // overriden at creation time
-  resourceName        : 'staff'
-}
-Object.freeze(creationOptions)
-Object.defineProperty(StaffMember, 'creationOptions', {
-  value: creationOptions,
-  writable: false,
-  enumerable: true,
-  configurable: false
+const creationOptions = bindCreationConfig({
+  allowSet     : ['familyName', 'givenName', 'roles'],
+  dataCleaner  : (item) => { delete item._sourceFileName; delete item.id; return item },
+  itemClass    : StaffMember,
+  itemName     : 'staff member',
+  keyField     : 'email',
+  resourceName : 'staff'
 })
 
 const hasOwn = (obj, fieldName) => Object.getOwnPropertyNames(obj).some((n) => n === fieldName)

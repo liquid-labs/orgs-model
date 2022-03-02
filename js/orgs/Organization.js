@@ -27,7 +27,7 @@ const Organization = class {
     this.technologies = new Technologies({ items : this.#innerState.technologies })
     this.vendors = new Vendors({ items : this.#innerState.vendors })
     this.alerts = {
-      sources : new Sources({ items: this.#innerState.alerts.sources })
+      sources : new Sources({ items : this.#innerState.alerts.sources })
     }
 
     this.staff.validate({ required : true })
