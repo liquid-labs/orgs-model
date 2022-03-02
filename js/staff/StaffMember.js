@@ -1,22 +1,24 @@
-import { Item } from '../lib/Item'
+import { Item, PrivateStamper } from '../lib/Item'
 import structuredClone from 'core-js-pure/actual/structured-clone'
 import { StaffRole } from './StaffRole'
 
 const StaffMember = class extends Item {
   #allRoles
+  #org
   #reportsByRoleName
   #reports
-
+  
   constructor(data, { org, ...rest }) {
+    super(data, Object.assign({}, creationOptions, rest))
     const errors = StaffMember.validateData({ data, org })
     if (errors.length > 0) {
       throw new Error(`Invalid data while creating 'staff member'; ${errors.join(' ')}`)
     }
-    Object.assign(this, structuredClone(data))
 
-    this.org = org
-    this.id = this.email.toLowerCase()
+    this.#org = org
     this.#reportsByRoleName = {}
+    this.#allRoles = []
+    this.#reports = undefined
   }
 
   /**
@@ -51,7 +53,7 @@ const StaffMember = class extends Item {
   getOwnRoles({ rawData = false } = {}) {
     return rawData === true
       ? [...this.roles]
-      : this.roles.map((data) => new StaffRole({ data, memberEmail : this.email, org : this.org }))
+      : this.roles.map((data) => new StaffRole(data, { memberEmail : this.email, org : this.#org }))
   }
 
   getAllRoleNames() { return this.allRolesData.map((r) => r.name) }
@@ -67,7 +69,7 @@ const StaffMember = class extends Item {
     if (data === undefined) {
       return undefined
     }
-    return new StaffRole({ data, memberEmail : this.email, org : this.org })
+    return new StaffRole(data, { memberEmail : this.email, org : this.#org })
   }
 
   getManagers() {
@@ -75,65 +77,17 @@ const StaffMember = class extends Item {
   }
 
   get allRoles() {
-    if (this.#allRoles === undefined) this.#initializeAllRoles()
-    return this.#allRoles.map((data) => new StaffRole({ data, memberEmail : this.email, org : this.org }))
+    if (this.#allRoles.length === 0)
+      // because this is a getter, it apparently breaks the proxy chain...
+      initializeAllRoles({ self: this, roles: this.data.roles, allRoles: this.#allRoles, org: this.#org })
+    return this.#allRoles.map((data) => new StaffRole(data, { memberEmail : this.email, org : this.#org }))
   }
 
   // TODO: take 'rawData' option in 'allRoles'
   get allRolesData() {
-    if (this.#allRoles === undefined) this.#initializeAllRoles()
+    if (this.#allRoles.length === 0)
+      initializeAllRoles({ self: this, roles: this.data.roles, allRoles: this.#allRoles, org: this.#org })
     return structuredClone(this.#allRoles)
-  }
-
-  #initializeAllRoles() {
-    this.#allRoles = this.roles.slice()
-
-    for (let i = 0; i < this.#allRoles.length; i += 1) {
-      const staffRole = this.#allRoles[i]
-      // verify the role is valid
-      const orgRole = this.org.roles.get(staffRole.name,
-        {
-          fuzzy     : true,
-          required  : true,
-          errMsgGen : (name) => `Staff member '${this.email}' claims unknown role '${name}'.`
-        })
-      for (const { name: impliedRoleName, mngrProtocol } of orgRole.implies || []) {
-        // An implied role can come from multiple sources, so let's check if it's already in place
-        const impliedStaffRole = this.#allRoles.find((r) => r.name === impliedRoleName)
-        if (impliedStaffRole) {
-          // we still want to track the implications, so we update the data
-          if (!hasOwn(impliedStaffRole, 'impliedBy')) impliedStaffRole.impliedBy = []
-          if (!impliedStaffRole.impliedBy.includes(staffRole.name)) { impliedStaffRole.impliedBy.push(staffRole.name) }
-          continue
-        }
-
-        const impliedOrgRole = this.org.roles.get(impliedRoleName,
-          {
-            required  : true,
-            errMsgGen : (name) => {
-              console.error(`Unknown role '${name}'...`)
-              return `Role '${orgRole.name}' implies unknown role '${name}' (triggered while processing staff member '${this.email}').`
-            }
-          })
-        const impliedStaffRoleData = {
-          name      : impliedOrgRole.name,
-          impliedBy : [staffRole.name]
-        }
-        for (const inheritedField of ['acting', 'display', 'tbd']) {
-          if (staffRole[inheritedField] !== undefined) { impliedStaffRoleData[inheritedField] = staffRole[inheritedField] }
-        }
-        if (mngrProtocol === 'self') {
-          impliedStaffRoleData.manager = this.email
-        }
-        else if (mngrProtocol === 'same') {
-          impliedStaffRoleData.manager = staffRole.manager
-        }
-        else {
-          throw new Error(`Unknown manager protocol '${mngrProtocol}' in implication for role '${staffRole.name}'.`)
-        }
-        this.#allRoles.push(impliedStaffRoleData)
-      } // implies loop
-    }
   }
 
   getReportsByRoleName(roleName) {
@@ -141,7 +95,7 @@ const StaffMember = class extends Item {
     if (cachedReports !== undefined) return cachedReports.slice()
     // else, need to build the entry
     const reports = []
-    for (const member of this.org.staff.list()) {
+    for (const member of this.#org.staff.list()) {
       if (member.email !== this.email
           && member.allRolesData.some((r) =>
             r.name === roleName && r.manager === this.email)) {
@@ -158,7 +112,7 @@ const StaffMember = class extends Item {
   }
 
   #initializeReports() {
-    this.#reports = this.org.staff.list().reduce((reports, member) => {
+    this.#reports = this.#org.staff.list().reduce((reports, member) => {
       if (this.email !== member.email
           && member.getOwnRoles().some((r) => r.managerEmail === this.email)) {
         reports.push(member.email)
@@ -202,6 +156,74 @@ const StaffMember = class extends Item {
     return errors
   }
 }
+
+const initializeAllRoles = ({ self, roles, allRoles, org }) => {
+  allRoles.push(...roles)
+
+  for (let i = 0; i < allRoles.length; i += 1) {
+    const staffRole = allRoles[i]
+    // verify the role is valid
+    const orgRole = org.roles.get(staffRole.name,
+      {
+        fuzzy     : true,
+        required  : true,
+        errMsgGen : (name) => `Staff member '${this.email}' claims unknown role '${name}'.`
+      })
+    for (const { name: impliedRoleName, mngrProtocol } of orgRole.implies || []) {
+      // An implied role can come from multiple sources, so let's check if it's already in place
+      const impliedStaffRole = allRoles.find((r) => r.name === impliedRoleName)
+      if (impliedStaffRole) {
+        // we still want to track the implications, so we update the data
+        if (!hasOwn(impliedStaffRole, 'impliedBy')) impliedStaffRole.impliedBy = []
+        if (!impliedStaffRole.impliedBy.includes(staffRole.name)) { impliedStaffRole.impliedBy.push(staffRole.name) }
+        continue
+      }
+
+      const impliedOrgRole = org.roles.get(impliedRoleName,
+        {
+          required  : true,
+          errMsgGen : (name) => {
+            console.error(`Unknown role '${name}'...`)
+            return `Role '${orgRole.name}' implies unknown role '${name}' (triggered while processing staff member '${self.data.email}').`
+          }
+        })
+      const impliedStaffRoleData = {
+        name      : impliedOrgRole.name,
+        impliedBy : [staffRole.name]
+      }
+      for (const inheritedField of ['acting', 'display', 'tbd']) {
+        if (staffRole[inheritedField] !== undefined) { impliedStaffRoleData[inheritedField] = staffRole[inheritedField] }
+      }
+      if (mngrProtocol === 'self') {
+        impliedStaffRoleData.manager = self.data.email // remember, the proxy chain is broken
+      }
+      else if (mngrProtocol === 'same') {
+        impliedStaffRoleData.manager = staffRole.manager
+      }
+      else {
+        throw new Error(`Unknown manager protocol '${mngrProtocol}' in implication for role '${staffRole.name}'.`)
+      }
+      allRoles.push(impliedStaffRoleData)
+    } // implies loop
+  }
+}
+
+const creationOptions = {
+  allowSet    : [ 'familyName', 'givenName' ],
+  dataCleaner         : (item) => { delete item._sourceFileName; delete item.id; return item },
+  itemClass           : StaffMember,
+  itemName            : 'staff member',
+  keyField            : 'email',
+  org : null, // overriden at creation time
+  resourceName        : 'staff'
+}
+Object.freeze(creationOptions)
+Object.defineProperty(StaffMember, 'creationOptions', {
+  value: creationOptions,
+  writable: false,
+  enumerable: true,
+  configurable: false
+})
 
 const hasOwn = (obj, fieldName) => Object.getOwnPropertyNames(obj).some((n) => n === fieldName)
 
