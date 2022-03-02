@@ -30,7 +30,7 @@ describe('Organization', () => {
   test('loads basic staff data', () => {
     const ceo = org.staff.get('ceo@foo.com')
     expect(ceo).not.toBe(undefined)
-    expect(ceo.getGivenName()).toEqual('CEO')
+    expect(ceo.givenName).toEqual('CEO')
   })
 
   test('loads basic role data', () => {
@@ -45,7 +45,7 @@ describe('Organization', () => {
     ${'ceo@foo.com'} | ${'CTO'} | ${'ceo@foo.com'}
     ${'dev@foo.com'} | ${'Developer'} | ${'ceo@foo.com'}
     `('$email as $roleName managed by $managerName', ({ email, roleName, managerEmail }) => {
-      expect(org.staff.get(email).getRole(roleName).getManager().getEmail()).toEqual(managerEmail)
+      expect(org.staff.get(email).getRole(roleName).getManager().email).toEqual(managerEmail)
     })
 
     test.each`
@@ -72,8 +72,8 @@ describe('Organization', () => {
     test('returns a list of 4 staff', () => {
       const staff = org.staff.list()
       expect(staff).toHaveLength(4)
-      expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
-      expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
+      expect(staff.findIndex(s => s.email === 'dev@foo.com')).not.toEqual(-1)
+      expect(staff.findIndex(s => s.email === 'uidev@foo.com')).not.toEqual(-1)
     })
   })
 
@@ -81,8 +81,8 @@ describe('Organization', () => {
     test('returns array of staff matching role', () => {
       const staff = org.staff.getByRoleName('Developer')
       expect(staff).toHaveLength(2)
-      expect(staff.findIndex(s => s.getEmail() === 'dev@foo.com')).not.toEqual(-1)
-      expect(staff.findIndex(s => s.getEmail() === 'uidev@foo.com')).not.toEqual(-1)
+      expect(staff.findIndex(s => s.email === 'dev@foo.com')).not.toEqual(-1)
+      expect(staff.findIndex(s => s.email === 'uidev@foo.com')).not.toEqual(-1)
     })
 
     test('returns empty array with no matching staff', () => expect(org.staff.getByRoleName('blah')).toEqual([]))
@@ -91,7 +91,7 @@ describe('Organization', () => {
   describe('generateOrgChartData', () => {
     test('for debang/OrgChart', () => {
       // console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
-      const expected = { id : 'ceo@foo.com/CEO', ids : ['ceo@foo.com/CEO', 'ceo@foo.com/CTO'], parent_id : '', email : 'ceo@foo.com', name : 'CEO Foo', titles : ['CEO', 'CTO'], roles : [ { name : 'CEO', singular : true, titular : true, jobDescription : 'Chief executive officer.', id : 'CEO' }, { name : 'CTO', singular : true, titular : true, jobDescription : 'Chief technical officer.', id : 'CTO' }], children : [{ id : 'dev@foo.com/Developer', ids : ['dev@foo.com/Developer'], parent_id : 'ceo@foo.com/CTO', email : 'dev@foo.com', name : 'Dev Bar', titles : ['Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'Developer' }], children : [{ id : 'uidev@foo.com/Developer', ids : ['uidev@foo.com/Developer'], parent_id : 'dev@foo.com/Developer', email : 'uidev@foo.com', name : 'UI Bar', titles : ['UI Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'Developer' }] }] }, { id : 'test@foo.com/Tester', ids : ['test@foo.com/Tester'], parent_id : 'ceo@foo.com/CTO', email : 'test@foo.com', name : 'Test Baz', titles : ['Tester'], roles : [{ name : 'Tester', titular : true, qualifiable : true, jobDescription : 'QA.', id : 'Tester' }] }] }
+      const expected = { id : 'ceo@foo.com/CEO', ids : ['ceo@foo.com/CEO', 'ceo@foo.com/CTO'], parent_id : '', email : 'ceo@foo.com', name : 'CEO Foo', titles : ['CEO', 'CTO'], roles : [ { name : 'CEO', singular : true, titular : true, jobDescription : 'Chief executive officer.', id : 'ceo' }, { name : 'CTO', singular : true, titular : true, jobDescription : 'Chief technical officer.', id : 'cto' }], children : [{ id : 'dev@foo.com/Developer', ids : ['dev@foo.com/Developer'], parent_id : 'ceo@foo.com/CTO', email : 'dev@foo.com', name : 'Dev Bar', titles : ['Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'developer' }], children : [{ id : 'uidev@foo.com/Developer', ids : ['uidev@foo.com/Developer'], parent_id : 'dev@foo.com/Developer', email : 'uidev@foo.com', name : 'UI Bar', titles : ['UI Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'developer' }] }] }, { id : 'test@foo.com/Tester', ids : ['test@foo.com/Tester'], parent_id : 'ceo@foo.com/CTO', email : 'test@foo.com', name : 'Test Baz', titles : ['Tester'], roles : [{ name : 'Tester', titular : true, qualifiable : true, jobDescription : 'QA.', id : 'tester' }] }] }
       // We 'stringify' because the way jest compares the object cares about the classes; doing it this way saves us
       // from having to import and instatiate 'Role' objects... though it's also a bit brittle, so we may want to take
       // that approach at some point.

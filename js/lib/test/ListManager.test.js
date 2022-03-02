@@ -10,8 +10,8 @@ const testItems = [
   { id: 3, type: 'foo' }
 ]
 
-const oneToOneSpec = { name: 'byId2', relationship: idxRelationships.ONE_TO_ONE, keyField: 'id' }
-const oneToManySpec = { name: 'byType', relationship: idxRelationships.ONE_TO_MANY, keyField: 'type' }
+const oneToOneSpec = { name: 'byId2', relationship: idxRelationships.ONE_TO_ONE, indexField: 'id' }
+const oneToManySpec = { name: 'byType', relationship: idxRelationships.ONE_TO_MANY, indexField: 'type' }
 
 const verifyOneToOneIndex = ({ index, items = testItems }) => {
   expect(Object.keys(index)).toHaveLength(items.length)
@@ -169,7 +169,7 @@ describe('ListManager', () => {
         index = listManager.getIndex('byId')
         items.splice(2, 1) // remove id: 3
         items.push({ id: 8, type: 'new' })
-        listManager.rebuild({ keyField: 'id', relationship: idxRelationships.ONE_TO_ONE, index })
+        listManager.rebuild({ indexField: 'id', relationship: idxRelationships.ONE_TO_ONE, index })
       })
       
       test('builds a valid one-to-one index', () => verifyOneToOneIndex({ index, items }))

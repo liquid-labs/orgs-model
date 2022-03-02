@@ -1,4 +1,5 @@
 export * from './auditRecords'
+export * from './alerts'
 export * from './orgs'
 export * from './roles'
 export * from './staff'
