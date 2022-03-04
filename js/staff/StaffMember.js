@@ -56,16 +56,16 @@ const StaffMember = class extends Item {
       : this.roles.map((data) => new StaffRole(data, { memberEmail : this.email, org : this.#org }))
   }
 
-  getAllRoleNames() { return this.allRolesData.map((r) => r.name) }
+  getAllRoleNames() { return this.getAllRolesData().map((r) => r.name) }
 
   hasRole(roleName) {
     return !!this.roles.some((r) => r.name === roleName) // let's avoid building '#allRoles' if we don't have to
-      || !!this.allRolesData.some((r) => r.name === roleName)
+      || !!this.getAllRolesData().some((r) => r.name === roleName)
   }
 
   getRole(roleName) {
     const data = this.roles.find((r) => r.name === roleName) // let's avoid building '#allRoles' if we don't have to
-      || this.allRolesData.find((r) => r.name === roleName)
+      || this.getAllRolesData().find((r) => r.name === roleName)
     if (data === undefined) {
       return undefined
     }
@@ -76,7 +76,7 @@ const StaffMember = class extends Item {
     return [...new Set(this.roles.map((r) => r.manager))]
   }
 
-  get allRoles() {
+  getAllRoles() {
     if (this.#allRoles.length === 0) {
       // because this is a getter, it apparently breaks the proxy chain...
       initializeAllRoles({ self : this, roles : this.data.roles, allRoles : this.#allRoles, org : this.#org })
@@ -85,7 +85,7 @@ const StaffMember = class extends Item {
   }
 
   // TODO: take 'rawData' option in 'allRoles'
-  get allRolesData() {
+  getAllRolesData() {
     if (this.#allRoles.length === 0) { initializeAllRoles({ self : this, roles : this.data.roles, allRoles : this.#allRoles, org : this.#org }) }
     return structuredClone(this.#allRoles)
   }
@@ -97,7 +97,7 @@ const StaffMember = class extends Item {
     const reports = []
     for (const member of this.#org.staff.list()) {
       if (member.email !== this.email
-          && member.allRolesData.some((r) =>
+          && member.getAllRolesData().some((r) =>
             r.name === roleName && r.manager === this.email)) {
         reports.push(member.email)
       }
