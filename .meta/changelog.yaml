@@ -7,9 +7,13 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
-    - "@liquid-labs/liq-alerts"
-    - "@liquid-labs/liq-core"
-    - "@liquid-labs/liq-cli"
+    - "@liquid-labs/policy-core"
+    - "@liquid-labs/policy-cloud"
+    - "@liquid-labs/policy-cloud-aws"
+    - "@liquid-labs/policy-networks"
+    - "@liquid-labs/policy-policy"
+    - "@liquid-labs/policy-security"
+    - "@liquid-labs/policy-business"
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Add change flow and lifecycle diagrams
