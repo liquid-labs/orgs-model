@@ -19,6 +19,10 @@ const StaffMember = class extends Item {
     this.#reportsByRoleName = {}
     this.#allRoles = []
     this.#reports = undefined
+    
+    // we do this pre-emptively because it has the side effect of setting 'impliedBy' on the StaffRoles; at some point
+    // that should probaby be an org function and happen at the org role level.
+    initializeAllRoles({ self : this, roles : data.roles, allRoles : this.#allRoles, org : this.#org })
   }
 
   /**
@@ -59,17 +63,38 @@ const StaffMember = class extends Item {
   getAllRoleNames() { return this.getAllRolesData().map((r) => r.name) }
 
   hasRole(roleName) {
-    return !!this.roles.some((r) => r.name === roleName) // let's avoid building '#allRoles' if we don't have to
-      || !!this.getAllRolesData().some((r) => r.name === roleName)
+    return !!this.getRole(roleName, { fuzzy : true, rawData : true })
   }
 
-  getRole(roleName) {
-    const data = this.roles.find((r) => r.name === roleName) // let's avoid building '#allRoles' if we don't have to
-      || this.getAllRolesData().find((r) => r.name === roleName)
+  getRole(roleName, { fuzzy=false, rawData=false } = {}) {
+    let roleFilter
+    if (fuzzy === true) {
+      const orgRole = this.#org.roles.get(roleName, { fuzzy })
+      if (orgRole === undefined) {
+        return undefined
+      }
+      
+      const pattern = orgRole?.matcher?.pattern
+      if (pattern) {
+        const regex = new RegExp(pattern)
+        roleFilter = (r) => r.name === roleName || r.name.match(regex)
+      }
+      else {
+        roleFilter = (r) => r.name === roleName
+      }
+    }
+    else {
+      roleFilter = (r) => r.name === roleName
+    }
+    const data = this.roles.find(roleFilter) // let's avoid building '#allRoles' if we don't have to
+      || this.getAllRolesData().find(roleFilter)
+    
     if (data === undefined) {
       return undefined
     }
-    return new StaffRole(data, { memberEmail : this.email, org : this.#org })
+    return rawData === true
+      ? structuredClone(data)
+      : new StaffRole(data, { memberEmail : this.email, org : this.#org })
   }
 
   getManagers() {
@@ -78,7 +103,6 @@ const StaffMember = class extends Item {
 
   getAllRoles() {
     if (this.#allRoles.length === 0) {
-      // because this is a getter, it apparently breaks the proxy chain...
       initializeAllRoles({ self : this, roles : this.data.roles, allRoles : this.#allRoles, org : this.#org })
     }
     return this.#allRoles.map((data) => new StaffRole(data, { memberEmail : this.email, org : this.#org }))
@@ -162,6 +186,9 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
 
   for (let i = 0; i < allRoles.length; i += 1) {
     const staffRole = allRoles[i]
+    if (!hasOwn(staffRole, 'impliedBy')) {
+      staffRole.impliedBy = []
+    }
     // verify the role is valid
     const orgRole = org.roles.get(staffRole.name,
       {
@@ -192,7 +219,9 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         impliedBy : [staffRole.name]
       }
       for (const inheritedField of ['acting', 'display', 'tbd']) {
-        if (staffRole[inheritedField] !== undefined) { impliedStaffRoleData[inheritedField] = staffRole[inheritedField] }
+        if (staffRole[inheritedField] !== undefined) {
+          impliedStaffRoleData[inheritedField] = staffRole[inheritedField]
+        }
       }
       if (mngrProtocol === 'self') {
         impliedStaffRoleData.manager = self.data.email // remember, the proxy chain is broken
