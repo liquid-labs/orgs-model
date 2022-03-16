@@ -358,3 +358,25 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2022-03-15T18:31:05.247Z
+  startEpochMillis: 1647369065247
+  issues:
+    - https://github.com/liquid-labs/policy-core/issues/39
+  branch: 2022.03.11-zane@liquid-labs.com-refresh_policy_structure
+  branchFrom: 020204dec70f3d139c2c977e9b032a0932f0ee3f
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/policy-core"
+    - "@liquid-labs/policy-cloud"
+    - "@liquid-labs/policy-cloud-aws"
+    - "@liquid-labs/policy-networks"
+    - "@liquid-labs/policy-policy"
+    - "@liquid-labs/policy-security"
+    - "@liquid-labs/policy-business"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Refresh policy structure
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
