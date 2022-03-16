@@ -1,6 +1,6 @@
 {
   "name": "@liquid-labs/orgs-model",
-  "version": "1.0.0-beta.73",
+  "version": "1.0.0-beta.74",
   "description": "Liquid organizations model.",
   "main": "dist/orgs-model.js",
   "files": [

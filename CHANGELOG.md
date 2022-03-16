@@ -117,3 +117,6 @@
 ## Release 1.0.0-beta.73
 * _**hotfix**_: fix getter/proxy problem _(zane@liquid-labs.com; 2022-03-04T21:09:41.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-03-04T21:13:02.000Z)_
+
+## Release 1.0.0-beta.74
+* Refresh policy structure _(zane@liquid-labs.com; 2022-03-15T18:31:05.247Z)_
