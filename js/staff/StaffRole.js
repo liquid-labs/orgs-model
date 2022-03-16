@@ -17,7 +17,23 @@ const StaffRole = class extends Role {
 
   getManager() { return this.#org.staff.get(this.managerEmail) }
 
-  get managerEmail() { return this.rawData.manager }
+  get managerEmail() { return this.manager }
+
+  get managerRole() {
+    // TODO: cache?
+    const myManager = this.getManager()
+    if (myManager === undefined) {
+      return undefined // root nodes are unmanaged
+    }
+    const myNode = this.#org.orgStructure.getNodeByRoleName(this.name)
+    for (const { name : managingRoleName } of myNode.getPossibleManagerNodes()) {
+      if (myManager.hasRole(managingRoleName)) {
+        return managingRoleName
+      }
+    }
+    // Should be impossible...
+    throw new Error(`Could not determine manager role for '${this.email}' role '${this.name}'; though did identify manager: ${myManager.name}`)
+  }
 
   get memberEmail() { return this.#memberEmail }
 
