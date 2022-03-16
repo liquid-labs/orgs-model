@@ -59,8 +59,10 @@ const indexAllProperties = (obj) => {
       const descriptor = propDescriptors[propKey]
       const propValue = descriptor.value
       const isFunction = !!(propValue && (typeof propValue === 'function'))
-      const hasGetter = !!descriptor.get
-      const hasSetter = !!descriptor.set
+      const getter = descriptor.get
+      const hasGetter = !!getter
+      const setter = descriptor.set
+      const hasSetter = !!setter
       const isField = hasGetter || hasSetter
       // probably not necessary, but to keep from confusion we don't override the Proxy functions
       if (!isField && propValue && obj !== Object && isFunction && !SKIP_METHODS.includes(propKey)) {
@@ -71,8 +73,10 @@ const indexAllProperties = (obj) => {
       }
       else if (isField) {
         propIndex[propKey] = Object.assign({
-          hasGetter : !!descriptor.get,
-          hasSetter : !!descriptor.set
+          getter,
+          hasGetter,
+          setter,
+          hasSetter
         }, descriptor)
       }
     }
@@ -83,12 +87,26 @@ const indexAllProperties = (obj) => {
 }
 
 const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
-  get : (object, key, reciever) => {
+  get : (object, key, receiver) => {
     if (key === 'isProxy') return true
-    // object method calls can go through the handler first
+    // object method calls can go through the get handler first to retrieve the function
     // TODO: the 'private' thing is a workaround for a Babel bug (?) that messes up private calls
     else if (methodIndex[key] || propIndex[key] || key.match(/private/)) {
-      return object[key]
+      try {
+        return receiver
+          ? Reflect.get(object, key, receiver)
+          : Reflect.get(object, key)
+      }
+      catch (e) {
+        // So, it's not clear to me what's happening. We seem to be able to access private fields in the first instance,
+        // but at some point in the function chain, it breaks down. But, the workaround is pretty simple.
+        if (e instanceof TypeError) { // assume private field access error
+          return Reflect.get(object, key)
+        }
+        else {
+          throw e
+        }
+      }
     }
     else {
       const value = data[key]
@@ -107,8 +125,7 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
       const setValue = value && typeof value === 'object'
         ? structuredClone(value)
         : value
-      data[key] = setValue
-      return true
+      return Reflect.set(data, key, setValue)
     }
     /* TODO: suppport 'setXXX' style?
     else if (methodIndex[`set${key.ucfirst()`]) {
@@ -137,7 +154,7 @@ const Item = class {
   #keyField
   #hasExplicitId
 
-  constructor(data, { idNormalizer = defaultIdNormalizer, allowSet, itemName, keyField, ...rest } = {}) {
+  constructor(data, { idNormalizer = defaultIdNormalizer, allowSet = [], itemName, keyField, ...rest } = {}) {
     if (keyField === undefined) {
       throw new Error('Key field must be specified. '
         + "Note, 'Item' is not typically created directly. Create a subclass or specify 'options.keyField' directly.")
@@ -160,7 +177,8 @@ const Item = class {
     const proxy = new Proxy(this, handler({
       data : this.#data,
       propIndex,
-      methodIndex
+      methodIndex,
+      allowSet
     }))
 
     return proxy // Note, this overrides the default + implicit 'return this'
