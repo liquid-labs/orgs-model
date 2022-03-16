@@ -19,7 +19,7 @@ const StaffMember = class extends Item {
     this.#reportsByRoleName = {}
     this.#allRoles = []
     this.#reports = undefined
-    
+
     // we do this pre-emptively because it has the side effect of setting 'impliedBy' on the StaffRoles; at some point
     // that should probaby be an org function and happen at the org role level.
     initializeAllRoles({ self : this, roles : data.roles, allRoles : this.#allRoles, org : this.#org })
@@ -66,14 +66,14 @@ const StaffMember = class extends Item {
     return !!this.getRole(roleName, { fuzzy : true, rawData : true })
   }
 
-  getRole(roleName, { fuzzy=false, rawData=false } = {}) {
+  getRole(roleName, { fuzzy = false, rawData = false } = {}) {
     let roleFilter
     if (fuzzy === true) {
       const orgRole = this.#org.roles.get(roleName, { fuzzy })
       if (orgRole === undefined) {
         return undefined
       }
-      
+
       const pattern = orgRole?.matcher?.pattern
       if (pattern) {
         const regex = new RegExp(pattern)
@@ -88,7 +88,7 @@ const StaffMember = class extends Item {
     }
     const data = this.roles.find(roleFilter) // let's avoid building '#allRoles' if we don't have to
       || this.getAllRolesData().find(roleFilter)
-    
+
     if (data === undefined) {
       return undefined
     }

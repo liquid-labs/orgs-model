@@ -18,7 +18,7 @@ const StaffRole = class extends Role {
   getManager() { return this.#org.staff.get(this.managerEmail) }
 
   get managerEmail() { return this.manager }
-  
+
   get managerRole() {
     // TODO: cache?
     const myManager = this.getManager()
