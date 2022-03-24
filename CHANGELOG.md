@@ -127,3 +127,4 @@
 ## Release 1.0.0-beta.76
 * _**hotfix**_: simplify option handlin by binding to class (constructors) rather than passing through instances _(zane@liquid-labs.com; 2022-03-24T16:10:41.000Z)_
 * _**hotfix**_: lint fixes; caught one functional error _(zane@liquid-labs.com; 2022-03-24T16:14:32.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-03-24T16:15:07.000Z)_
