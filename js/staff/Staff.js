@@ -1,3 +1,6 @@
+import { toSentenceCase } from 'js-convert-case'
+         toSentenceCase
+
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import * as idxType from '../lib/index-relationships'
@@ -70,5 +73,19 @@ const checkCondition = (condition, member) => {
 }
 
 Staff.checkCondition = checkCondition
+
+Staff.csvTransform = (staffMember) => {
+  const data = staffMember.data
+  delete data.id
+  const humanData = {}
+  for (const key in data) {
+    const newKey = toSentenceCase(key)
+    humanData[newKey] = key !== 'roles'
+      ? data[key]
+      : data[key].map(r => `${r.name}/${r.manager}`).join(';')
+  }
+  
+  return humanData
+}
 
 export { Staff }

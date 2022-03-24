@@ -18,7 +18,7 @@
     "liq-tsv2md": "bin/liq-tsv2md.pl"
   },
   "scripts": {
-    "build": "catalyst-scripts build && make",
+    "build": "JS_SOURCEMAP=true catalyst-scripts build && make",
     "pretest": "catalyst-scripts pretest",
     "test": "catalyst-scripts test",
     "preversion": "npm run build && npm test && npm run lint",
@@ -46,7 +46,8 @@
     "dotenv": "^16.0.0"
   },
   "dependencies": {
-    "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.6"
+    "@liquid-labs/gucci-wrapper": "^1.0.0-alpha.6",
+    "js-convert-case": "^4.2.0"
   },
   "liquidDev": {
     "changeControl": {
