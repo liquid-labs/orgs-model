@@ -241,7 +241,7 @@ bindCreationConfig({
   allowSet      : ['familyName', 'givenName', 'roles'],
   dataCleaner   : (data) => { delete data._sourceFileName; delete data.id; return data },
   dataFlattener : (data) => {
-    data.roles = data.roles.map(r => `${r.name}/${r.manager}`).join(';')
+    data.roles = data.roles?.map(r => `${r.name}/${r.manager}`).join(';')
     return data
   },
   itemClass    : StaffMember,
