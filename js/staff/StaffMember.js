@@ -9,7 +9,7 @@ const StaffMember = class extends Item {
   #reports
 
   constructor(data, { org, ...rest }) {
-    super(data, Object.assign({}, creationOptions, rest))
+    super(data, rest)
     const errors = StaffMember.validateData({ data, org })
     if (errors.length > 0) {
       throw new Error(`Invalid data while creating 'staff member'; ${errors.join(' ')}`)
@@ -237,9 +237,13 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
   }
 }
 
-const creationOptions = bindCreationConfig({
+bindCreationConfig({
   allowSet     : ['familyName', 'givenName', 'roles'],
-  dataCleaner  : (item) => { delete item._sourceFileName; delete item.id; return item },
+  dataCleaner  : (data) => { delete data._sourceFileName; delete data.id; return item },
+  dataFlattener : (data) => {
+    data.roles = data.roles.map(r => `${r.name}/${r.manager}`).join(';')
+    return data
+  },
   itemClass    : StaffMember,
   itemName     : 'staff member',
   keyField     : 'email',

@@ -1,10 +1,6 @@
 import { Item, bindCreationConfig } from '../lib/Item'
 
 const Role = class extends Item {
-  constructor(data, options) {
-    super(data, Object.assign({}, creationOptions, options))
-  }
-
   getName() { return this.name }
 
   getManager() { return this.manager }
@@ -16,7 +12,7 @@ const Role = class extends Item {
   isQualifiable() { return !!this.qualifiable }
 }
 
-const creationOptions = bindCreationConfig({
+const itemConfig = bindCreationConfig({
   itemClass    : Role,
   itemName     : 'role',
   keyField     : 'name',

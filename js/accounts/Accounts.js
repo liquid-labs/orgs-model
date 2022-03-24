@@ -13,8 +13,7 @@ const Accounts = class extends Resources {
     super(Object.assign(
       {},
       options,
-      { indexes : [{ indexField : 'department', relationship : idxType.ONE_TO_MANY }] },
-      Account.creationOptions
+      { indexes : [{ indexField : 'department', relationship : idxType.ONE_TO_MANY }] }
     ))
     this.checkCondition = Accounts.checkCondition
   }
@@ -68,6 +67,13 @@ Object.defineProperty(Accounts, 'checkCondition', {
   value        : checkCondition,
   writable     : false,
   enumerable   : false,
+  configurable : false
+})
+
+Object.defineProperty(Accounts, 'itemConfig', {
+  value        : Account.itemConfig,
+  writable     : false,
+  enumerable   : true,
   configurable : false
 })
 

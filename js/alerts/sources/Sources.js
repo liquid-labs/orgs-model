@@ -13,7 +13,7 @@ const Sources = class extends Resources {
     super(Object.assign(
       {},
       options,
-      Source.creationOptions
+      Source.itemConfig
     ))
     this.checkCondition = Sources.checkCondition
   }
@@ -64,6 +64,13 @@ Object.defineProperty(Sources, 'checkCondition', {
   value        : checkCondition,
   writable     : false,
   enumerable   : false,
+  configurable : false
+})
+
+Object.defineProperty(Sources, 'itemConfig', {
+  value        : Source.itemConfig,
+  writable     : false,
+  enumerable   : true,
   configurable : false
 })
 

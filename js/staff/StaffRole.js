@@ -9,7 +9,7 @@ const StaffRole = class extends Role {
     super(
       // the 'data' is just the staff role data, which is incomplete; so we retrieve the 'Role' data and merge
       Object.assign(org.roles.get(data.name, { fuzzy : true, rawData : true }), data), // data
-      Object.assign({}, StaffRole.creationOptions, rest) // options
+      rest // options
     )
     this.#memberEmail = memberEmail
     this.#org = org
@@ -83,7 +83,7 @@ const validationMsg = ({ memberEmail, name, reason }) =>
 
 bindCreationConfig(Object.assign(
   {},
-  Role.creationOptions,
+  Role.itemConfig,
   {
     itemClass : StaffRole,
     itemName  : 'staff role'

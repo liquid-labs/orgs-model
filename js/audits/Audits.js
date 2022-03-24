@@ -11,10 +11,16 @@ const Audits = class extends Resources {
     super(Object.assign(
       {},
       options,
-      Audit.creationOptions,
       { indexes : [{ indexField : 'target', relationship : idxType.ONE_TO_MANY }] }
     ))
   }
 }
+
+Object.defineProperty(Audits, 'itemConfig', {
+  value        : Audit.itemConfig,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
+})
 
 export { Audits }

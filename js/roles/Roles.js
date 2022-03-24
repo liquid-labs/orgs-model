@@ -5,11 +5,7 @@ import { Role } from './Role'
 
 const Roles = class extends Resources {
   constructor({ org, ...rest }) {
-    super(Object.assign(
-      {},
-      rest,
-      Role.creationOptions
-    ))
+    super(rest)
 
     this.org = org
     this.checkCondition = checkCondition
@@ -106,5 +102,12 @@ const checkCondition = (condition, role) => {
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
+
+Object.defineProperty(Roles, 'itemConfig', {
+  value        : Role.itemConfig,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
+})
 
 export { Roles }

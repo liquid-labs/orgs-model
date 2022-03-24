@@ -17,22 +17,29 @@ const data = {
 }
 
 const SubItem = class extends Item {
-  constructor(data, options = {}) {
-    super(data, Object.assign(options, { keyField: 'integer'}))
-  }
-  
   subFunc() { return 'subfunc' }
   
   get bar() { return 'bar' }
 }
 
+bindCreationConfig({
+  dataCleaner  : (data) => { delete data.id; return data },
+  itemClass    : SubItem,
+  itemName     : 'sub-item',
+  keyField     : 'integer',
+  resourceName : 'sub-items'
+})
+
 const SubSubItem = class extends SubItem {
-  constructor(data, options) {
-    super(data, options)
-  }
-  
   subSubFunc() { return 'subsubfunc' }
 }
+
+bindCreationConfig(Object.assign({},
+  SubItem.itemConfig, {
+    itemClass: SubSubItem,
+    itemName: 'sub-sub-item',
+    resourceName: 'sub-sub-items'
+  }))
 
 const TrickItem = class extends SubItem {
   constructor(data, options) {
@@ -44,9 +51,14 @@ const TrickItem = class extends SubItem {
   }
 }
 
+bindCreationConfig(Object.assign({},
+  SubItem.itemConfig, {
+    itemClass: TrickItem,
+    itemName: 'trick item',
+    resourceName: 'trick items'
+  }))
+
 describe('Item', () => {
-  const item = new Item(data, { keyField: 'integer' })
-  
   // collection of common tests check access from class and subclass instances
   const basicAccessTests = (target, targetProto) => {
     test(`${target.constructor.name} has protoype ${targetProto}`, () =>
@@ -84,12 +96,10 @@ describe('Item', () => {
     })
   } // end 'basicAcessTests' test builder
   
-  test("'new Item(data)' with to options or no 'options.keyField' raises an exception", () => {
-    expect(() => new Item(data)).toThrow()
-    expect(() => new Item(data, { hey : 38 })).toThrow()
+  test("Trying to create an Item directl ('new Item(data)') raises an exception", () => {
+    expect(() => new Item(data)).toThrow('cannot be created directly')
   })
   
-  basicAccessTests(item, Item.prototype)
   
   describe('subclasses', () => {
     const subItem = new SubItem(data)

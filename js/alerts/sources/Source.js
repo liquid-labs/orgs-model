@@ -1,12 +1,9 @@
 import { Item, bindCreationConfig } from '../../lib/Item'
 
-const Source = class extends Item {
-  constructor(data, options) {
-    super(data, Object.assign({}, creationOptions, options))
-  }
-}
+const Source = class extends Item { }
 
-const creationOptions = bindCreationConfig({
+bindCreationConfig({
+  dataCleaner  : (data) => { delete data.id; return data },
   itemClass: Source,
   itemName: 'external alert source',
   keyField: 'entityLegalName',

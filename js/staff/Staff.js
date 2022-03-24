@@ -11,7 +11,6 @@ const Staff = class extends Resources {
     super(Object.assign(
       {},
       rest,
-      StaffMember.creationOptions,
       {
         additionalItemCreationOptions : Object.assign({}, additionalItemCreationOptions, { org }),
         indexes                       : [{ indexField : 'employmentStatus', relationship : idxType.ONE_TO_MANY }]
@@ -73,18 +72,11 @@ const checkCondition = (condition, member) => {
 
 Staff.checkCondition = checkCondition
 
-Staff.csvTransform = (staffMember) => {
-  const data = staffMember.data
-  delete data.id
-  const humanData = {}
-  for (const key in data) { // eslint-disable-line guard-for-in
-    const newKey = toSentenceCase(key)
-    humanData[newKey] = key !== 'roles'
-      ? data[key]
-      : data[key].map(r => `${r.name}/${r.manager}`).join(';')
-  }
-
-  return humanData
-}
+Object.defineProperty(Staff, 'itemConfig', {
+  value        : StaffMember.itemConfig,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
+})
 
 export { Staff }

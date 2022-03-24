@@ -10,48 +10,23 @@ import { Item, defaultIdNormalizer } from './Item'
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
-  /**
-  * Used to transform incoming ID into a standard format. Must be a function that takes a single argument of the raw ID
-  * and returns a normalized ID. The default normalizer expects a string and will lowercase it.
-  */
-  #idNormalizer
   #itemCreationOptions
   #fileName
   /**
   * Internal 'by ID' index.
   */
   #indexById
-  #itemClass
-  #itemName
-  /**
-  * Our 'keyField'. We will always annotate incoming objcts with 'id', but the resource may use another field for it's
-  * canonical ID.
-  */
-  #keyField
-  #dataCleaner
-  #resourceName
 
   constructor({
     fileName,
-    idNormalizer,
     indexes = [],
-    itemClass = Item,
     additionalItemCreationOptions = {},
     // TODO: if itemName not specified, deduce from 'itemClass'
-    itemName, // TODO: really more 'itemTypeName' or 'itemClassName' or something
     items = [],
-    keyField,
-    dataCleaner,
     readFromFile = false,
-    resourceName
   }) {
     this.#fileName = fileName || getSourceFile(items)
-    this.#idNormalizer = idNormalizer || itemClass.creationOptions?.idNormalizer || defaultIdNormalizer
-    this.#itemClass = itemClass
-    this.#itemName = itemName
-    this.#keyField = keyField
-    this.#resourceName = resourceName
-    this.#dataCleaner = dataCleaner
+    
     if (readFromFile === true && items && items.length > 0) {
       throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${resourceName}.`)
     }
@@ -65,34 +40,50 @@ const Resources = class {
     items = items || []
     const seen = {}
     items.forEach((item) => {
-      item.id = this.#idNormalizer(item.id || item[this.#keyField])
+      item.id = item.id || this.idNormalizer(item[this.keyField])
       if (seen[item.id] === true) {
-        throw new Error(`Found items with duplicate key field '${keyField}' values ('${item.id}') in the ${this.resourceName} list.`)
+        throw new Error(`Found items with duplicate key field '${this.keyField}' values ('${item.id}') in the ${this.resourceName} list.`)
       }
       seen[item.id] = true
     })
 
     this.listManager = new ListManager({
-      className : resourceName,
-      keyField,
-      idNormalizer,
+      className : this.resourceName,
+      keyField: this.keyField,
+      idNormalizer: this.idNormalizer,
       items
     })
     this.#indexById = this.listManager.getIndex('byId')
     this.#itemCreationOptions = Object.assign({},
-      additionalItemCreationOptions,
-      { idNormalizer, itemName, keyField, resourceName }
+      additionalItemCreationOptions
     )
     this.#addIndexes(indexes)
   }
 
-  get keyField() { return this.#keyField }
-  get itemName() { return this.#itemName }
-  get resourceName() { return this.#resourceName }
+  // item config convenience accessors
+  get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
+  
+  get dataFlatenner() { return this.constructor.itemConfig.dataFlattener }
+  
+  /**
+  * See [Item.idNormalizer](./Item.md#idnormalizer)
+  */
+  get idNormalizer() { return this.constructor.itemConfig.idNormalizer }
+  
+  get itemClass() { return this.constructor.itemConfig.itemClass }
+  
+  get itemName() { return this.constructor.itemConfig.itemName }
+  
+  /**
+  * See [Item.keyField](./Item.md#keyfield)
+  */
+  get keyField() { return this.constructor.itemConfig.keyField }
+  
+  get resourceName() { return this.constructor.itemConfig.resourceName }
 
   add(data) {
     data = ensureRaw(data)
-    if (data.id === undefined) data.id = this.#idNormalizer(data[this.#keyField])
+    if (data.id === undefined) data.id = this.idNormalizer(data[this.keyField])
 
     if (this.has(data.id)) {
       throw new Error(`Cannot add ${this.itemName} with existing key '${data.id}'; try 'update'.`)
@@ -113,9 +104,9 @@ const Resources = class {
 
   update(data, { skipGet = false, ...rest } = {}) {
     data = ensureRaw(data)
-    const id = data[this.#keyField]
+    const id = data[this.keyField]
     if (!this.has(id) === undefined) {
-      throw new Error(`No such ${this.#itemName} with key '${id}' to update; try 'add'.`)
+      throw new Error(`No such ${this.itemName} with key '${id}' to update; try 'add'.`)
     }
 
     this.listManager.updateItem(data)
@@ -126,7 +117,7 @@ const Resources = class {
   }
 
   delete(itemId, { required = false } = {}) {
-    itemId = this.#idNormalizer(itemId)
+    itemId = this.idNormalizer(itemId)
     const item = this.#indexById[itemId]
     if (required === true && item === undefined) {
       throw new Error(`No such item with id '${item.id}' found.`)
@@ -142,9 +133,9 @@ const Resources = class {
   *
   * - `sort`: the field to sort on. Defaults to 'id'. Set to falsy unsorted and slightly faster results.
   */
-  list({ sort = this.#keyField, ...rest } = {}) {
+  list({ sort = this.keyField, ...rest } = {}) {
     // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
-    const items = this.constructor.sort({
+    const items = this.constructor.sort({ // TODO: this is an odd construction... why relegate to static function?
       sort,
       items : [...this.listManager.getItems({ noClone : true })]
     })
@@ -155,8 +146,8 @@ const Resources = class {
     if (!fileName) { throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`) }
 
     let itemList = this.list({ rawData : true }) // now we have a deep copy, so we don't have to worry about changes
-    if (this.#dataCleaner) {
-      itemList = itemList.map((i) => this.#dataCleaner(i))
+    if (this.dataCleaner) {
+      itemList = itemList.map((i) => this.dataCleaner(i))
     }
     fs.writeFileSync(fileName, JSON.stringify(itemList, null, '  '))
   }
@@ -179,7 +170,7 @@ const Resources = class {
   * the incoming options.
   */
   createItem(data) {
-    return new this.#itemClass(data, this.#itemCreationOptions)
+    return new this.itemClass(data, this.#itemCreationOptions)
   }
 
   #dataToItem(data, { clean = false, required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
@@ -187,15 +178,16 @@ const Resources = class {
       throw new Error('Incompatible options; \'clean = true\' requires \'raw data = true\'')
     }
     if (required === true && data === undefined) {
-      errMsgGen = errMsgGen || (() => `Did not find required ${this.#itemName}${id ? ` '${id}'.` : ''}.`)
-      throw new Error(errMsgGen(data[this.#keyField]))
+      errMsgGen = errMsgGen || (() => `Did not find required ${this.itemName}${id ? ` '${id}'.` : ''}.`)
+      throw new Error(errMsgGen(data[this.keyField]))
     }
 
     if (data === undefined) return undefined
     if (rawData === true) {
       data = structuredClone(data)
-      data.id = data[this.#keyField]
-      return clean === true ? this.#dataCleaner(data) : data
+      // TODO: is this necessary? Or can we rely on prior behavior to have guaranteed ID by this point?
+      data.id = data[this.keyField]
+      return clean === true ? this.dataCleaner(data) : data
     }
     // else
     return this.createItem(data)
@@ -205,7 +197,7 @@ const Resources = class {
     return rawData !== true
       ? data.map((data) => this.createItem(data))
       : clean === true
-        ? data.map((i) => structuredClone(this.#dataCleaner(i)))
+        ? data.map((i) => structuredClone(this.dataCleaner(i)))
         : structuredClone(data)
   }
 

@@ -12,7 +12,7 @@ const AuditRecords = class extends Resources {
     super(Object.assign(
       {},
       options,
-      AuditRecord.creationOptions,
+      AuditRecord.itemConfig,
       {
         indexes : [
           { indexField : 'auditId', relationship : idxType.ONE_TO_MANY },
@@ -51,6 +51,13 @@ const checkCondition = (condition, productRec) => {
 
 Object.defineProperty(AuditRecords, 'checkCondition', {
   value        : checkCondition,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
+})
+
+Object.defineProperty(AuditRecords, 'itemConfig', {
+  value        : AuditRecord.itemConfig,
   writable     : false,
   enumerable   : true,
   configurable : false

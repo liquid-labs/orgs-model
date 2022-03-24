@@ -15,7 +15,7 @@ const Vendors = class extends Resources {
     super(Object.assign(
       {},
       options,
-      Vendor.creationOptions,
+      Vendor.itemConfig,
       { indexes : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }] }
     ))
 
@@ -51,5 +51,12 @@ const checkCondition = (condition, productRec) => {
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
+
+Object.defineProperty(Vendors, 'itemConfig', {
+  value        : Vendor.itemConfig,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
+})
 
 export { Vendors }

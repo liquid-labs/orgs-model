@@ -1,12 +1,8 @@
 import { Item, bindCreationConfig } from '../lib/Item'
 
-const AuditRecord = class extends Item {
-  constructor(data, options) {
-    super(data, Object.assign({}, creationOptions, options))
-  }
-}
+const AuditRecord = class extends Item { }
 
-const creationOptions = bindCreationConfig({
+bindCreationConfig({
   itemClass    : AuditRecord,
   itemName     : 'audit record',
   keyField     : 'id',

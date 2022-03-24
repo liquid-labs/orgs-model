@@ -152,27 +152,24 @@ const defaultIdNormalizer = (id) => typeof id === 'string' ? id.toLowerCase() : 
 
 const Item = class {
   #data
-  #idNormalizer
-  #keyField
-  #hasExplicitId
 
-  constructor(data, { idNormalizer = defaultIdNormalizer, allowSet = [], itemName, keyField, ...rest } = {}) {
-    if (keyField === undefined) {
+  constructor(data, { allowSet = [], ...rest } = {}) {
+    if (Object.getPrototypeOf(this) === Item.prototype) {
+      throw new Error("'Item's cannot be created directly. You must create a sub-class and configure it via 'bindCreationConfig'.")
+    }
+    
+    if (this.keyField === undefined) {
       throw new Error('Key field must be specified. '
         + "Note, 'Item' is not typically created directly. Create a subclass or specify 'options.keyField' directly.")
     }
     this.#data = data
-    this.#idNormalizer = idNormalizer
-    this.#keyField = keyField
 
-    if (!data[keyField]) {
-      throw new Error(`Key field '${keyField}' value '${data[keyField]}' is non-truthy!`)
+    if (!data[this.keyField]) {
+      throw new Error(`Key field '${this.keyField}' value '${data[this.keyField]}' is non-truthy!`)
     }
 
-    if ('id' in data) this.#hasExplicitId = true
-    else {
-      data.id = idNormalizer(data[keyField])
-      this.#hasExplicitId = false
+    if (data.id === undefined) {
+      data.id = this.idNormalizer(data[this.keyField])
     }
 
     const [propIndex, methodIndex] = indexAllProperties(this)
@@ -189,39 +186,73 @@ const Item = class {
   // get id() { return this.#data.id || this.#idNormalizer(this.#data[this.#keyField]) }
 
   get data() { return structuredClone(this.#data) }
+  
+  get dataCleaned() {
+    const data = this.data
+    return this.dataCleaner ? this.dataCleaner(data) : data
+  }
 
   // TODO: drop this
   get rawData() { return this.#data }
+  
+  // item config convenience accessors
+  get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
+  
+  get dataFlatenner() { return this.constructor.itemConfig.dataFlattener }
+  
+  /**
+  * Used to transform incoming ID into a standard format. Must be a function that takes a single argument of the raw ID
+  * and returns a normalized ID. The default normalizer expects a string and will lowercase it.
+  */
+  get idNormalizer() { return this.constructor.itemConfig.idNormalizer }
+  
+  get itemClass() { return this.constructor.itemConfig.itemClass }
+  
+  get itemName() { return this.constructor.itemConfig.itemName }
+  
+  /**
+  * Our 'keyField'. We will always annotate incoming objcts with 'id', but the resource may use another field for it's
+  * canonical ID.
+  */
+  get keyField() { return this.constructor.itemConfig.keyField }
+  
+  get resourceName() { return this.constructor.itemConfig.resourceName }
 }
 
+const requiredItemConfig = [ 'itemClass', 'itemName', 'keyField', 'resourceName' ]
 /**
-* Creates a frozen resource 'creationOptions' and immutably binds it to the resource class.
+* Creates a frozen resource 'itemConfig' and immutably binds it to the resource class.
 *
 * #### Parameters
 *
-* - `itemClass`: The class used to create new resource items. This is also where the class `creationOptions' is bound.
+* - `itemClass`: The class used to create new resource items. This is also where the class `itemConfig' is bound.
 * - `itemName`: The name by which to refer resource items.
 * - `keyField`: The key field used as or to generate an ID.
 * - `resourceName`: The name by which to refer to the resource as a wole and multiple resource items.
 * - `idNormalizer`: (opt) A function used to normalize the key field when creating implied IDs. Will default to the
 *     `defaultIdNormalizer` if not specified.
 */
-const bindCreationConfig = ({ itemClass, itemName, keyField, resourceName, idNormalizer }) => {
-  // create basic, minimal options
-  const creationOptions = { itemClass, itemName, keyField, resourceName }
-  // add optional configurations
-  if (idNormalizer) creationOptions.idNormalizer = idNormalizer
+const bindCreationConfig = (itemConfig) => {
+  // verify required items
+  for (const requiredConfig of requiredItemConfig) {
+    if (itemConfig[requiredConfig]== undefined) {
+      throw new Error(`Missing required field '${requiredConfig}' when creating new Item type; got: ${JSON.stringify(itemConfig, null, '  ')}}`)
+    }
+  }
+  if (itemConfig.idNormalizer === undefined) {
+    itemConfig.idNormalizer = defaultIdNormalizer
+  }
   // lock it down
-  Object.freeze(creationOptions)
-  // bind it
-  Object.defineProperty(itemClass, 'creationOptions', {
-    value        : creationOptions,
+  Object.freeze(itemConfig)
+  // bind it to the item class
+  Object.defineProperty(itemConfig.itemClass, 'itemConfig', {
+    value        : itemConfig,
     writable     : false,
     enumerable   : true,
     configurable : false
   })
 
-  return creationOptions
+  return itemConfig
 }
 
-export { Item, defaultIdNormalizer, bindCreationConfig }
+export { Item, bindCreationConfig }

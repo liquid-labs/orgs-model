@@ -12,7 +12,7 @@ const Technologies = class extends Resources {
     super(Object.assign(
       {},
       options,
-      Technology.creationOptions
+      Technology.itemConfig
     ))
 
     this.checkCondition = checkCondition
@@ -63,5 +63,12 @@ const checkCondition = (condition, productRec) => {
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }
+
+Object.defineProperty(Technologies, 'itemConfig', {
+  value        : Technology.itemConfig,
+  writable     : false,
+  enumerable   : true,
+  configurable : false
+})
 
 export { Technologies }
