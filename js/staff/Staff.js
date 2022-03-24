@@ -1,5 +1,3 @@
-import { toSentenceCase } from 'js-convert-case'
-
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import * as idxType from '../lib/index-relationships'

@@ -238,8 +238,8 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
 }
 
 bindCreationConfig({
-  allowSet     : ['familyName', 'givenName', 'roles'],
-  dataCleaner  : (data) => { delete data._sourceFileName; delete data.id; return item },
+  allowSet      : ['familyName', 'givenName', 'roles'],
+  dataCleaner   : (data) => { delete data._sourceFileName; delete data.id; return data },
   dataFlattener : (data) => {
     data.roles = data.roles.map(r => `${r.name}/${r.manager}`).join(';')
     return data

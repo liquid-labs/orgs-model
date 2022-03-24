@@ -12,7 +12,7 @@ const Role = class extends Item {
   isQualifiable() { return !!this.qualifiable }
 }
 
-const itemConfig = bindCreationConfig({
+bindCreationConfig({
   itemClass    : Role,
   itemName     : 'role',
   keyField     : 'name',

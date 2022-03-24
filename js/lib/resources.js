@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import { getSourceFile } from '@liquid-labs/federated-json'
 
 import { ListManager } from './ListManager'
-import { Item, defaultIdNormalizer } from './Item'
+import { Item } from './Item'
 
 /**
 * Common class for base resources support simple get and list functions.
@@ -23,15 +23,15 @@ const Resources = class {
     additionalItemCreationOptions = {},
     // TODO: if itemName not specified, deduce from 'itemClass'
     items = [],
-    readFromFile = false,
+    readFromFile = false
   }) {
     this.#fileName = fileName || getSourceFile(items)
-    
+
     if (readFromFile === true && items && items.length > 0) {
-      throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${resourceName}.`)
+      throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${this.resourceName}.`)
     }
     if (readFromFile === true && !fileName) {
-      throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${resourceName}.`)
+      throw new Error(`Must specify 'fileName' when 'readFromFile : true' while loading ${this.resourceName}.`)
     }
     if (readFromFile === true) {
       items = JSON.parse(fs.readFileSync(fileName))
@@ -48,9 +48,9 @@ const Resources = class {
     })
 
     this.listManager = new ListManager({
-      className : this.resourceName,
-      keyField: this.keyField,
-      idNormalizer: this.idNormalizer,
+      className    : this.resourceName,
+      keyField     : this.keyField,
+      idNormalizer : this.idNormalizer,
       items
     })
     this.#indexById = this.listManager.getIndex('byId')
@@ -62,23 +62,23 @@ const Resources = class {
 
   // item config convenience accessors
   get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
-  
+
   get dataFlatenner() { return this.constructor.itemConfig.dataFlattener }
-  
+
   /**
   * See [Item.idNormalizer](./Item.md#idnormalizer)
   */
   get idNormalizer() { return this.constructor.itemConfig.idNormalizer }
-  
+
   get itemClass() { return this.constructor.itemConfig.itemClass }
-  
+
   get itemName() { return this.constructor.itemConfig.itemName }
-  
+
   /**
   * See [Item.keyField](./Item.md#keyfield)
   */
   get keyField() { return this.constructor.itemConfig.keyField }
-  
+
   get resourceName() { return this.constructor.itemConfig.resourceName }
 
   add(data) {
@@ -170,7 +170,7 @@ const Resources = class {
   * the incoming options.
   */
   createItem(data) {
-    return new this.itemClass(data, this.#itemCreationOptions)
+    return new this.itemClass(data, this.#itemCreationOptions) // eslint-disable-line new-cap
   }
 
   #dataToItem(data, { clean = false, required = false, rawData = false, id, errMsgGen, ...rest } = {}) {

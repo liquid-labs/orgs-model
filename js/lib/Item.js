@@ -157,7 +157,7 @@ const Item = class {
     if (Object.getPrototypeOf(this) === Item.prototype) {
       throw new Error("'Item's cannot be created directly. You must create a sub-class and configure it via 'bindCreationConfig'.")
     }
-    
+
     if (this.keyField === undefined) {
       throw new Error('Key field must be specified. '
         + "Note, 'Item' is not typically created directly. Create a subclass or specify 'options.keyField' directly.")
@@ -186,7 +186,7 @@ const Item = class {
   // get id() { return this.#data.id || this.#idNormalizer(this.#data[this.#keyField]) }
 
   get data() { return structuredClone(this.#data) }
-  
+
   get dataCleaned() {
     const data = this.data
     return this.dataCleaner ? this.dataCleaner(data) : data
@@ -194,32 +194,32 @@ const Item = class {
 
   // TODO: drop this
   get rawData() { return this.#data }
-  
+
   // item config convenience accessors
   get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
-  
+
   get dataFlatenner() { return this.constructor.itemConfig.dataFlattener }
-  
+
   /**
   * Used to transform incoming ID into a standard format. Must be a function that takes a single argument of the raw ID
   * and returns a normalized ID. The default normalizer expects a string and will lowercase it.
   */
   get idNormalizer() { return this.constructor.itemConfig.idNormalizer }
-  
+
   get itemClass() { return this.constructor.itemConfig.itemClass }
-  
+
   get itemName() { return this.constructor.itemConfig.itemName }
-  
+
   /**
   * Our 'keyField'. We will always annotate incoming objcts with 'id', but the resource may use another field for it's
   * canonical ID.
   */
   get keyField() { return this.constructor.itemConfig.keyField }
-  
+
   get resourceName() { return this.constructor.itemConfig.resourceName }
 }
 
-const requiredItemConfig = [ 'itemClass', 'itemName', 'keyField', 'resourceName' ]
+const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'resourceName']
 /**
 * Creates a frozen resource 'itemConfig' and immutably binds it to the resource class.
 *
@@ -235,7 +235,7 @@ const requiredItemConfig = [ 'itemClass', 'itemName', 'keyField', 'resourceName'
 const bindCreationConfig = (itemConfig) => {
   // verify required items
   for (const requiredConfig of requiredItemConfig) {
-    if (itemConfig[requiredConfig]== undefined) {
+    if (itemConfig[requiredConfig] === undefined) {
       throw new Error(`Missing required field '${requiredConfig}' when creating new Item type; got: ${JSON.stringify(itemConfig, null, '  ')}}`)
     }
   }
