@@ -91,7 +91,7 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
     if (key === 'isProxy') return true
     // object method calls can go through the get handler first to retrieve the function
     // TODO: the 'private' thing is a workaround for a Babel bug (?) that messes up private calls
-    else if (methodIndex[key] || propIndex[key] || key.match(/private/)) {
+    else if (methodIndex[key] || propIndex[key] || key.match?.(/private/)) {
       try {
         return receiver
           ? Reflect.get(object, key, receiver)
@@ -142,7 +142,9 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
   getOwnPropertyDescriptor : (target, key) => {
     // TODO: really, theh property as percieved by the user is not configurable; but if we set that false, the proxy complains that it doesn't match the underlying data property...
     return Object.getOwnPropertyDescriptor(target, key)
-      || Object.assign(Object.getOwnPropertyDescriptor(data, key), { writable : false, configurable : true })
+      || Object.getOwnPropertyDescriptor(data, key)
+      // TODO: we want to do something like below, because it's not true that the data keys are writable, in general, but '@fast-csv/format' was running into errors
+      // || Object.assign(Object.getOwnPropertyDescriptor(data, key), { writable : false, configurable : true })
   }
 })
 
