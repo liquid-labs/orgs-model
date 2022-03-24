@@ -120,3 +120,6 @@
 
 ## Release 1.0.0-beta.74
 * Refresh policy structure _(zane@liquid-labs.com; 2022-03-15T18:31:05.247Z)_
+
+## Release 1.0.0-beta.75
+* Generalize output format handling _(zane@liquid-labs.com; 2022-03-23T22:56:56.521Z)_
