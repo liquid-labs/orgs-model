@@ -1,5 +1,4 @@
 import { toSentenceCase } from 'js-convert-case'
-         toSentenceCase
 
 import { Evaluator } from '@liquid-labs/condition-eval'
 
@@ -78,13 +77,13 @@ Staff.csvTransform = (staffMember) => {
   const data = staffMember.data
   delete data.id
   const humanData = {}
-  for (const key in data) {
+  for (const key in data) { // eslint-disable-line guard-for-in
     const newKey = toSentenceCase(key)
     humanData[newKey] = key !== 'roles'
       ? data[key]
       : data[key].map(r => `${r.name}/${r.manager}`).join(';')
   }
-  
+
   return humanData
 }
 
