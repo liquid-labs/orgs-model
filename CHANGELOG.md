@@ -112,7 +112,7 @@
 ## Release 1.0.0-beta.72
 * Initial implementation _(zane@liquid-labs.com; 2022-03-01T02:49:04.197Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-03-02T17:01:31.000Z)_
-* _**hotfix**_: used new standard 'itemConfig' flow; lint fixes _(zane@liquid-labs.com; 2022-03-02T18:42:18.000Z)_
+* _**hotfix**_: used new standard 'creationOptions' flow; lint fixes _(zane@liquid-labs.com; 2022-03-02T18:42:18.000Z)_
 
 ## Release 1.0.0-beta.73
 * _**hotfix**_: fix getter/proxy problem _(zane@liquid-labs.com; 2022-03-04T21:09:41.000Z)_
@@ -123,3 +123,7 @@
 
 ## Release 1.0.0-beta.75
 * Generalize output format handling _(zane@liquid-labs.com; 2022-03-23T22:56:56.521Z)_
+
+## Release 1.0.0-beta.76
+* _**hotfix**_: simplify option handlin by binding to class (constructors) rather than passing through instances _(zane@liquid-labs.com; 2022-03-24T16:10:41.000Z)_
+* _**hotfix**_: lint fixes; caught one functional error _(zane@liquid-labs.com; 2022-03-24T16:14:32.000Z)_
