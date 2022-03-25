@@ -63,7 +63,7 @@ const Resources = class {
   // item config convenience accessors
   get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
 
-  get dataFlatenner() { return this.constructor.itemConfig.dataFlattener }
+  get dataFlattener() { return this.constructor.itemConfig.dataFlattener }
 
   /**
   * See [Item.idNormalizer](./Item.md#idnormalizer)
@@ -197,7 +197,7 @@ const Resources = class {
     return rawData !== true
       ? data.map((data) => this.createItem(data))
       : clean === true
-        ? data.map((i) => structuredClone(this.dataCleaner(i)))
+        ? data.map((i) => this.dataCleaner(structuredClone(i)))
         : structuredClone(data)
   }
 

@@ -198,7 +198,7 @@ const Item = class {
   // item config convenience accessors
   get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
 
-  get dataFlatenner() { return this.constructor.itemConfig.dataFlattener }
+  get dataFlattener() { return this.constructor.itemConfig.dataFlattener }
 
   /**
   * Used to transform incoming ID into a standard format. Must be a function that takes a single argument of the raw ID
