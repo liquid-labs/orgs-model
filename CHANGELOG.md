@@ -128,3 +128,6 @@
 * _**hotfix**_: simplify option handlin by binding to class (constructors) rather than passing through instances _(zane@liquid-labs.com; 2022-03-24T16:10:41.000Z)_
 * _**hotfix**_: lint fixes; caught one functional error _(zane@liquid-labs.com; 2022-03-24T16:14:32.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-03-24T16:15:07.000Z)_
+
+## Release 1.0.0-beta.77
+* Support noHeader and fields options on output _(zane@liquid-labs.com; 2022-03-24T18:47:25.662Z)_
