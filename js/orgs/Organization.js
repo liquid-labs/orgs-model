@@ -33,7 +33,7 @@ const Organization = class {
     this.staff.validate({ required : true })
   }
 
-  // TODO: some external code relies on access to inner state; remove this once that's fixed
+  // TODO: some external code relies on access to inner state; remove this once that's fixed; if it's 'read-only', then keep this, but return a structuredClone?
   get innerState() { return this.#innerState }
 
   // TODO: deprecated; just use 'org.roles'
