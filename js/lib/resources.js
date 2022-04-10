@@ -196,7 +196,7 @@ const Resources = class {
   #dataToList(data, { clean = false, rawData = false } = {}) {
     return rawData !== true
       ? data.map((data) => this.createItem(data))
-      : clean === true
+      : clean === true && this.dataCleaner
         ? data.map((i) => this.dataCleaner(structuredClone(i)))
         : structuredClone(data)
   }

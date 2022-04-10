@@ -410,3 +410,21 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2022-04-10T02:07:20.530Z
+  startEpochMillis: 1649556440530
+  issues:
+    - https://github.com/Liquid-Labs/liq-roles/issues/1
+  branch: 2022.04.07-zane@liquid-labs.com-implement_basic_list_with
+  branchFrom: 9eb340774ad24dc9b86944ef69c21f7cb7efe9c5
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-roles"
+    - "@liquid-labs/liq-core"
+    - "@liquid-labs/liq-handlers-lib"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Implement basic list with visible roles support
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
