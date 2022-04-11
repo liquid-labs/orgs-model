@@ -131,3 +131,9 @@
 
 ## Release 1.0.0-beta.77
 * Support noHeader and fields options on output _(zane@liquid-labs.com; 2022-03-24T18:47:25.662Z)_
+
+## Release 1.0.0-beta.78
+* _**hotfix**_: improved TODO message for future reference _(zane@liquid-labs.com; 2022-03-28T00:05:03.000Z)_
+* Implement basic list with visible roles support _(zane@liquid-labs.com; 2022-04-10T02:07:20.530Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-04-11T23:12:43.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-04-11T23:13:55.000Z)_

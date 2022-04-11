@@ -78,7 +78,7 @@ const Roles = class extends Resources {
   getStaffInRole(roleName) {
     return this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
   }
-  
+
   list({
     all = false,
     includeIndirect = false,
@@ -103,7 +103,7 @@ const Roles = class extends Resources {
     else { // theoretically not possible, but included for future robustness
       throw new Error('Could not determine filter for options: ', arguments[0])
     }
-    
+
     return super.list(rest).filter(filter)
   }
 }
