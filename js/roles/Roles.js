@@ -30,7 +30,7 @@ const Roles = class extends Resources {
       let qualifier
       // now fuzzy match if desired
       if (result === undefined && fuzzy === true) {
-        const matchingRoles = this.list({ rawData : true }).filter((role) => {
+        const matchingRoles = this.list({ rawData : true, all : true }).filter((role) => {
           if (role.matcher !== undefined) {
             const { antiPattern, pattern, qualifierGroup } = role.matcher
             const match = name.match(new RegExp(pattern, 'i'))
@@ -78,7 +78,42 @@ const Roles = class extends Resources {
   getStaffInRole(roleName) {
     return this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
   }
+  
+  list({
+    all = false,
+    includeIndirect = false,
+    excludeDesignated = false,
+    ...rest
+  } = {}) {
+    if (all === true || (includeIndirect === true && excludeDesignated === false)) {
+      return super.list(rest)
+    }
+
+    let filter
+    if (includeIndirect === false) {
+      const indirectFilter = notImpliedFilterGenerator(this.org.orgStructure)
+      filter = excludeDesignated
+        ? indirectFilter
+        : (r) => indirectFilter(r) || designatedFilter(r)
+    }
+    else if (excludeDesignated === true) {
+      filter = notDesignatedFilter
+    }
+    // already handled as equiv to 'all' : (includeIndirect === true && excludeDesignated === false)
+    else { // theoretically not possible, but included for future robustness
+      throw new Error('Could not determine filter for options: ', arguments[0])
+    }
+    
+    return super.list(rest).filter(filter)
+  }
 }
+
+const designatedFilter = (role) => role.designated === true
+const notDesignatedFilter = (role) => !role.designated
+
+// TODO: do we really have to worry about undefined roles at this point?
+const notImpliedFilterGenerator = (orgStructure) => (role) =>
+  orgStructure.getNodeByRoleName(role.name)?.implied === false
 
 /**
 * Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Roles targets in
