@@ -30,7 +30,7 @@ const Roles = class extends Resources {
       let qualifier
       // now fuzzy match if desired
       if (result === undefined && fuzzy === true) {
-        const matchingRoles = this.list({ rawData : true }).filter((role) => {
+        const matchingRoles = this.list({ rawData : true, all : true }).filter((role) => {
           if (role.matcher !== undefined) {
             const { antiPattern, pattern, qualifierGroup } = role.matcher
             const match = name.match(new RegExp(pattern, 'i'))
@@ -77,6 +77,23 @@ const Roles = class extends Resources {
 
   getStaffInRole(roleName) {
     return this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
+  }
+  
+  list({
+    all = false,
+    includeIndirect = false,
+    excludeDesignated = false,
+    ...rest
+  } = {}) {
+    if (all === true || includeIndirect === true) {
+      return super.list(rest)
+    }
+    
+    /*const directFilter = (r) =>
+      this.org.orgStructure.getNodeByRoleName(r.name)?.implied !== true*/
+    const filter = (r) => this.org.orgStructure.getNodeByRoleName(r.name)?.implied === false || r.designated === true
+    
+    return super.list(rest).filter(filter)
   }
 }
 
