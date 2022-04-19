@@ -2,8 +2,8 @@
 
 use strict; use warnings;
 
-my $output = shift;
 my $input = shift;
+my $output = shift;
 
 open my $fd, "<", $input or die "Cannot open '$input' for input.";
 open my $out, ">", $output or die "Cannot open '$output' for output.";
@@ -20,20 +20,15 @@ while (my $line = <$fd>) {
   }
   elsif ($line !~ /^(#.*|\s*)$/) { # is a non-empty, non-comment line?
     # substite a 'non-quoted' value; if not-non-quoted value, then continue processing.
-    if ($line !~ s/^([^']+)=([^'#]+)\s*(#.*)?$/$1 : $2/) {
+    if ($line !~ s/^([^']+)=([^'#]+)(\s*#?.*)$/$1 : $2$3/) {
       $line =~ s/([^']*)\s*=\s*'/$1 : '/;
       if ($line !~ /'[^']*'/) { # then it's multiline
         $line =~ s/:\s*'/: |\n  /;
         $in_multiline = 1;
       }
-      else {
-        $line =~ s/('[^']*')\s*(#.*)?$/$1/; # allow and remove trailing comments
-      }
     } # else already handled by the '!~' with substitution. :)
   } # blank or comment test
-  else { # is a non-multiline blank or comment
-    next; # to skip the line print
-  }
+  # is a non-multiline blank or comment; which is fine for yaml
 
   print $out "$line\n";
 }
