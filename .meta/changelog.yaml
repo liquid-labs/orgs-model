@@ -430,3 +430,19 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2022-04-18T19:15:12.354Z
+  startEpochMillis: 1650309312354
+  issues:
+    - https://github.com/Liquid-Labs/liq-policy/issues/5
+  branch: 2022.04.18-zane@liquid-labs.com-move_policy_building_tools
+  branchFrom: ea146395f72589931b2010dad342d9273ce7d406
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-policy"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Move policy building tools here and update
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
