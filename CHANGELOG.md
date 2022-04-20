@@ -137,3 +137,6 @@
 * Implement basic list with visible roles support _(zane@liquid-labs.com; 2022-04-10T02:07:20.530Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-04-11T23:12:43.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-04-11T23:13:55.000Z)_
+
+## Release 1.0.0-beta.79
+* Move policy building tools here and update _(zane@liquid-labs.com; 2022-04-18T19:15:12.354Z)_
