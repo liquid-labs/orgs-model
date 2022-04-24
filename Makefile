@@ -1,18 +1,31 @@
+.DELETE_ON_ERROR:
+.PHONY: all lint lint-fix qa test
+
 NPM_BIN:=$(shell npm bin)
 CATALYST_SCRIPTS:=$(NPM_BIN)/catalyst-scripts
-BASH_ROLLUP:=$(NPM_BIN)/bash-rollup
 
-GLOSSARY_SRC:=src/liq-gen-glossary
-GLOSSARY_SRC_JS:=$(GLOSSARY_SRC)/generate-glossary.js $(GLOSSARY_SRC)/index.js
-GLOSSARY_GENERATOR_JS:=dist/generate-glossary.js
-GLOSSARY_GENERATOR_BIN:=dist/liq-gen-glossary.sh
+DIST=dist
+ORGS_MODEL_SRC:=js/
+ORGS_MODEL_FILES:=$(shell find $(ORGS_MODEL_SRC) -type f -not -path "*/test/*")
+ORGS_MODEL:=$(DIST)/orgs-model.js
 
-BUILD_TARGETS:=$(GLOSSARY_GENERATOR_BIN) $(GLOSSARY_GENERATOR_JS)
+BUILD_TARGETS:=$(ORGS_MODEL)
+
+default: all
 
 all: $(BUILD_TARGETS)
 
-$(GLOSSARY_GENERATOR_JS): package.json $(GLOSSARY_SRC_JS)
-	JS_SRC=$(GLOSSARY_SRC) JS_OUT=$@ JS_SOURCEMAP=true $(CATALYST_SCRIPTS) build
+$(ORGS_MODEL): $(ORGS_MODEL_FILES)
+	JS_SOURCEMAP=true $(CATALYST_SCRIPTS) build
 
-$(GLOSSARY_GENERATOR_BIN): $(GLOSSARY_SRC)/liq-gen-glossary.sh $(GLOSSARY_GENERATOR_JS)
-	$(BASH_ROLLUP) $< $@
+test:
+	$(CATALYST_SCRIPTS) pretest
+	$(CATALYST_SCRIPTS) test
+
+lint:
+	$(CATALYST_SCRIPTS) lint
+	
+lint-fix:
+	$(CATALYST_SCRIPTS) lint-fix
+	
+qa: test lint

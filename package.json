@@ -8,13 +8,13 @@
     "dist/"
   ],
   "scripts": {
-    "build": "JS_SOURCEMAP=true catalyst-scripts build && make",
-    "pretest": "catalyst-scripts pretest",
-    "test": "catalyst-scripts test",
+    "build": "make",
+    "test": "make test",
     "preversion": "npm run build && npm test && npm run lint",
     "postversion": "git push --tags upstream",
-    "lint": "catalyst-scripts lint",
-    "lint:fix": "catalyst-scripts lint-fix"
+    "lint": "make lint",
+    "lint:fix": "make lint-fix",
+    "qa": "make qa"
   },
   "repository": {
     "type": "git",
@@ -27,8 +27,6 @@
   },
   "homepage": "https://github.com/Liquid-Labs/orgs-model#readme",
   "devDependencies": {
-    "@liquid-labs/bash-rollup": "^1.0.0-alpha.5",
-    "@liquid-labs/bash-toolkit": "^1.0.0-alpha.52",
     "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.53",
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.22",
