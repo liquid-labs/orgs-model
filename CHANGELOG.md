@@ -140,3 +140,7 @@
 
 ## Release 1.0.0-beta.79
 * Move policy building tools here and update _(zane@liquid-labs.com; 2022-04-18T19:15:12.354Z)_
+
+## Release 1.0.0-beta.80
+* _**hotfix**_: migrated glossary generation tool to liq-policy _(zane@liquid-labs.com; 2022-04-24T22:36:59.000Z)_
+* _**hotfix**_: moved package scripts logic to Makefile _(zane@liquid-labs.com; 2022-04-24T22:47:37.000Z)_
