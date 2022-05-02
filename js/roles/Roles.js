@@ -79,14 +79,26 @@ const Roles = class extends Resources {
     return this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
   }
 
+  /**
+  * Options:
+  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `includeStaff=true`
+  * - `excludeDesignated`: only include titular roles
+  * - `includeIndirect`: include indirect roles which may be defined by the system but are never directly assigned to staff members
+  * - `includeStaff`: include the global, implicit 'staff' role
+  */
   list({
     all = false,
-    includeIndirect = false,
     excludeDesignated = false,
-    ...rest
+    includeIndirect = false,
+    sortEmploymentStatusFirst = false,
+    ...listOptions
   } = {}) {
-    if (all === true || (includeIndirect === true && excludeDesignated === false)) {
-      return super.list(rest)
+    if (sortEmploymentStatusFirst === true) {
+      listOptions.sortFunc = employmentSorter
+    }
+    
+    if (all === true || (includeIndirect === true && excludeDesignated === false && includeStaff === true)) {
+      return super.list(listOptions)
     }
 
     let filter
@@ -104,7 +116,7 @@ const Roles = class extends Resources {
       throw new Error('Could not determine filter for options: ', arguments[0])
     }
 
-    return super.list(rest).filter(filter)
+    return super.list(listOptions).filter(filter)
   }
 }
 
@@ -114,6 +126,35 @@ const notDesignatedFilter = (role) => !role.designated
 // TODO: do we really have to worry about undefined roles at this point?
 const notImpliedFilterGenerator = (orgStructure) => (role) =>
   orgStructure.getNodeByRoleName(role.name)?.implied === false
+
+const employmentSorter = (a,b) => {
+  const aName = a.name
+  const bName = b.name
+  if (aName === bName) { // I don't think this ever happens, but just in case
+    return 0
+  }
+  if (aName === 'Staff') {
+    return -1
+  }
+  if (bName === 'Staff') {
+    return 1
+  }
+  if (aName === 'Employee') { // we know bName isn't 'Staff'
+    return -1
+  }
+  if (bName === 'Employee') { // we know aName isn't 'Staff'
+    return 1
+  }
+  if (aName === 'Contractor') { // we know bName isn't 'Staff' or 'Employee'
+    return -1
+  }
+  if (bName === 'Contractor') { // we know aName isn't 'Staff' or 'Employee'
+    return 1
+  }
+  else {
+    return aName.localeCompare(bName)
+  }
+}
 
 /**
 * Obligitory 'checkCondition' function provided by the API for processing inclusion or exclusion of Roles targets in
