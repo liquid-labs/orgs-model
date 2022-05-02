@@ -131,14 +131,20 @@ const Resources = class {
   *
   * ### Parameters
   *
-  * - `sort`: the field to sort on. Defaults to 'id'. Set to falsy unsorted and slightly faster results.
+  * - `sort`: the field to sort on. Defaults to 'id'. Set to `false` for unsorted and slightly faster results.
+  * - `sortFunc`: a specialized sort function. If provided, then `sort` will be ignored, even if `false`.
   */
-  list({ sort = this.keyField, ...rest } = {}) {
+  list({ sort=this.keyField, sortFunc, ...rest } = {}) {
     // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
-    const items = this.constructor.sort({ // TODO: this is an odd construction... why relegate to static function?
-      sort,
-      items : [...this.listManager.getItems({ noClone : true })]
-    })
+    const items = [...this.listManager.getItems({ noClone : true })]
+    if (sortFunc !== undefined) {
+      console.log('sorting according to sort func...')
+      items.sort(sortFunc)
+    }
+    else if (sort !== false){
+      items.sort(fieldSort(sort))
+    }
+
     return this.#dataToList(items, rest)
   }
 
@@ -210,13 +216,9 @@ const Resources = class {
       return this.#dataToItem(result, Object.assign(options || {}, { id : key }))
     }
   }
-
-  static sort({ sort = 'id', items }) {
-    if (sort) items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
-
-    return items
-  }
 }
+
+const fieldSort = (field) => (a, b) => a[field].localeCompare(b[field])
 
 const ensureRaw = (data) => data instanceof Item ? data.rawData : structuredClone(data)
 
