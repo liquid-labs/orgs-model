@@ -91,12 +91,25 @@ const Resources = class {
 
     this.listManager.addItem(data)
   }
-
+  
   /**
   * Retrieves a single vendor/product entry by name.
+  *
+  * Options:
+  * - `dataAugmentor`: used to augment the base data, such as with implied or context driven data that isn't reflected
+  *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
+  *   users.
   */
-  get(id, options) {
-    const data = this.#indexById[id]
+  get(id, { dataAugmentor, ...options }) {
+    let data
+    if (dataAugmentor === undefined) {
+      data = this.#indexById[id]
+    }
+    else {
+      data = structuredClone(this.#indexById[id])
+      dataAugmentor(data)
+    }
+    // TODO: if data augmented, then we could signal to skip the structuredClone that happens here
     return this.#dataToItem(data, Object.assign({}, options || {}, { id }))
   }
 
@@ -130,21 +143,34 @@ const Resources = class {
   * Returns a list of the resource items.
   *
   * ### Parameters
-  *
+  * - `dataAugmentor`: used to augment the base data, such as with implied or context driven data that isn't reflected
+  *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
+  *   users.
   * - `sort`: the field to sort on. Defaults to 'id'. Set to `false` for unsorted and slightly faster results.
   * - `sortFunc`: a specialized sort function. If provided, then `sort` will be ignored, even if `false`.
   */
-  list({ sort=this.keyField, sortFunc, ...rest } = {}) {
-    // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
-    const items = [...this.listManager.getItems({ noClone : true })]
+  list({ dataAugmentor, sort=this.keyField, sortFunc, ...rest } = {}) {
+    let items
+    if (dataAugmentor === undefined) {
+      // then we can optimize by using the raw data, which is cloned later it 'dataToList'
+      // 'noClone' provides the underlying list itself; since we (usually) sort, we copy through unrolling
+      items = [...this.listManager.getItems({ noClone : true })]
+    }
+    else { // then we want the raw data, but need it to be cloned because it's going to be manipulated
+      items = this.listManager.getItems({ rawData : true })
+      for (const item of items) {
+        dataAugmentor(item)
+      }
+    }
+
     if (sortFunc !== undefined) {
-      console.log('sorting according to sort func...')
       items.sort(sortFunc)
     }
     else if (sort !== false){
       items.sort(fieldSort(sort))
     }
 
+    // TODO: if data is augmented, we can skip the structuredClone that happens in #dataToList because it's already copied.
     return this.#dataToList(items, rest)
   }
 
