@@ -5,6 +5,8 @@ import { Resources } from '../lib/resources'
 import { StaffMember } from './StaffMember'
 
 const Staff = class extends Resources {
+  #addEmploymentRoles
+  
   constructor({ org, additionalItemCreationOptions, ...rest }) {
     super(Object.assign(
       {},
@@ -19,9 +21,20 @@ const Staff = class extends Resources {
 
     this.org = org
     this.checkCondition = checkCondition
+    this.#addEmploymentRoles = bindAddEmploymentRolesToOrg(org)
+  }
+
+  get(id, options) {
+    options.dataAugmentor = this.#addEmploymentRoles
+    return super.get(id, options)
   }
 
   getByRoleName(role) { return this.list().filter(s => s.hasRole(role)) }
+
+  list(options) {
+    options.dataAugmentor = this.#addEmploymentRoles
+    return super.list(options)
+  }
 
   validate({ required = false } = {}) {
     const errors = []
@@ -34,6 +47,24 @@ const Staff = class extends Resources {
 
     return errors.length === 0 ? true : errors
   }
+}
+
+const bindAddEmploymentRolesToOrg = (org) => (data) => {
+  const { employmentStatus, roles } = data
+  if (employmentStatus !== 'board' && employmentStatus !== 'logical') {
+    if (employmentStatus === 'contractor') {
+      roles.push(org.roles.get('Contractor', { rawData: true }))
+    }
+    else if (employmentStatus === 'employee') {
+      roles.push(org.roles.get('Employee', { rawData: true }))
+    }
+    else {
+      throw new Error(`Staff member '${data.email}' has invalid employment status '${employmentStatus}'`)
+    }
+    roles.push(org.roles.get('Staff', { rawData: true }))
+  }
+  
+  return data
 }
 
 // Setup 'zeroRes' matchers for 'checkCondition'. If matching parameters are missing, treated as false rather than an

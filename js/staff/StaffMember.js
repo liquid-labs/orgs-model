@@ -239,7 +239,24 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
 
 bindCreationConfig({
   allowSet      : ['familyName', 'givenName', 'roles'],
-  dataCleaner   : (data) => { delete data._sourceFileName; delete data.id; return data },
+  dataCleaner   : (data) => {
+    delete data._sourceFileName
+    delete data.id
+    const { employmentStatus } = data
+    if (employmentStatus === 'employee' || employmentStatus === 'contractor') {
+      // Note the use of 'reduceRight' so that we get the higher index first, which is important when we delete them.
+      const indexes = data.roles.reduceRight((acc, r, i) => {
+        if (r.name === 'Staff' || r.name === 'Employee' || r.name === 'Contractor') {
+          acc.push(i)
+        }
+        return acc
+      }, [])
+      for (const i of indexes) {
+        data.roles.splice(i, 1)
+      }
+    }
+    return data
+  },
   dataFlattener : (data) => {
     data.roles = data.roles?.map(r => `${r.name}/${r.manager}`).join(';')
     return data
