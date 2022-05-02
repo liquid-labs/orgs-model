@@ -444,3 +444,20 @@
   securityNotes: []
   drpBcpNotes: []
   backoutNotes: []
+- startTimestamp: 2022-05-02T16:41:01.337Z
+  startEpochMillis: 1651509661337
+  issues:
+    - https://github.com/liquid-labs/liq-roles/issues/3
+  branch: 2022.05.01-zane@liquid-labs.com-incorporate_actual_roles_report
+  branchFrom: c5053ffd4a1bee939186c6eecff4870bd607764c
+  workInitiator: zane@liquid-labs.com
+  branchInitiator: zane@liquid-labs.com
+  involvedProjects:
+    - "@liquid-labs/liq-roles"
+    - "@liquid-labs/liq-handlers-lib"
+    - "@liquid-labs/orgs-model"
+  changeNotes:
+    - Incorporate actual roles report
+  securityNotes: []
+  drpBcpNotes: []
+  backoutNotes: []
