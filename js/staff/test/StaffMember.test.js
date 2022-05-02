@@ -56,7 +56,7 @@ describe('StaffMember', () => {
 
   test('processes designated role (Sensitive Data Handler)', () => {
     const dev = org.staff.get('dev@foo.com')
-    expect(dev.getOwnRoleNames()).toHaveLength(2)
+    expect(dev.getOwnRoleNames()).toHaveLength(4) // 2 assigned and 2 implicit
     expect(dev.hasRole('Sensitive Data Handler')).toBe(true)
   })
 })

@@ -21,7 +21,7 @@ describe('Roles', () => {
 
   test('parses test file', () => {
     expect(testRoles).toBeTruthy()
-    expect(testRoles.list()).toHaveLength(8)
+    expect(testRoles.list()).toHaveLength(11)
   })
 
   // CEO is first in the underlying list

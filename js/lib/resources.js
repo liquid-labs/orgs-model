@@ -100,12 +100,9 @@ const Resources = class {
   *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
   *   users.
   */
-  get(id, { dataAugmentor, ...options }) {
-    let data
-    if (dataAugmentor === undefined) {
-      data = this.#indexById[id]
-    }
-    else {
+  get(id, { dataAugmentor, ...options }={}) {
+    let data = this.#indexById[id]
+    if (dataAugmentor !== undefined && data !== undefined) {
       data = structuredClone(this.#indexById[id])
       dataAugmentor(data)
     }

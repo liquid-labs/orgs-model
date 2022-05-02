@@ -62,11 +62,11 @@ const StaffMember = class extends Item {
 
   getAllRoleNames() { return this.getAllRolesData().map((r) => r.name) }
 
-  hasRole(roleName) {
-    return !!this.getRole(roleName, { fuzzy : true, rawData : true })
+  hasRole(roleName, { direct=false }={}) {
+    return !!this.getRole(roleName, { direct, fuzzy : true, rawData : true })
   }
 
-  getRole(roleName, { fuzzy = false, rawData = false } = {}) {
+  getRole(roleName, { direct, fuzzy = false, rawData = false } = {}) {
     let roleFilter
     if (fuzzy === true) {
       const orgRole = this.#org.roles.get(roleName, { fuzzy })
@@ -87,9 +87,9 @@ const StaffMember = class extends Item {
       roleFilter = (r) => r.name === roleName
     }
     const data = this.roles.find(roleFilter) // let's avoid building '#allRoles' if we don't have to
-      || this.getAllRolesData().find(roleFilter)
+      || (!direct && this.getAllRolesData().find(roleFilter))
 
-    if (data === undefined) {
+    if (!data) {
       return undefined
     }
     return rawData === true

@@ -1,4 +1,7 @@
 [
+  { "name": "Staff", "designated": true, "summary": "Staff."},
+  { "name": "Employee", "designated": true, "summary": "Employee."},
+  { "name": "Contractor", "designated": true, "summary": "Contractor."},
   { "name": "CEO", "singular": true, "titular": true, "jobDescription": "Chief executive officer." },
   { "name": "CTO", "singular": true, "titular": true, "jobDescription": "Chief technical officer.", "implies": [ { "name": "Head Developer", "mngrProtocol": "self" }, { "name": "Sensitive Data Handler", "mngrProtocol": "self" } ] },
   { "name": "Developer", "titular": true, "qualifiable": true, "jobDescription": "Hacker." },
