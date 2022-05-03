@@ -198,8 +198,8 @@ const Resources = class {
   * A 'safe' creation method that guarantees the creation options defined in the resource constructor will override the
   * the incoming options.
   */
-  createItem(data) {
-    return new this.itemClass(data, this.#itemCreationOptions) // eslint-disable-line new-cap
+  createItem(data, options) {
+    return new this.itemClass(data, Object.assign({}, options, this.#itemCreationOptions)) // eslint-disable-line new-cap
   }
 
   #dataToItem(data, { clean = false, required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
@@ -219,7 +219,7 @@ const Resources = class {
       return clean === true ? this.dataCleaner(data) : data
     }
     // else
-    return this.createItem(data)
+    return this.createItem(data, rest)
   }
 
   #dataToList(data, { clean = false, rawData = false } = {}) {

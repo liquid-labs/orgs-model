@@ -4,8 +4,14 @@ import { Resources } from '../lib/resources'
 import { Role } from './Role'
 
 const Roles = class extends Resources {
-  constructor({ org, ...rest }) {
-    super(rest)
+  constructor({ org, additionalItemCreationOptions, ...rest }) {
+    super(Object.assign(
+      {},
+      rest,
+      {
+        additionalItemCreationOptions : Object.assign({}, additionalItemCreationOptions, { org })
+      }
+    ))
 
     this.org = org
     this.checkCondition = checkCondition
@@ -15,8 +21,8 @@ const Roles = class extends Resources {
     const superOptions = fuzzy === true
       // then we need to generate matching options but with required guaranteed false because if there's not an exact
       // match, we'll use the fuzzy matching logic.
-      ? Object.assign({}, options, { required : false })
-      : options
+      ? Object.assign({}, options, { required : false, org: this.org })
+      : Object.assign({}, options, { org: this.org })
 
     let result = super.get(name, superOptions)
     const {
@@ -62,7 +68,7 @@ const Roles = class extends Resources {
         throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
       }
 
-      if (rawData !== true && result) result = new Role(result)
+      if (rawData !== true && result) result = new Role(result, { org: this.org })
 
       if (includeQualifier === true) {
         return [result, qualifier]

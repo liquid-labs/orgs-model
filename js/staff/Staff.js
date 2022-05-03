@@ -31,10 +31,10 @@ const Staff = class extends Resources {
 
   /**
   * Options:
-  * - `direct`: Only staff who have the role directly assigned are returned.
+  * - `directAssigned`: Only staff who have the role directly assigned are returned.
   */
-  getByRoleName(role, { direct }={}) {
-    return this.list().filter(s => s.hasRole(role, { direct }))
+  getByRoleName(role, { ownRole }={}) {
+    return this.list().filter(s => s.hasRole(role, { ownRole }))
   }
 
   list(options = {}) {
