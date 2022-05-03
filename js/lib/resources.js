@@ -91,7 +91,7 @@ const Resources = class {
 
     this.listManager.addItem(data)
   }
-  
+
   /**
   * Retrieves a single vendor/product entry by name.
   *
@@ -100,7 +100,7 @@ const Resources = class {
   *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
   *   users.
   */
-  get(id, { dataAugmentor, ...options }={}) {
+  get(id, { dataAugmentor, ...options } = {}) {
     let data = this.#indexById[id]
     if (dataAugmentor !== undefined && data !== undefined) {
       data = structuredClone(this.#indexById[id])
@@ -146,7 +146,7 @@ const Resources = class {
   * - `sort`: the field to sort on. Defaults to 'id'. Set to `false` for unsorted and slightly faster results.
   * - `sortFunc`: a specialized sort function. If provided, then `sort` will be ignored, even if `false`.
   */
-  list({ dataAugmentor, sort=this.keyField, sortFunc, ...rest } = {}) {
+  list({ dataAugmentor, sort = this.keyField, sortFunc, ...rest } = {}) {
     let items
     if (dataAugmentor === undefined) {
       // then we can optimize by using the raw data, which is cloned later it 'dataToList'
@@ -163,7 +163,7 @@ const Resources = class {
     if (sortFunc !== undefined) {
       items.sort(sortFunc)
     }
-    else if (sort !== false){
+    else if (sort !== false) {
       items.sort(fieldSort(sort))
     }
 

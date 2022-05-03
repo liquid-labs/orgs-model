@@ -9,7 +9,7 @@ const StaffRole = class extends Role {
     super(
       // the 'data' is just the staff role data, which is incomplete; so we retrieve the 'Role' data and merge
       Object.assign(org.roles.get(data.name, { fuzzy : true, rawData : true }), data), // data
-      Object.assign({ org }, rest )// options
+      Object.assign({ org }, rest)// options
     )
     this.#memberEmail = memberEmail
     this.#org = org

@@ -24,7 +24,12 @@ describe('Roles', () => {
     expect(testRoles.list()).toHaveLength(11)
   })
 
-  // CEO is first in the underlying list
-  test('properly sets fields', () =>
-    expect(testRoles.list({ sort: false }).some((r) => r.name === 'CEO')).toBe(true))
+  describe('list', () => {
+    // CEO is first in the underlying list
+    test("respects 'sort=false' option", () =>
+      expect(testRoles.list({ sort: false }).some((r) => r.name === 'CEO')).toBe(true))
+      
+    test("respects 'excludeDesignated=true' option", () =>
+      expect(testRoles.list({ excludeDesignated: true })).toHaveLength(6)) // 5 of 11 are designated
+  })
 })

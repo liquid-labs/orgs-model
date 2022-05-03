@@ -4,16 +4,16 @@ const impliesCache = {}
 
 const Role = class extends Item {
   #org
-  
+
   constructor(data, { org, ...rest }) {
     super(data, rest)
-    
+
     if (org === undefined) {
-      throw new Error(`'org' is a required parameter when creating a new Role.`)
+      throw new Error('\'org\' is a required parameter when creating a new Role.')
     }
     this.#org = org
   }
-  
+
   getName() { return this.name }
 
   getManager() { return this.manager }
@@ -23,12 +23,12 @@ const Role = class extends Item {
   isDesignated() { return !!this.designated }
 
   isQualifiable() { return !!this.qualifiable }
-  
+
   impliesRole(roleName) {
     if (roleName === this.name) {
       return true
     }
-    
+
     const myName = this.name
     if (!(myName in impliesCache)) {
       impliesCache[myName] = {}
@@ -44,7 +44,7 @@ const Role = class extends Item {
     if (this.superRole) {
       toCheck.push(this.superRole)
     }
-    
+
     // console.log('toCheck(2): ', toCheck) // DEBUG
     for (const impliedRoleName of toCheck) {
       if (impliedRoleName === roleName) {
@@ -60,7 +60,7 @@ const Role = class extends Item {
         return true
       }
     }
-    
+
     myCache[roleName] = false
     return false
   }

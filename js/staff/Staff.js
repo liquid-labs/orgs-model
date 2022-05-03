@@ -6,7 +6,7 @@ import { StaffMember } from './StaffMember'
 
 const Staff = class extends Resources {
   #addEmploymentRoles
-  
+
   constructor({ org, additionalItemCreationOptions, ...rest }) {
     super(Object.assign(
       {},
@@ -24,7 +24,7 @@ const Staff = class extends Resources {
     this.#addEmploymentRoles = bindAddEmploymentRolesToOrg(org)
   }
 
-  get(id, options={}) {
+  get(id, options = {}) {
     options.dataAugmentor = this.#addEmploymentRoles
     return super.get(id, options)
   }
@@ -33,7 +33,7 @@ const Staff = class extends Resources {
   * Options:
   * - `directAssigned`: Only staff who have the role directly assigned are returned.
   */
-  getByRoleName(role, { ownRole }={}) {
+  getByRoleName(role, { ownRole } = {}) {
     return this.list().filter(s => s.hasRole(role, { ownRole }))
   }
 
@@ -57,20 +57,20 @@ const Staff = class extends Resources {
 
 const bindAddEmploymentRolesToOrg = (org) => (data) => {
   const { employmentStatus, roles } = data
-  
+
   if (employmentStatus !== 'board' && employmentStatus !== 'logical') {
     if (employmentStatus === 'contractor') {
-      roles.push(org.roles.get('Contractor', { rawData: true, required: true }))
+      roles.push(org.roles.get('Contractor', { rawData : true, required : true }))
     }
     else if (employmentStatus === 'employee') {
-      roles.push(org.roles.get('Employee', { rawData: true, required: true }))
+      roles.push(org.roles.get('Employee', { rawData : true, required : true }))
     }
     else {
       throw new Error(`Staff member '${data.email}' has invalid employment status '${employmentStatus}'`)
     }
-    roles.push(org.roles.get('Staff', { rawData: true, required: true }))
+    roles.push(org.roles.get('Staff', { rawData : true, required : true }))
   }
-  
+
   return data
 }
 

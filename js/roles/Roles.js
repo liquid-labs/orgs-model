@@ -21,8 +21,8 @@ const Roles = class extends Resources {
     const superOptions = fuzzy === true
       // then we need to generate matching options but with required guaranteed false because if there's not an exact
       // match, we'll use the fuzzy matching logic.
-      ? Object.assign({}, options, { required : false, org: this.org })
-      : Object.assign({}, options, { org: this.org })
+      ? Object.assign({}, options, { required : false, org : this.org })
+      : Object.assign({}, options, { org : this.org })
 
     let result = super.get(name, superOptions)
     const {
@@ -68,7 +68,7 @@ const Roles = class extends Resources {
         throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
       }
 
-      if (rawData !== true && result) result = new Role(result, { org: this.org })
+      if (rawData !== true && result) result = new Role(result, { org : this.org })
 
       if (includeQualifier === true) {
         return [result, qualifier]
@@ -87,14 +87,15 @@ const Roles = class extends Resources {
 
   /**
   * Options:
-  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `includeStaff=true`
+  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `excludeStaff=false`
   * - `excludeDesignated`: only include titular roles
   * - `includeIndirect`: include indirect roles which may be defined by the system but are never directly assigned to staff members
-  * - `includeStaff`: include the global, implicit 'staff' role
+  * - `excludeStaff`: include the global, implicit 'staff' role
   */
   list({
     all = false,
     excludeDesignated = false,
+    excludeStaff = false,
     includeIndirect = false,
     sortEmploymentStatusFirst = false,
     ...listOptions
@@ -102,38 +103,35 @@ const Roles = class extends Resources {
     if (sortEmploymentStatusFirst === true) {
       listOptions.sortFunc = employmentSorter
     }
-    
-    if (all === true || (includeIndirect === true && excludeDesignated === false && includeStaff === true)) {
+
+    if (all === true || (includeIndirect === true && excludeDesignated === false && excludeStaff === true)) {
       return super.list(listOptions)
     }
+    const filters = []
 
-    let filter
     if (includeIndirect === false) {
       const indirectFilter = notImpliedFilterGenerator(this.org.orgStructure)
-      filter = excludeDesignated
-        ? indirectFilter
-        : (r) => indirectFilter(r) || designatedFilter(r)
+      filters.push(indirectFilter)
     }
-    else if (excludeDesignated === true) {
-      filter = notDesignatedFilter
+    if (excludeDesignated) {
+      filters.push(notDesignatedFilter)
     }
-    // already handled as equiv to 'all' : (includeIndirect === true && excludeDesignated === false)
-    else { // theoretically not possible, but included for future robustness
-      throw new Error('Could not determine filter for options: ', arguments[0])
+    if (excludeStaff) {
+      filters.push(excludeStaffFilter)
     }
+    const filter = (r) => !filters.some(f => f(r) === false)
 
     return super.list(listOptions).filter(filter)
   }
 }
 
-const designatedFilter = (role) => role.designated === true
 const notDesignatedFilter = (role) => !role.designated
 
 // TODO: do we really have to worry about undefined roles at this point?
 const notImpliedFilterGenerator = (orgStructure) => (role) =>
   orgStructure.getNodeByRoleName(role.name)?.implied === false
 
-const employmentSorter = (a,b) => {
+const employmentSorter = (a, b) => {
   const aName = a.name
   const bName = b.name
   if (aName === bName) { // I don't think this ever happens, but just in case
@@ -160,6 +158,11 @@ const employmentSorter = (a,b) => {
   else {
     return aName.localeCompare(bName)
   }
+}
+
+const excludeStaffFilter = (r) => {
+  const { name } = r
+  return !(name === 'Staff' || name === 'Employee' || name === 'Contractor')
 }
 
 /**

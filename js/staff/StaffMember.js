@@ -62,11 +62,11 @@ const StaffMember = class extends Item {
 
   getAllRoleNames() { return this.getAllRolesData().map((r) => r.name) }
 
-  hasRole(roleName, { ownRole=false }={}) {
+  hasRole(roleName, { ownRole = false } = {}) {
     return !!this.getRole(roleName, { fuzzy : true, ownRole, rawData : true })
   }
 
-  getRole(roleName, { fuzzy = false, ownRole=false, rawData = false } = {}) {
+  getRole(roleName, { fuzzy = false, ownRole = false, rawData = false } = {}) {
     let roleFilter
     if (fuzzy === true) {
       const orgRole = this.#org.roles.get(roleName, { fuzzy })
@@ -244,8 +244,8 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
 }
 
 bindCreationConfig({
-  allowSet      : ['familyName', 'givenName', 'roles'],
-  dataCleaner   : (data) => {
+  allowSet    : ['familyName', 'givenName', 'roles'],
+  dataCleaner : (data) => {
     delete data._sourceFileName
     delete data.id
     const { employmentStatus } = data
