@@ -62,11 +62,11 @@ const StaffMember = class extends Item {
 
   getAllRoleNames() { return this.getAllRolesData().map((r) => r.name) }
 
-  hasRole(roleName) {
-    return !!this.getRole(roleName, { fuzzy : true, rawData : true })
+  hasRole(roleName, { ownRole = false } = {}) {
+    return !!this.getRole(roleName, { fuzzy : true, ownRole, rawData : true })
   }
 
-  getRole(roleName, { fuzzy = false, rawData = false } = {}) {
+  getRole(roleName, { fuzzy = false, ownRole = false, rawData = false } = {}) {
     let roleFilter
     if (fuzzy === true) {
       const orgRole = this.#org.roles.get(roleName, { fuzzy })
@@ -87,9 +87,15 @@ const StaffMember = class extends Item {
       roleFilter = (r) => r.name === roleName
     }
     const data = this.roles.find(roleFilter) // let's avoid building '#allRoles' if we don't have to
-      || this.getAllRolesData().find(roleFilter)
+      || (!ownRole && this.getAllRolesData().find(roleFilter))
 
-    if (data === undefined) {
+    // DEBUG
+    // console.log(`looking for ${roleName} in:`)
+    // console.log(this.roles)
+    // console.log('got: ', data)
+    // GUBED
+
+    if (!data) {
       return undefined
     }
     return rawData === true
@@ -238,8 +244,25 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
 }
 
 bindCreationConfig({
-  allowSet      : ['familyName', 'givenName', 'roles'],
-  dataCleaner   : (data) => { delete data._sourceFileName; delete data.id; return data },
+  allowSet    : ['familyName', 'givenName', 'roles'],
+  dataCleaner : (data) => {
+    delete data._sourceFileName
+    delete data.id
+    const { employmentStatus } = data
+    if (employmentStatus === 'employee' || employmentStatus === 'contractor') {
+      // Note the use of 'reduceRight' so that we get the higher index first, which is important when we delete them.
+      const indexes = data.roles.reduceRight((acc, r, i) => {
+        if (r.name === 'Staff' || r.name === 'Employee' || r.name === 'Contractor') {
+          acc.push(i)
+        }
+        return acc
+      }, [])
+      for (const i of indexes) {
+        data.roles.splice(i, 1)
+      }
+    }
+    return data
+  },
   dataFlattener : (data) => {
     data.roles = data.roles?.map(r => `${r.name}/${r.manager}`).join(';')
     return data

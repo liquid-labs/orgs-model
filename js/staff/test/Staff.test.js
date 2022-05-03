@@ -23,7 +23,7 @@ describe('Staff', () => {
   test('fields', () => {
     const ceo = testStaff.get('ceo@foo.com')
     expect(ceo.email).toBe('ceo@foo.com')
-    expect(ceo.getAllRoles()).toHaveLength(2)
+    expect(ceo.getAllRoles()).toHaveLength(4)
     const ceoRole = ceo.getAllRoles()[0]
     expect(ceoRole.name).toBe('CEO')
     expect(ceoRole.manager).toBe(undefined)

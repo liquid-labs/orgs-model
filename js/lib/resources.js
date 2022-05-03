@@ -94,9 +94,19 @@ const Resources = class {
 
   /**
   * Retrieves a single vendor/product entry by name.
+  *
+  * Options:
+  * - `dataAugmentor`: used to augment the base data, such as with implied or context driven data that isn't reflected
+  *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
+  *   users.
   */
-  get(id, options) {
-    const data = this.#indexById[id]
+  get(id, { dataAugmentor, ...options } = {}) {
+    let data = this.#indexById[id]
+    if (dataAugmentor !== undefined && data !== undefined) {
+      data = structuredClone(this.#indexById[id])
+      dataAugmentor(data)
+    }
+    // TODO: if data augmented, then we could signal to skip the structuredClone that happens here
     return this.#dataToItem(data, Object.assign({}, options || {}, { id }))
   }
 
@@ -130,15 +140,34 @@ const Resources = class {
   * Returns a list of the resource items.
   *
   * ### Parameters
-  *
-  * - `sort`: the field to sort on. Defaults to 'id'. Set to falsy unsorted and slightly faster results.
+  * - `dataAugmentor`: used to augment the base data, such as with implied or context driven data that isn't reflected
+  *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
+  *   users.
+  * - `sort`: the field to sort on. Defaults to 'id'. Set to `false` for unsorted and slightly faster results.
+  * - `sortFunc`: a specialized sort function. If provided, then `sort` will be ignored, even if `false`.
   */
-  list({ sort = this.keyField, ...rest } = {}) {
-    // 'noClone' provides teh underlying list itself; since we sort, let's copy the arry (with 'slice()')
-    const items = this.constructor.sort({ // TODO: this is an odd construction... why relegate to static function?
-      sort,
-      items : [...this.listManager.getItems({ noClone : true })]
-    })
+  list({ dataAugmentor, sort = this.keyField, sortFunc, ...rest } = {}) {
+    let items
+    if (dataAugmentor === undefined) {
+      // then we can optimize by using the raw data, which is cloned later it 'dataToList'
+      // 'noClone' provides the underlying list itself; since we (usually) sort, we copy through unrolling
+      items = [...this.listManager.getItems({ noClone : true })]
+    }
+    else { // then we want the raw data, but need it to be cloned because it's going to be manipulated
+      items = this.listManager.getItems({ rawData : true })
+      for (const item of items) {
+        dataAugmentor(item)
+      }
+    }
+
+    if (sortFunc !== undefined) {
+      items.sort(sortFunc)
+    }
+    else if (sort !== false) {
+      items.sort(fieldSort(sort))
+    }
+
+    // TODO: if data is augmented, we can skip the structuredClone that happens in #dataToList because it's already copied.
     return this.#dataToList(items, rest)
   }
 
@@ -169,8 +198,8 @@ const Resources = class {
   * A 'safe' creation method that guarantees the creation options defined in the resource constructor will override the
   * the incoming options.
   */
-  createItem(data) {
-    return new this.itemClass(data, this.#itemCreationOptions) // eslint-disable-line new-cap
+  createItem(data, options) {
+    return new this.itemClass(data, Object.assign({}, options, this.#itemCreationOptions)) // eslint-disable-line new-cap
   }
 
   #dataToItem(data, { clean = false, required = false, rawData = false, id, errMsgGen, ...rest } = {}) {
@@ -190,7 +219,7 @@ const Resources = class {
       return clean === true ? this.dataCleaner(data) : data
     }
     // else
-    return this.createItem(data)
+    return this.createItem(data, rest)
   }
 
   #dataToList(data, { clean = false, rawData = false } = {}) {
@@ -210,13 +239,9 @@ const Resources = class {
       return this.#dataToItem(result, Object.assign(options || {}, { id : key }))
     }
   }
-
-  static sort({ sort = 'id', items }) {
-    if (sort) items.sort((a, b) => a[sort].localeCompare(b[sort])) // TODO: check if sort field is valid
-
-    return items
-  }
 }
+
+const fieldSort = (field) => (a, b) => a[field].localeCompare(b[field])
 
 const ensureRaw = (data) => data instanceof Item ? data.rawData : structuredClone(data)
 
