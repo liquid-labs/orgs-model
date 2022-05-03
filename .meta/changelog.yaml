@@ -7,7 +7,8 @@
   workInitiator: zane@liquid-labs.com
   branchInitiator: zane@liquid-labs.com
   involvedProjects:
-    - "@liquid-labs/liq-policy"
+    - "@liquid-labs/liq-roles"
+    - "@liquid-labs/liq-handlers-lib"
     - "@liquid-labs/orgs-model"
   changeNotes:
     - Add change flow and lifecycle diagrams
