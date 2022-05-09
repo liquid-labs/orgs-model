@@ -1,31 +1,29 @@
-import * as fjson from '@liquid-labs/federated-json'
+import * as fs from 'fs'
 
-import { loadBashSettings } from './bash-env'
+import * as yaml from 'js-yaml'
+
+import * as fjson from '@liquid-labs/federated-json'
 
 const loadOrgState = ({ dataPath, ...fjsonOptions }) => {
   if (!dataPath) {
     throw new Error('Data path cannot be non-truthy. Must be a string pointing to the root org direcotry.')
   }
 
-  const liqSettingsPath = `${process.env.HOME}/.liq/settings.sh`
-  // console.error(`Loading settings from '${liqSettingsPath}'.`) // DEBUG / TODO: this is useful, but we can't output blindly to stdout because sometimes that output is being captured.
-  loadBashSettings(liqSettingsPath, 'LIQ_PLAYGROUND')
-
-  // first, we handle the original bash-centric approach, centered on individual settings
-  const orgSettingsPath = `${dataPath}/orgs/settings.sh`
-  // TODO: the 'ORG_ID' is expected to be set from the old style settings.sh; we should take this in the constructor
-  loadBashSettings(orgSettingsPath, 'ORG_ID')
-  // the 'settings.sh' values are now availale on process.env
-
-  // and here's the prototype new approach; the read function handles the 'exists' check
-  const rootJsonPath = `${dataPath}/orgs/${process.env.ORG_ID}.json`
+  // for fjson var replacement
+  const rootJsonPath = `${dataPath}/orgs/org.json`
+  process.env.LIQ_PLAYGROUND = `${process.env.HOME}/.liq/playground`
   process.env.ORG_DATA_PATH = dataPath
   process.env.ORG_ROOT_JSON_PATH = rootJsonPath
-
-  // console.error(`Loading root JSON from '${rootJsonPath}'.`) // DEBUG / TODO: this is useful, but we can't output
-  // blindly to stdout because sometimes that output is being captured.
+  
   fjsonOptions = Object.assign({}, fjsonOptions, { rememberSource : true })
-  return fjson.read(rootJsonPath, fjsonOptions)
+  const orgState = fjson.read(rootJsonPath, fjsonOptions)
+  
+  // TODO: this is a workaround; in future, we can just point fjson at the settings.yaml (once it supports yaml)
+  const orgSettingsPath = `${dataPath}/orgs/settings.yaml`
+  const globalSettings = yaml.load(fs.readFileSync(orgSettingsPath, { encoding: 'utf8' }))
+  orgState.settings = globalSettings
+  
+  return orgState
 }
 
 export { loadOrgState }

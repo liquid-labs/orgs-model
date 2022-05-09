@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/Liquid-Labs/orgs-model#readme",
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.53",
+    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.54",
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.22",
     "core-js-pure": "^3.21.1",
@@ -49,5 +49,8 @@
         "--skip-unused"
       ]
     }
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
   }
 }
