@@ -147,3 +147,7 @@
 
 ## Release 1.0.0-beta.81
 * Incorporate actual roles report _(zane@liquid-labs.com; 2022-05-02T16:41:01.337Z)_
+
+## Release 1.0.0-beta.82
+* _**hotfix**_: updated to latest settings/data layout _(zane@liquid-labs.com; 2022-05-09T01:33:59.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-09T01:34:58.000Z)_
