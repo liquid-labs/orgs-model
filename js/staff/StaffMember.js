@@ -203,7 +203,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
       impliedRoles.push(...orgRole.implies)
     }
     if (orgRole.superRole) {
-      impliedRoles.push({ name: orgRole.superRole, mngrProtocol: 'self' })
+      impliedRoles.push({ name : orgRole.superRole, mngrProtocol : 'self' })
     }
     for (const { name: impliedRoleName, mngrProtocol } of impliedRoles) {
       // An implied role can come from multiple sources, so let's check if it's already in place

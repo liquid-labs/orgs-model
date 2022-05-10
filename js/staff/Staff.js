@@ -35,7 +35,7 @@ const Staff = class extends Resources {
   */
   getByRoleName(roles, options) {
     if (typeof roles === 'string') {
-      roles = [ roles ]
+      roles = [roles]
     }
     return this.list().filter(s => {
       for (const role of roles) {
