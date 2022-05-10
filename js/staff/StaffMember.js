@@ -89,12 +89,6 @@ const StaffMember = class extends Item {
     const data = this.roles.find(roleFilter) // let's avoid building '#allRoles' if we don't have to
       || (!ownRole && this.getAllRolesData().find(roleFilter))
 
-    // DEBUG
-    // console.log(`looking for ${roleName} in:`)
-    // console.log(this.roles)
-    // console.log('got: ', data)
-    // GUBED
-
     if (!data) {
       return undefined
     }
@@ -116,7 +110,9 @@ const StaffMember = class extends Item {
 
   // TODO: take 'rawData' option in 'allRoles'
   getAllRolesData() {
-    if (this.#allRoles.length === 0) { initializeAllRoles({ self : this, roles : this.data.roles, allRoles : this.#allRoles, org : this.#org }) }
+    if (this.#allRoles.length === 0) {
+      initializeAllRoles({ self : this, roles : this.data.roles, allRoles : this.#allRoles, org : this.#org })
+    }
     return structuredClone(this.#allRoles)
   }
 
@@ -202,7 +198,14 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         required  : true,
         errMsgGen : (name) => `Staff member '${this.email}' claims unknown role '${name}'.`
       })
-    for (const { name: impliedRoleName, mngrProtocol } of orgRole.implies || []) {
+    const impliedRoles = []
+    if (orgRole.implies !== undefined) {
+      impliedRoles.push(...orgRole.implies)
+    }
+    if (orgRole.superRole) {
+      impliedRoles.push({ name: orgRole.superRole, mngrProtocol: 'self' })
+    }
+    for (const { name: impliedRoleName, mngrProtocol } of impliedRoles) {
       // An implied role can come from multiple sources, so let's check if it's already in place
       const impliedStaffRole = allRoles.find((r) => r.name === impliedRoleName)
       if (impliedStaffRole) {
