@@ -30,11 +30,11 @@ const allFields = [
   'startDate'
 ]
 
-const defaultFields = [ 'name', 'purpose', 'usageStatus' ]
+const defaultFields = ['name', 'purpose', 'usageStatus']
 
 bindCreationConfig({
   allFields,
-  dataCleaner  : (data) => { delete data.id; return data },
+  dataCleaner   : (data) => { delete data.id; return data },
   dataFlattener : (data) => {
     data.departments = data.departments?.join(';')
     data.documentReferences = data.documentReferences?.join(';')
