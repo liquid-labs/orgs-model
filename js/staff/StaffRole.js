@@ -32,7 +32,7 @@ const StaffRole = class extends Role {
       }
     }
     // Should be impossible...
-    throw new Error(`Could not determine manager role for '${this.email}' role '${this.name}'; though did identify manager: ${myManager.name}`)
+    throw new Error(`Could not determine manager role for '${this.memberEmail}' role '${this.name}'; though did identify manager: ${this.managerEmail}`)
   }
 
   get memberEmail() { return this.#memberEmail }
