@@ -157,3 +157,7 @@
 * _**hotfix**_: search 'superRole' for role match _(zane@liquid-labs.com; 2022-05-10T03:18:36.000Z)_
 * _**hotfix**_: support multi-role filter _(zane@liquid-labs.com; 2022-05-10T03:19:22.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-10T03:23:04.000Z)_
+
+## Release 1.0.0-beta.84
+* _**hotfix**_: defined default and all fields _(zane@liquid-labs.com; 2022-05-10T06:48:26.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-10T06:51:53.000Z)_
