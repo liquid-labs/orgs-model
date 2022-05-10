@@ -151,3 +151,9 @@
 ## Release 1.0.0-beta.82
 * _**hotfix**_: updated to latest settings/data layout _(zane@liquid-labs.com; 2022-05-09T01:33:59.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-09T01:34:58.000Z)_
+
+## Release 1.0.0-beta.83
+* _**hotfix**_: fix error message _(zane@liquid-labs.com; 2022-05-10T03:16:24.000Z)_
+* _**hotfix**_: search 'superRole' for role match _(zane@liquid-labs.com; 2022-05-10T03:18:36.000Z)_
+* _**hotfix**_: support multi-role filter _(zane@liquid-labs.com; 2022-05-10T03:19:22.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-10T03:23:04.000Z)_
