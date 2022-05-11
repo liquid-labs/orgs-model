@@ -205,6 +205,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
     if (orgRole.superRole) {
       impliedRoles.push({ name : orgRole.superRole, mngrProtocol : 'self' })
     }
+    
     for (const { name: impliedRoleName, mngrProtocol } of impliedRoles) {
       // An implied role can come from multiple sources, so let's check if it's already in place
       const impliedStaffRole = allRoles.find((r) => r.name === impliedRoleName)
@@ -232,13 +233,14 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
           impliedStaffRoleData[inheritedField] = staffRole[inheritedField]
         }
       }
+      
       if (mngrProtocol === 'self') {
         impliedStaffRoleData.manager = self.data.email // remember, the proxy chain is broken
       }
       else if (mngrProtocol === 'same') {
         impliedStaffRoleData.manager = staffRole.manager
       }
-      else {
+      else if (impliedOrgRole.titular === true) {
         throw new Error(`Unknown manager protocol '${mngrProtocol}' in implication for role '${staffRole.name}'.`)
       }
       allRoles.push(impliedStaffRoleData)
