@@ -161,3 +161,8 @@
 ## Release 1.0.0-beta.84
 * _**hotfix**_: defined default and all fields _(zane@liquid-labs.com; 2022-05-10T06:48:26.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-10T06:51:53.000Z)_
+
+## Release 1.0.0-beta.85
+* _**hotfix**_: fixed issue with titular roles complaining about lack of a maneger (which is not used for titular roles) _(zane@liquid-labs.com; 2022-05-11T20:52:56.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-11T20:53:42.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-05-11T20:53:52.000Z)_
