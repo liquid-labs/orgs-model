@@ -81,8 +81,12 @@ const Roles = class extends Resources {
     return result
   }
 
-  getStaffInRole(roleName) {
-    return this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
+  //TODO: the convention here is reversed; in StaffMember.hasRole(), the option is 'ownRole' which defaults false.
+  //TODO: this is also idiomatic by returning data objects by default rather than the full class
+  getStaffInRole(roleName, { impliedRoles=false } = {}) {
+    return impliedRoles === true
+      ? this.org.staff.list().filter((s) => s.hasRole(roleName)).map((s) => s.data)
+      : this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
   }
 
   /**
