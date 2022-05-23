@@ -143,6 +143,7 @@ const Resources = class {
   * - `dataAugmentor`: used to augment the base data, such as with implied or context driven data that isn't reflected
   *   in the raw data structure. This is intendend for use by concrete resource handlers and should not be used by end
   *   users.
+  * - `rawData`: if true, then JSON structures will be returned rather than full objects.
   * - `sort`: the field to sort on. Defaults to 'id'. Set to `false` for unsorted and slightly faster results.
   * - `sortFunc`: a specialized sort function. If provided, then `sort` will be ignored, even if `false`.
   */
