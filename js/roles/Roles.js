@@ -87,19 +87,25 @@ const Roles = class extends Resources {
 
   /**
   * Options:
-  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `excludeStaff=false`
-  * - `excludeDesignated`: only include titular roles
-  * - `includeIndirect`: include indirect roles which may be defined by the system but are never directly assigned to staff members
-  * - `excludeStaff`: include the global, implicit 'staff' role
+  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `excludeStaff=false`.
+  * - `excludeDesignated`: if true, only include titular roles. Incompatible with `excludeTitular`.
+  * - `excludeStaff`: if true, excludes the the global, implicit 'staff' role.
+  * - `excludeTitular`: if true, only includes designated roles. Incompatible with `excludeDesignated`.
+  * - `includeIndirect`: if true, include indirect roles which may be defined by the system but are never directly assigned to staff members.
   */
   list({
     all = false,
     excludeDesignated = false,
     excludeStaff = false,
+    excludeTitular = false,
     includeIndirect = false,
     sortEmploymentStatusFirst = false,
     ...listOptions
   } = {}) {
+    if (excludeTitular === true && excludeDesignated === true) {
+      throw new Error(`Incompatible options; 'excludeTitular' and 'excludeDesignated' cannot both be true.`)
+    }
+    
     if (sortEmploymentStatusFirst === true) {
       listOptions.sortFunc = employmentSorter
     }
@@ -119,17 +125,31 @@ const Roles = class extends Resources {
     if (excludeStaff) {
       filters.push(excludeStaffFilter)
     }
-    const filter = (r) => !filters.some(f => f(r) === false)
+    if (excludeTitular) {
+      filters.push(notTitularFilter)
+    }
+    // it's included if no one vetos it.
+    const filter = (r) => {
+      return !filters.some((f, i) => {
+        return f(r) === false
+      })
+    }
 
     return super.list(listOptions).filter(filter)
   }
 }
 
 const notDesignatedFilter = (role) => !role.designated
+const notTitularFilter = (role) => !role.titular
 
 // TODO: do we really have to worry about undefined roles at this point?
 const notImpliedFilterGenerator = (orgStructure) => (role) =>
-  orgStructure.getNodeByRoleName(role.name)?.implied === false
+  !orgStructure.getNodeByRoleName(role.name)?.implied
+  
+const excludeStaffFilter = (r) => {
+  const { name } = r
+  return !(name === 'Staff' || name === 'Employee' || name === 'Contractor')
+}
 
 const employmentSorter = (a, b) => {
   const aName = a.name
@@ -158,11 +178,6 @@ const employmentSorter = (a, b) => {
   else {
     return aName.localeCompare(bName)
   }
-}
-
-const excludeStaffFilter = (r) => {
-  const { name } = r
-  return !(name === 'Staff' || name === 'Employee' || name === 'Contractor')
 }
 
 /**
