@@ -81,9 +81,9 @@ const Roles = class extends Resources {
     return result
   }
 
-  //TODO: the convention here is reversed; in StaffMember.hasRole(), the option is 'ownRole' which defaults false.
-  //TODO: this is also idiomatic by returning data objects by default rather than the full class
-  getStaffInRole(roleName, { impliedRoles=false } = {}) {
+  // TODO: the convention here is reversed; in StaffMember.hasRole(), the option is 'ownRole' which defaults false.
+  // TODO: this is also idiomatic by returning data objects by default rather than the full class
+  getStaffInRole(roleName, { impliedRoles = false } = {}) {
     return impliedRoles === true
       ? this.org.staff.list().filter((s) => s.hasRole(roleName)).map((s) => s.data)
       : this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
@@ -107,9 +107,9 @@ const Roles = class extends Resources {
     ...listOptions
   } = {}) {
     if (excludeTitular === true && excludeDesignated === true) {
-      throw new Error(`Incompatible options; 'excludeTitular' and 'excludeDesignated' cannot both be true.`)
+      throw new Error('Incompatible options; \'excludeTitular\' and \'excludeDesignated\' cannot both be true.')
     }
-    
+
     if (sortEmploymentStatusFirst === true) {
       listOptions.sortFunc = employmentSorter
     }
@@ -149,7 +149,7 @@ const notTitularFilter = (role) => !role.titular
 // TODO: do we really have to worry about undefined roles at this point?
 const notImpliedFilterGenerator = (orgStructure) => (role) =>
   !orgStructure.getNodeByRoleName(role.name)?.implied
-  
+
 const excludeStaffFilter = (r) => {
   const { name } = r
   return !(name === 'Staff' || name === 'Employee' || name === 'Contractor')
