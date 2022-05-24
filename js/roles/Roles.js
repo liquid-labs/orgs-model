@@ -85,7 +85,10 @@ const Roles = class extends Resources {
   // TODO: this is also idiomatic by returning data objects by default rather than the full class
   getStaffInRole(roleName, { impliedRoles = false } = {}) {
     return impliedRoles === true
-      ? this.org.staff.list().filter((s) => s.hasRole(roleName)).map((s) => s.data)
+      ? this.org.staff.list()
+          .filter((s) => s.hasRole(roleName))
+          .map((s) => s.data)
+          // .filter((s, i, l) => l.indexOf(s) === i) // the same person can trigger with different roles, so we uniq-ify
       : this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))
   }
 
@@ -146,9 +149,14 @@ const Roles = class extends Resources {
 const notDesignatedFilter = (role) => !role.designated
 const notTitularFilter = (role) => !role.titular
 
-// TODO: do we really have to worry about undefined roles at this point?
-const notImpliedFilterGenerator = (orgStructure) => (role) =>
-  !orgStructure.getNodeByRoleName(role.name)?.implied
+const notImpliedFilterGenerator = (orgStructure) => (role) => {
+  const node = orgStructure.getNodeByRoleName(role.name)
+  const result = !!node && (node && !node.implied)// !!role.designated || !!node
+  // console.log(`testing ${role.name}:\n  node:     ${!!node}; not implied: ${!node.implied} designated? ${role.designated}; node: ${node}\nresult: ${result}`)
+  console.log(`testing ${role.name}: ${new String(result).toUpperCase()}\n  node:     ${!!node}; not implied: ${node ? !node.implied : '-'}\n`)
+  return result
+  // !role.designated && orgStructure.getNodeByRoleName(role.name)
+}
 
 const excludeStaffFilter = (r) => {
   const { name } = r
