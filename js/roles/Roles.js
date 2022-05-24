@@ -153,7 +153,7 @@ const notImpliedFilterGenerator = (orgStructure) => (role) => {
   const node = orgStructure.getNodeByRoleName(role.name)
   const result = !!node && (node && !node.implied)// !!role.designated || !!node
   // console.log(`testing ${role.name}:\n  node:     ${!!node}; not implied: ${!node.implied} designated? ${role.designated}; node: ${node}\nresult: ${result}`)
-  console.log(`testing ${role.name}: ${new String(result).toUpperCase()}\n  node:     ${!!node}; not implied: ${node ? !node.implied : '-'}\n`)
+  // console.log(`testing ${role.name}: ${new String(result).toUpperCase()}\n  node:     ${!!node}; not implied: ${node ? !node.implied : '-'}\n`)
   return result
   // !role.designated && orgStructure.getNodeByRoleName(role.name)
 }
