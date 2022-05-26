@@ -177,3 +177,4 @@
 * _**hotfix**_: removed debug _(zane@liquid-labs.com; 2022-05-24T06:54:13.000Z)_
 * _**hotfix**_: addd support to exclude logical staff from 'getStaffInRole' _(zane@liquid-labs.com; 2022-05-26T01:41:12.000Z)_
 * _**hotfix**_: lint fixes; removed commented out debug _(zane@liquid-labs.com; 2022-05-26T01:45:19.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-05-26T01:45:33.000Z)_
