@@ -24,34 +24,27 @@ const Role = class extends Item {
   isDesignated() { return !!this.designated }
 
   isQualifiable() { return !!this.qualifiable }
-  
+
   get allDuties() {
     if (this.#allDuties !== undefined) {
       return this.#allDuties
     }
     // else figure out all duties
     this.#allDuties = {}
-    const tracker = {}
-    const frontier = [ this.data ]
-    // console.log(`starting frontier: `, frontier) // DEBUG
+    const frontier = [this.data]
     while (frontier.length > 0) {
       const edge = frontier.shift()
       if (edge.duties) {
-        // console.log(`      allDuties pre-merge:`, this.#allDuties, '\n      edge duties: ', edge.duties) // DEBUG
         mergeDuties(this.#allDuties, edge.duties)
-        // console.log(`      allDuties post-merge:`, this.#allDuties) // DEBUG
       }
-      const { superRole, implies=[] } = edge
+      const { superRole, implies = [] } = edge
       if (superRole) {
-        // console.log(`  expanding frontier with superRole ${superRole}`) // DEBUG
-        frontier.push(this.#org.roles.get(superRole, { required: true, rawData: true }))
+        frontier.push(this.#org.roles.get(superRole, { required : true, rawData : true }))
       }
       for (const { name } of implies) {
-        // console.log(`  expanding frontier with implied role ${name}`) // DEBUG
-        frontier.push(this.#org.roles.get(name, { required: true, rawData: true }))
+        frontier.push(this.#org.roles.get(name, { required : true, rawData : true }))
       }
     }
-    // console.log(`${this.name} allDuties: `, this.#allDuties)
     return this.#allDuties
   }
 
@@ -113,7 +106,7 @@ const mergeDuties = (target, source) => {
       target[sourceKey] = [...source[sourceKey]]
     }
   }
-  
+
   return target
 }
 

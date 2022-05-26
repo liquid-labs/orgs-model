@@ -83,7 +83,7 @@ const Roles = class extends Resources {
 
   // TODO: the convention here is reversed; in StaffMember.hasRole(), the option is 'ownRole' which defaults false.
   // TODO: this is also idiomatic by returning data objects by default rather than the full class
-  getStaffInRole(roleName, { impliedRoles=false, excludeLogical=false } = {}) {
+  getStaffInRole(roleName, { impliedRoles = false, excludeLogical = false } = {}) {
     const filters = []
     if (impliedRoles === true) {
       filters.push((s) => s.hasRole(roleName))
@@ -91,11 +91,11 @@ const Roles = class extends Resources {
     else { // requires 'own' role
       filters.push((s) => s.roles.some((r) => r.name === roleName))
     }
-    
+
     if (excludeLogical === true) {
       filters.push(({ employmentStatus }) => employmentStatus !== 'logical')
     }
-    
+
     return this.org.staff.list()
       .filter((s) => {
         for (const f of filters) {
@@ -105,13 +105,13 @@ const Roles = class extends Resources {
         }
         return true
       })
-    
-/*    return impliedRoles === true
+
+    /*    return impliedRoles === true
       ? this.org.staff.list()
           .filter((s) => s.hasRole(roleName))
           .map((s) => s.data)
           // .filter((s, i, l) => l.indexOf(s) === i) // the same person can trigger with different roles, so we uniq-ify
-      : this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName))*/
+      : this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName)) */
   }
 
   /**
