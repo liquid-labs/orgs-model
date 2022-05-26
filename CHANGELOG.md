@@ -166,3 +166,14 @@
 * _**hotfix**_: fixed issue with titular roles complaining about lack of a maneger (which is not used for titular roles) _(zane@liquid-labs.com; 2022-05-11T20:52:56.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-11T20:53:42.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-05-11T20:53:52.000Z)_
+
+## Release 1.0.0-beta.86
+* _**hotfix**_: document Roles.list 'rawData' option _(zane@liquid-labs.com; 2022-05-23T17:03:37.000Z)_
+* _**hotfix**_: implement 'Roles.list' 'excludeTitular' option _(zane@liquid-labs.com; 2022-05-23T17:04:04.000Z)_
+* _**hotfix**_: support getting *all* staff in role as well as 'own role' _(zane@liquid-labs.com; 2022-05-23T19:26:27.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-05-23T20:47:39.000Z)_
+* _**hotfix**_: added support to get 'all duties' _(zane@liquid-labs.com; 2022-05-24T01:49:31.000Z)_
+* _**hotfix**_: fixed filters to properly exclude 'implied' nodesby default _(zane@liquid-labs.com; 2022-05-24T01:50:11.000Z)_
+* _**hotfix**_: removed debug _(zane@liquid-labs.com; 2022-05-24T06:54:13.000Z)_
+* _**hotfix**_: addd support to exclude logical staff from 'getStaffInRole' _(zane@liquid-labs.com; 2022-05-26T01:41:12.000Z)_
+* _**hotfix**_: lint fixes; removed commented out debug _(zane@liquid-labs.com; 2022-05-26T01:45:19.000Z)_
