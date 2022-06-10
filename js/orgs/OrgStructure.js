@@ -9,7 +9,8 @@ const Node = class {
     this.possibleMngrNames = possibleMngrNames || []
     if (primaryManagerNodeName) this.possibleMngrNames.unshift(primaryManagerNodeName)
     this.possibleManagerNodes = []
-    this.children = []
+    this.children = [] // primary report nodes
+    this.reports = {} // all possible reports names (as index)
   }
 
   getName() { return this.name }
@@ -17,6 +18,8 @@ const Node = class {
   getPrimaryManagerNode() { return this.primaryManagerNode }
 
   getPossibleManagerNodes() { return this.possibleManagerNodes }
+  
+  getReportRoleNames() { return Object.keys(this.reports).sort() }
 
   getChildren() { return this.children }
 
@@ -49,6 +52,7 @@ const OrgStructure = class {
         node.primaryManagerNode = primaryManagerNode
         // console.error(`Adding ${node.name} as child of ${primaryManagerNode.name}`) // DEBUG
         primaryManagerNode.children.push(node)
+        primaryManagerNode.reports[node.name] = true
 
         node.possibleMngrNames.forEach(mngrName => {
           const mngr = nodes.find(n => n.name === mngrName)
@@ -58,6 +62,7 @@ const OrgStructure = class {
           }
 
           node.possibleManagerNodes.push(mngr)
+          mngr.reports[node.name] = true
         })
       }
 
