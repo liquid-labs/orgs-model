@@ -1,6 +1,7 @@
 import { Item, bindCreationConfig } from '../lib/Item'
 
 const impliesCache = {}
+const nameMapper = (i) => i.name
 
 const Role = class extends Item {
   #allDuties
@@ -17,7 +18,31 @@ const Role = class extends Item {
 
   getName() { return this.name }
 
-  getManager() { return this.manager }
+  getManagerRoles({ namesOnly=false }={}) {
+    const org = this.#org
+    
+    const mapper = namesOnly === true
+      ? nameMapper
+      : (i) => org.roles.get(i.name)
+    
+    const orgChartNode = this.#org.orgStructure.getNodeByRoleName(this.name)
+    const managers = [ ...orgChartNode.getPossibleManagerNodes() ]
+      .filter((i) => i !== undefined)
+      .map(mapper)
+    
+    return managers
+  }
+  
+  getReportRoles({ namesOnly=false }={}) {
+    const org = this.#org
+      
+    const orgChartNode = this.#org.orgStructure.getNodeByRoleName(this.name)
+    const reportNames = orgChartNode.getReportRoleNames()
+    
+    return namesOnly === true
+      ? reportNames
+      : reportNames.map((i) => org.roles.get(i))
+  }
 
   isTitular() { return !!this.titular }
 
