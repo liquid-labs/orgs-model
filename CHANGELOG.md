@@ -179,3 +179,8 @@
 * _**hotfix**_: lint fixes; removed commented out debug _(zane@liquid-labs.com; 2022-05-26T01:45:19.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-05-26T01:45:33.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-05-26T01:48:12.000Z)_
+
+## Release 1.0.0-beta.87
+* _**hotfix**_: track all reports as well as 'primary' reports _(zane@liquid-labs.com; 2022-06-10T16:42:21.000Z)_
+* _**hotfix**_: removed unused/confusing 'getManager'; added 'getManagerRoles' and 'getReportRoles' _(zane@liquid-labs.com; 2022-06-10T16:42:28.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-06-10T16:42:54.000Z)_
