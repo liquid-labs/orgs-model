@@ -18,7 +18,7 @@ const Node = class {
   getPrimaryManagerNode() { return this.primaryManagerNode }
 
   getPossibleManagerNodes() { return this.possibleManagerNodes }
-  
+
   getReportRoleNames() { return Object.keys(this.reports).sort() }
 
   getChildren() { return this.children }

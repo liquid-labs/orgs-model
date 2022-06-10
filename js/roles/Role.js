@@ -18,27 +18,27 @@ const Role = class extends Item {
 
   getName() { return this.name }
 
-  getManagerRoles({ namesOnly=false }={}) {
+  getManagerRoles({ namesOnly = false } = {}) {
     const org = this.#org
-    
+
     const mapper = namesOnly === true
       ? nameMapper
       : (i) => org.roles.get(i.name)
-    
+
     const orgChartNode = this.#org.orgStructure.getNodeByRoleName(this.name)
-    const managers = [ ...orgChartNode.getPossibleManagerNodes() ]
+    const managers = [...orgChartNode.getPossibleManagerNodes()]
       .filter((i) => i !== undefined)
       .map(mapper)
-    
+
     return managers
   }
-  
-  getReportRoles({ namesOnly=false }={}) {
+
+  getReportRoles({ namesOnly = false } = {}) {
     const org = this.#org
-      
+
     const orgChartNode = this.#org.orgStructure.getNodeByRoleName(this.name)
     const reportNames = orgChartNode.getReportRoleNames()
-    
+
     return namesOnly === true
       ? reportNames
       : reportNames.map((i) => org.roles.get(i))
