@@ -145,7 +145,7 @@ const Roles = class extends Resources {
     const filters = []
 
     if (includeIndirect === false) {
-      const indirectFilter = notImpliedFilterGenerator(this.org.orgStructure)
+      const indirectFilter = notImpliedTitularFilterGenerator(this.org.orgStructure)
       filters.push(indirectFilter)
     }
     if (excludeDesignated) {
@@ -171,7 +171,8 @@ const Roles = class extends Resources {
 const notDesignatedFilter = (role) => !role.designated
 const notTitularFilter = (role) => !role.titular
 
-const notImpliedFilterGenerator = (orgStructure) => (role) => {
+const notImpliedTitularFilterGenerator = (orgStructure) => (role) => {
+  if (role.designated === true) return true
   const node = orgStructure.getNodeByRoleName(role.name)
   const result = !!node && (node && !node.implied)// !!role.designated || !!node
   // console.log(`testing ${role.name}:\n  node:     ${!!node}; not implied: ${!node.implied} designated? ${role.designated}; node: ${node}\nresult: ${result}`)
