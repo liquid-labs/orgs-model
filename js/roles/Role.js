@@ -43,6 +43,28 @@ const Role = class extends Item {
       ? reportNames
       : reportNames.map((i) => org.roles.get(i))
   }
+  
+  // TODO: once we've got plugins done, this logic should move to 'liq-roles'
+  getAccess() {
+    const allAccess = {}
+    for (const { role : accessRole, access } of this.#org.innerState.rolesAccess.accessRules) {
+      if (access === undefined || access.length === 0) continue
+      
+      if (this.impliesRole(accessRole)) {
+        for (const { serviceBundle, type } of access) {
+          const currTypes = allAccess[serviceBundle]
+          if (currTypes === undefined) {
+            allAccess[serviceBundle] = [ type ]
+          }
+          else {
+            allAccess[serviceBundle] = combineAccess({ type, currTypes })
+          }
+        }
+      }
+    }
+    
+    return allAccess
+  }
 
   isTitular() { return !!this.titular }
 
@@ -133,6 +155,57 @@ const mergeDuties = (target, source) => {
   }
 
   return target
+}
+
+const combineAccess = ({ currTypes, type }) => {
+  // first we check if the incoming type is duplicative of or is supersceded by an existing type
+  if (currTypes.includes(type)) {
+    return currTypes
+  }
+  else if (type === 'reader'
+      && (currTypes.includes('editor') || currTypes.includes('manager') || currTypes.includes('admin'))) {
+    return currTypes
+  }
+  else if (type === 'editor' && (currTypes.includes('manager') || currTypes.includes('admin'))) {
+    return currTypes
+  }
+  else if (type === 'manager' && currTypes.includes('admin')) {
+    return currTypes
+  }
+  // new we check if the incoming type superscedes an existing type
+  else if ((type === 'editor' || type === 'manager' || type === 'admin')) {
+    const readerI = currTypes.indexOf('reader')
+    if (readerI >= 0) {
+      currTypes.splice(readerI, 1, type)
+    }
+    else if ((type === 'manager' || type === 'admin')) {
+      const editorI = currTypes.indexOf('editor')
+      if (editorI >= 0) {
+        currTypes.splice(editorI, 1, type)
+      }
+      else if (type === 'admin') {
+        const managerI = currTypes.indexOf('manager')
+        if (managerI >= 0) {
+          currTypes.splice(managerI, 1, type)
+        }
+      }
+    }
+  }
+  else { // we add the incoming type to the list; should really only happen with 'access-manager' + one non-admin type
+    currTypes.push(type)
+  }
+  currTypes.sort((a, b) => {
+    if (a === b) return 0
+    if (a === 'reader') return -1
+    if (b === 'reader') return 1
+    if (a === 'access-manager' || a === 'admin') return 1
+    if (b === 'access-manager' || b === 'admin') return -1
+    if (a === 'manager') return -1
+    if (b === 'manager') return 1
+    // then the only thing left is editor, but since they are not both editor, then one of the previous checks must have
+    // already passed
+  })
+  return currTypes
 }
 
 bindCreationConfig({
