@@ -161,15 +161,16 @@ const Resources = class {
       }
     }
 
+    // TODO: if data is augmented, we can skip the structuredClone that happens in #dataToList because it's already copied.
+    const resultItems = this.#dataToList(items, rest)
     if (sortFunc !== undefined) {
-      items.sort(sortFunc)
+      resultItems.sort(sortFunc)
     }
     else if (sort !== false) {
-      items.sort(fieldSort(sort))
+      resultItems.sort(fieldSort(sort))
     }
-
-    // TODO: if data is augmented, we can skip the structuredClone that happens in #dataToList because it's already copied.
-    return this.#dataToList(items, rest)
+    
+    return resultItems
   }
 
   write({ fileName = this.#fileName } = {}) {
