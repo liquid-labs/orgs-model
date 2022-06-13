@@ -190,3 +190,4 @@
 * _**hotfix**_: rename 'excludeStaff' param to 'excludeStaffRoles' _(zane@liquid-labs.com; 2022-06-13T16:57:18.000Z)_
 * _**hotfix**_: implemented instance method 'Role.getAccess()' to provide access summary data _(zane@liquid-labs.com; 2022-06-13T21:30:09.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-06-13T21:32:08.000Z)_
+* _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-06-13T21:32:21.000Z)_
