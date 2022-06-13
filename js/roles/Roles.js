@@ -116,16 +116,16 @@ const Roles = class extends Resources {
 
   /**
   * Options:
-  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `excludeStaff=false`.
+  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `excludeStaffRoles=false`.
   * - `excludeDesignated`: if true, only include titular roles. Incompatible with `excludeTitular`.
-  * - `excludeStaff`: if true, excludes the the global, implicit 'staff' role.
+  * - `excludeStaffRoles`: if true, excludes the the global, implicit 'staff' role.
   * - `excludeTitular`: if true, only includes designated roles. Incompatible with `excludeDesignated`.
   * - `includeIndirect`: if true, include indirect roles which may be defined by the system but are never directly assigned to staff members.
   */
   list({
     all = false,
     excludeDesignated = false,
-    excludeStaff = false,
+    excludeStaffRoles = false,
     excludeTitular = false,
     includeIndirect = false,
     sortEmploymentStatusFirst = false,
@@ -139,7 +139,7 @@ const Roles = class extends Resources {
       listOptions.sortFunc = employmentSorter
     }
 
-    if (all === true || (includeIndirect === true && excludeDesignated === false && excludeStaff === true)) {
+    if (all === true || (includeIndirect === true && excludeDesignated === false && excludeStaffRoles === true)) {
       return super.list(listOptions)
     }
     const filters = []
@@ -151,8 +151,8 @@ const Roles = class extends Resources {
     if (excludeDesignated) {
       filters.push(notDesignatedFilter)
     }
-    if (excludeStaff) {
-      filters.push(excludeStaffFilter)
+    if (excludeStaffRoles) {
+      filters.push(excludeStaffRolesFilter)
     }
     if (excludeTitular) {
       filters.push(notTitularFilter)
@@ -181,7 +181,7 @@ const notImpliedTitularFilterGenerator = (orgStructure) => (role) => {
   // !role.designated && orgStructure.getNodeByRoleName(role.name)
 }
 
-const excludeStaffFilter = (r) => {
+const excludeStaffRolesFilter = (r) => {
   const { name } = r
   return !(name === 'Staff' || name === 'Employee' || name === 'Contractor')
 }
