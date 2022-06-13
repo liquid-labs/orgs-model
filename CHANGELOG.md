@@ -184,3 +184,9 @@
 * _**hotfix**_: track all reports as well as 'primary' reports _(zane@liquid-labs.com; 2022-06-10T16:42:21.000Z)_
 * _**hotfix**_: removed unused/confusing 'getManager'; added 'getManagerRoles' and 'getReportRoles' _(zane@liquid-labs.com; 2022-06-10T16:42:28.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-06-10T16:42:54.000Z)_
+
+## Release 1.0.0-beta.88
+* _**hotfix**_: fix erroneous exclusion of designated tasks when includeIndirect is false _(zane@liquid-labs.com; 2022-06-13T02:02:17.000Z)_
+* _**hotfix**_: rename 'excludeStaff' param to 'excludeStaffRoles' _(zane@liquid-labs.com; 2022-06-13T16:57:18.000Z)_
+* _**hotfix**_: implemented instance method 'Role.getAccess()' to provide access summary data _(zane@liquid-labs.com; 2022-06-13T21:30:09.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-06-13T21:32:08.000Z)_
