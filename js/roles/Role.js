@@ -43,18 +43,18 @@ const Role = class extends Item {
       ? reportNames
       : reportNames.map((i) => org.roles.get(i))
   }
-  
+
   // TODO: once we've got plugins done, this logic should move to 'liq-roles'
   getAccess() {
     const allAccess = {}
     for (const { role : accessRole, access } of this.#org.innerState.rolesAccess.accessRules) {
       if (access === undefined || access.length === 0) continue
-      
+
       if (this.impliesRole(accessRole)) {
         for (const { serviceBundle, type } of access) {
           const currTypes = allAccess[serviceBundle]
           if (currTypes === undefined) {
-            allAccess[serviceBundle] = [ type ]
+            allAccess[serviceBundle] = [type]
           }
           else {
             allAccess[serviceBundle] = combineAccess({ type, currTypes })
@@ -62,7 +62,7 @@ const Role = class extends Item {
         }
       }
     }
-    
+
     return allAccess
   }
 
@@ -203,7 +203,8 @@ const combineAccess = ({ currTypes, type }) => {
     if (a === 'manager') return -1
     if (b === 'manager') return 1
     // then the only thing left is editor, but since they are not both editor, then one of the previous checks must have
-    // already passed
+    // already passed; but lint wants us to return something...
+    return 0
   })
   return currTypes
 }
