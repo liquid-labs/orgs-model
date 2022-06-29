@@ -1,10 +1,13 @@
+import merge from 'lodash.merge'
+
 import { Item, bindCreationConfig } from '../lib/Item'
 
 const impliesCache = {}
 const nameMapper = (i) => i.name
 
 const Role = class extends Item {
-  #allDuties
+  #allMyDuties
+  #dutiesByDomain
   #org
 
   constructor(data, { org, ...rest }) {
@@ -72,27 +75,50 @@ const Role = class extends Item {
 
   isQualifiable() { return !!this.qualifiable }
 
+  /**
+  * Creates (and caches)
+  */
   get allDuties() {
-    if (this.#allDuties !== undefined) {
-      return this.#allDuties
+    if (this.#allMyDuties !== undefined) {
+      return this.#allMyDuties
     }
     // else figure out all duties
-    this.#allDuties = {}
-    const frontier = [this.data]
+    this.#allMyDuties = {}
+    const frontier = [this.data] // We will need both the duties and the role name, so we work with the role as a whole
     while (frontier.length > 0) {
       const edge = frontier.shift()
       if (edge.duties) {
-        mergeDuties(this.#allDuties, edge.duties)
+        mergeDuties(this.#allMyDuties, edge.duties)
       }
+      // now, let's see if there are
       const { superRole, implies = [] } = edge
-      if (superRole) {
-        frontier.push(this.#org.roles.get(superRole, { required : true, rawData : true }))
-      }
-      for (const { name } of implies) {
-        frontier.push(this.#org.roles.get(name, { required : true, rawData : true }))
+      const implyAll = superRole ? implies.concat([ { name: superRole } ]) : implies
+      for (const { name } of implyAll) {
+        frontier.push(this.#org.roles.get(name, { required : true }))
       }
     }
-    return this.#allDuties
+    
+    return this.#allMyDuties
+  }
+  
+  get fullyIndexedRoleDuties() {
+    if (this.#dutiesByDomain === undefined) {
+      const allMyDuties = this.allDuties
+      this.#dutiesByDomain = {}
+      
+      for (const myDomain in allMyDuties) {
+        const dutySpec = this.#org.innerState.roleDuties.find((d) => d.domain === myDomain)
+        if (dutySpec === undefined) {
+          throw new Error(`Did not find expected duty domain spec '${myDomain}' in 'roleDuties'.`)
+        }
+        const { domain, duties } = dutySpec
+        
+        const myDutySpec = this.#dutiesByDomain[domain] || {}
+        this.#dutiesByDomain[domain] = merge(myDutySpec, duties)
+      }
+    }
+    
+    return structuredClone(this.#dutiesByDomain)
   }
 
   impliesRole(roleName) {
@@ -111,12 +137,10 @@ const Role = class extends Item {
     }
     // else, we gotta figure it out
     const toCheck = (this.implies && this.implies.map(r => r.name)) || []
-    // console.log('toCheck (1): ', toCheck) // DEBUG
     if (this.superRole) {
       toCheck.push(this.superRole)
     }
 
-    // console.log('toCheck(2): ', toCheck) // DEBUG
     for (const impliedRoleName of toCheck) {
       if (impliedRoleName === roleName) {
         myCache[roleName] = true
