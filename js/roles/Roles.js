@@ -1,9 +1,14 @@
+import merge from 'lodash.merge'
+
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import { Resources } from '../lib/resources'
 import { Role } from './Role'
 
 const Roles = class extends Resources {
+  #org
+  #dutiesByDomain
+  
   constructor({ org, additionalItemCreationOptions, ...rest }) {
     super(Object.assign(
       {},
@@ -13,7 +18,8 @@ const Roles = class extends Resources {
       }
     ))
 
-    this.org = org
+    this.org = org // TODO: deprecated
+    this.#org = org
     this.checkCondition = checkCondition
   }
 
@@ -48,7 +54,6 @@ const Roles = class extends Resources {
 
               if (qualifierGroup) {
                 qualifier = match[qualifierGroup]
-                // console.error(`qualifier group: ${qualifierGroup}/${qualifier}`) // DEBUG
               }
               return true
             }
@@ -165,6 +170,35 @@ const Roles = class extends Resources {
     }
 
     return super.list(listOptions).filter(filter)
+  }
+  
+  get fullyIndexedGlobalDuties() {
+    if (this.#dutiesByDomain === undefined) {
+      this.#dutiesByDomain = {}
+      const allDomains = this.org.innerState.roleDuties.reduce((domainNames, { domain }) => {
+        domainNames.push(domain)
+        return domainNames
+      }, [])
+      
+      for (const domain of allDomains) {
+        const dutySpec = this.#org.innerState.roleDuties.find((d) => d.domain === domain)
+        if (dutySpec === undefined) {
+          throw new Error(`Did not find expected duty domain spec '${domain}' in 'roleDuties'.`)
+        }
+        const { duties } = dutySpec
+        
+        let myDutySpec = this.#dutiesByDomain[domain]
+        if (!myDutySpec) {
+          myDutySpec = {}
+          this.#dutiesByDomain[domain] = myDutySpec
+        }
+        merge(myDutySpec, duties) // lodash merge mutates the first object
+      }
+    }
+    
+    return structuredClone(this.#dutiesByDomain)
+    
+    
   }
 }
 
