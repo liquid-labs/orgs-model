@@ -191,3 +191,11 @@
 * _**hotfix**_: implemented instance method 'Role.getAccess()' to provide access summary data _(zane@liquid-labs.com; 2022-06-13T21:30:09.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-06-13T21:32:08.000Z)_
 * _**hotfix**_: updated CHANGELOGE.md for release (by liq) _(zane@liquid-labs.com; 2022-06-13T21:32:21.000Z)_
+
+## Release 1.0.0-beta.89
+* _**hotfix**_: sort after (potentially) processing items into 'real' objects _(zane@liquid-labs.com; 2022-06-13T21:49:11.000Z)_
+* _**hotfix**_: audit fixes _(zane@liquid-labs.com; 2022-06-13T21:50:01.000Z)_
+* _**hotfix**_: add global indexed duties def getter _(zane@liquid-labs.com; 2022-06-29T19:34:09.000Z)_
+* _**hotfix**_: rename some vars; add func to get individuals indexed duties; removed debug _(zane@liquid-labs.com; 2022-06-29T19:34:32.000Z)_
+* _**hotfix**_: add lodash.merge _(zane@liquid-labs.com; 2022-06-29T19:34:49.000Z)_
+* _**hotfix**_: lint fixes and define supported engines _(zane@liquid-labs.com; 2022-06-29T19:46:51.000Z)_
