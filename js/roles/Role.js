@@ -92,33 +92,34 @@ const Role = class extends Item {
       }
       // now, let's see if there are
       const { superRole, implies = [] } = edge
-      const implyAll = superRole ? implies.concat([ { name: superRole } ]) : implies
+      const implyAll = superRole ? implies.concat([{ name : superRole }]) : implies
       for (const { name } of implyAll) {
         frontier.push(this.#org.roles.get(name, { required : true }))
       }
     }
-    
+
     return this.#allMyDuties
   }
-  
+
   get fullyIndexedRoleDuties() {
     if (this.#dutiesByDomain === undefined) {
       const allMyDuties = this.allDuties
       this.#dutiesByDomain = {}
-      
-      for (const myDomain in allMyDuties) {
+
+      // we're trusting 'allDuties'
+      for (const myDomain in allMyDuties) { // eslint-disable-line guard-for-in
         const dutySpec = this.#org.innerState.roleDuties.find((d) => d.domain === myDomain)
         if (dutySpec === undefined) {
           throw new Error(`Did not find expected duty domain spec '${myDomain}' in 'roleDuties'.`)
         }
         const { domain, duties } = dutySpec
-        
+
         const myDutySpec = this.#dutiesByDomain[domain] || {}
         this.#dutiesByDomain[domain] = merge(myDutySpec, duties)
       }
     }
-    
-    return structuredClone(this.#dutiesByDomain)
+
+    return structuredClone(this.#dutiesByDomain) // eslint-disable-line no-undef -- defined in node 17.0.0
   }
 
   impliesRole(roleName) {

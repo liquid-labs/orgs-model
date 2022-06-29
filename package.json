@@ -20,6 +20,9 @@
     "type": "git",
     "url": "git+ssh://git@github.com/Liquid-Labs/orgs-model.git"
   },
+  "engines": {
+    "node": ">=17.0.0"
+  },
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
   "license": "ISC",
   "bugs": {

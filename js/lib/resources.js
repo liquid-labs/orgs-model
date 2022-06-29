@@ -169,7 +169,7 @@ const Resources = class {
     else if (sort !== false) {
       resultItems.sort(fieldSort(sort))
     }
-    
+
     return resultItems
   }
 

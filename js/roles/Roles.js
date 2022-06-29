@@ -8,7 +8,7 @@ import { Role } from './Role'
 const Roles = class extends Resources {
   #org
   #dutiesByDomain
-  
+
   constructor({ org, additionalItemCreationOptions, ...rest }) {
     super(Object.assign(
       {},
@@ -171,7 +171,7 @@ const Roles = class extends Resources {
 
     return super.list(listOptions).filter(filter)
   }
-  
+
   get fullyIndexedGlobalDuties() {
     if (this.#dutiesByDomain === undefined) {
       this.#dutiesByDomain = {}
@@ -179,14 +179,14 @@ const Roles = class extends Resources {
         domainNames.push(domain)
         return domainNames
       }, [])
-      
+
       for (const domain of allDomains) {
         const dutySpec = this.#org.innerState.roleDuties.find((d) => d.domain === domain)
         if (dutySpec === undefined) {
           throw new Error(`Did not find expected duty domain spec '${domain}' in 'roleDuties'.`)
         }
         const { duties } = dutySpec
-        
+
         let myDutySpec = this.#dutiesByDomain[domain]
         if (!myDutySpec) {
           myDutySpec = {}
@@ -195,10 +195,8 @@ const Roles = class extends Resources {
         merge(myDutySpec, duties) // lodash merge mutates the first object
       }
     }
-    
-    return structuredClone(this.#dutiesByDomain)
-    
-    
+
+    return structuredClone(this.#dutiesByDomain) // eslint-disable-line no-undef -- defined in node 17.0.0
   }
 }
 
