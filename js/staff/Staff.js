@@ -5,8 +5,6 @@ import { Resources } from '../lib/resources'
 import { StaffMember } from './StaffMember'
 
 const Staff = class extends Resources {
-  #addEmploymentRoles
-
   constructor({ org, additionalItemCreationOptions, ...rest }) {
     super(Object.assign(
       {},
@@ -21,11 +19,13 @@ const Staff = class extends Resources {
 
     this.org = org
     this.checkCondition = checkCondition
-    this.#addEmploymentRoles = bindAddEmploymentRolesToOrg(org)
   }
 
   get(id, options = {}) {
-    options.dataAugmentor = this.#addEmploymentRoles
+    const { ownRolesOnly } = options
+
+    bindAugmentor({ allRoles: this.allRoles, options, org: this.org, ownRolesOnly })
+    
     return super.get(id, options)
   }
 
@@ -48,7 +48,10 @@ const Staff = class extends Resources {
   }
 
   list(options = {}) {
-    options.dataAugmentor = this.#addEmploymentRoles
+    const { ownRolesOnly = false } = options
+    
+    bindAugmentor({ allRoles: this.allRoles, options, org: this.org, ownRolesOnly })
+    
     return super.list(options)
   }
 
@@ -65,7 +68,18 @@ const Staff = class extends Resources {
   }
 }
 
-const bindAddEmploymentRolesToOrg = (org) => (data) => {
+const bindAugmentor = ({ allRoles, options, org, ownRolesOnly }) => {
+  if (ownRolesOnly) {
+    options.dataAugmentor = bindAddEmploymentRoles(org)
+  }
+  else {
+    options.dataAugmentor = bindAddAllRoles(org, allRoles)
+  }
+  
+  return options
+}
+
+const bindAddEmploymentRoles = (org) => (data) => {
   const { employmentStatus, roles } = data
 
   if (employmentStatus !== 'board' && employmentStatus !== 'logical') {
@@ -81,6 +95,14 @@ const bindAddEmploymentRolesToOrg = (org) => (data) => {
     roles.push(org.roles.get('Staff', { rawData : true, required : true }))
   }
 
+  return data
+}
+
+const bindAddAllRoles = (org, allRoles) => (data) => {
+  data = bindAddEmploymentRoles(org)(data)
+  
+  data.allRoles = allRoles
+  
   return data
 }
 
