@@ -86,7 +86,7 @@ const Roles = class extends Resources {
     return result
   }
 
-  // TODO: the convention here is reversed; in StaffMember.hasRole(), the option is 'ownRole' which defaults false.
+  // TODO: the convention here is reversed; in StaffMember.hasRole(), the option is 'ownRolesOnly' which defaults false.
   // TODO: this is also idiomatic by returning data objects by default rather than the full class
   getStaffInRole(roleName, { impliedRoles = false, excludeLogical = false } = {}) {
     const filters = []

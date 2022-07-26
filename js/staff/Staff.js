@@ -31,7 +31,7 @@ const Staff = class extends Resources {
 
   /**
   * Options:
-  * - `ownRole`: Only staff who have the role directly assigned are returned.
+  * - `ownRolesOnly`: Only staff who have the role directly assigned are returned.
   */
   getByRoleName(roles, options) {
     if (typeof roles === 'string') {

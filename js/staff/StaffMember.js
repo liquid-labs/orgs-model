@@ -62,11 +62,11 @@ const StaffMember = class extends Item {
 
   getAllRoleNames() { return this.getAllRolesData().map((r) => r.name) }
 
-  hasRole(roleName, { ownRole = false } = {}) {
-    return !!this.getRole(roleName, { fuzzy : true, ownRole, rawData : true })
+  hasRole(roleName, { ownRolesOnly = false } = {}) {
+    return !!this.getRole(roleName, { fuzzy : true, ownRolesOnly, rawData : true })
   }
 
-  getRole(roleName, { fuzzy = false, ownRole = false, rawData = false } = {}) {
+  getRole(roleName, { fuzzy = false, ownRolesOnly = false, rawData = false } = {}) {
     let roleFilter
     if (fuzzy === true) {
       const orgRole = this.#org.roles.get(roleName, { fuzzy })
@@ -87,7 +87,7 @@ const StaffMember = class extends Item {
       roleFilter = (r) => r.name === roleName
     }
     const data = this.roles.find(roleFilter) // let's avoid building '#allRoles' if we don't have to
-      || (!ownRole && this.getAllRolesData().find(roleFilter))
+      || (!ownRolesOnly && this.getAllRolesData().find(roleFilter))
 
     if (!data) {
       return undefined
@@ -99,6 +99,10 @@ const StaffMember = class extends Item {
 
   getManagers() {
     return [...new Set(this.roles.map((r) => r.manager))]
+  }
+
+  get allRoles() {
+    return this.getAllRolesData()
   }
 
   getAllRoles() {
@@ -184,10 +188,13 @@ const StaffMember = class extends Item {
 }
 
 const initializeAllRoles = ({ self, roles, allRoles, org }) => {
+  const frontier = [...roles]
   allRoles.push(...roles)
 
-  for (let i = 0; i < allRoles.length; i += 1) {
-    const staffRole = allRoles[i]
+  while (frontier.length > 0) {
+    const staffRole = frontier.shift()
+  // for (let i = 0; i < allRoles.length; i += 1) {
+    // const staffRole = allRoles[i]
     if (!hasOwn(staffRole, 'impliedBy')) {
       staffRole.impliedBy = []
     }
@@ -226,7 +233,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         })
       const impliedStaffRoleData = {
         name      : impliedOrgRole.name,
-        impliedBy : [staffRole.name]
+        impliedBy : [ staffRole.name ]
       }
       for (const inheritedField of ['acting', 'display', 'tbd']) {
         if (staffRole[inheritedField] !== undefined) {
@@ -244,8 +251,9 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         throw new Error(`Unknown manager protocol '${mngrProtocol}' in implication for role '${staffRole.name}'.`)
       }
       allRoles.push(impliedStaffRoleData)
+      frontier.push(impliedStaffRoleData)
     } // implies loop
-  }
+  } // frontier loop
 }
 
 bindCreationConfig({
