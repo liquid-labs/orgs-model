@@ -199,3 +199,9 @@
 * _**hotfix**_: rename some vars; add func to get individuals indexed duties; removed debug _(zane@liquid-labs.com; 2022-06-29T19:34:32.000Z)_
 * _**hotfix**_: add lodash.merge _(zane@liquid-labs.com; 2022-06-29T19:34:49.000Z)_
 * _**hotfix**_: lint fixes and define supported engines _(zane@liquid-labs.com; 2022-06-29T19:46:51.000Z)_
+
+## Release 1.0.0-beta.90
+* _**hotfix**_: noted future todo _(zane@liquid-labs.com; 2022-07-18T03:48:39.000Z)_
+* _**hotfix**_: clarified var rename: ownRoles -> ownRolesOnly _(zane@liquid-labs.com; 2022-07-26T02:10:30.000Z)_
+* _**hotfix**_: support raw data results which include 'allRoles' _(zane@liquid-labs.com; 2022-07-26T21:57:51.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-07-26T21:58:46.000Z)_
