@@ -24,8 +24,8 @@ const Staff = class extends Resources {
   get(id, options = {}) {
     const { ownRolesOnly } = options
 
-    bindAugmentor({ allRoles: this.allRoles, options, org: this.org, ownRolesOnly })
-    
+    bindAugmentor({ allRoles : this.allRoles, options, org : this.org, ownRolesOnly })
+
     return super.get(id, options)
   }
 
@@ -49,9 +49,9 @@ const Staff = class extends Resources {
 
   list(options = {}) {
     const { ownRolesOnly = false } = options
-    
-    bindAugmentor({ allRoles: this.allRoles, options, org: this.org, ownRolesOnly })
-    
+
+    bindAugmentor({ allRoles : this.allRoles, options, org : this.org, ownRolesOnly })
+
     return super.list(options)
   }
 
@@ -75,7 +75,7 @@ const bindAugmentor = ({ allRoles, options, org, ownRolesOnly }) => {
   else {
     options.dataAugmentor = bindAddAllRoles(org, allRoles)
   }
-  
+
   return options
 }
 
@@ -100,9 +100,9 @@ const bindAddEmploymentRoles = (org) => (data) => {
 
 const bindAddAllRoles = (org, allRoles) => (data) => {
   data = bindAddEmploymentRoles(org)(data)
-  
+
   data.allRoles = allRoles
-  
+
   return data
 }
 

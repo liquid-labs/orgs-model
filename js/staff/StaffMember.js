@@ -193,7 +193,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
 
   while (frontier.length > 0) {
     const staffRole = frontier.shift()
-  // for (let i = 0; i < allRoles.length; i += 1) {
+    // for (let i = 0; i < allRoles.length; i += 1) {
     // const staffRole = allRoles[i]
     if (!hasOwn(staffRole, 'impliedBy')) {
       staffRole.impliedBy = []
@@ -233,7 +233,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         })
       const impliedStaffRoleData = {
         name      : impliedOrgRole.name,
-        impliedBy : [ staffRole.name ]
+        impliedBy : [staffRole.name]
       }
       for (const inheritedField of ['acting', 'display', 'tbd']) {
         if (staffRole[inheritedField] !== undefined) {
