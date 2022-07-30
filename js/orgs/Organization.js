@@ -105,7 +105,6 @@ const Organization = class {
       return result
     }
     else if (style === 'debang/OrgChart') {
-      console.error('starting debang breakdown...') // DEBUG
       // Converts array-based/tabular '[staff, manager, qualifier] to a JSON tree, allowing for the same staff member
       // to appear at multiple nodes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
       const seedData = this
@@ -157,7 +156,6 @@ const Organization = class {
           }
           // Search the built up data graph for a matching parent. If found, attach item into data. If not, stick it
           // back on the seedData and process the next item.
-          console.error(`looking at parent id: ${item.parent_id} of item ${item.id}`) // DEBUG
           jsonloop.findNodeById(data, item.parent_id, function(err, node) {
             if (err) { // try deferring the processing till the needed node is added...
               countSinceUpdate += 1

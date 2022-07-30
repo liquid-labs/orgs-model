@@ -227,7 +227,6 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         {
           required  : true,
           errMsgGen : (name) => {
-            console.error(`Unknown role '${name}'...`)
             return `Role '${orgRole.name}' implies unknown role '${name}' (triggered while processing staff member '${self.data.email}').`
           }
         })
