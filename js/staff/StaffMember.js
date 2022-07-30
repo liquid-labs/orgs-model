@@ -210,7 +210,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
       impliedRoles.push(...orgRole.implies)
     }
     if (orgRole.superRole) {
-      impliedRoles.push({ name : orgRole.superRole, mngrProtocol : 'self' })
+      impliedRoles.push({ name : orgRole.superRole, mngrProtocol : 'same' })
     }
 
     for (const { name: impliedRoleName, mngrProtocol } of impliedRoles) {
@@ -248,7 +248,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         impliedStaffRoleData.manager = staffRole.manager
       }
       else if (impliedOrgRole.titular === true) {
-        throw new Error(`Unknown manager protocol '${mngrProtocol}' in implication for role '${staffRole.name}'.`)
+        throw new Error(`Unknown manager protocol '${mngrProtocol}' in implication '${impliedRoleName}' for role '${staffRole.name}'.`)
       }
       allRoles.push(impliedStaffRoleData)
       frontier.push(impliedStaffRoleData)
