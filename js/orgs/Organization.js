@@ -85,7 +85,7 @@ const Organization = class {
                 || managingRoles.find(mngrRole =>
                   this.hasStaffInRole(mngrEmail, mngrRole.getName(), { ownRolesOnly : false })
                 )
-              
+
               /* `${mngrEmail}/${r.getName()}` === myKey
                 ? r
                 : this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
@@ -160,7 +160,7 @@ const Organization = class {
             if (err) { // try deferring the processing till the needed node is added...
               countSinceUpdate += 1
               if (countSinceUpdate === seedData.length + 1) {
-                throw new Error(`${seedData.length} entries could not be connected to parent (e.g.: ${item.parent_id})\nseed data: ${JSON.stringify(seedData, null, '  ')};\n\ndata: ${JSON.stringify(data, null, '  ')}`, { error: err })
+                throw new Error(`${seedData.length} entries could not be connected to parent (e.g.: ${item.parent_id})\nseed data: ${JSON.stringify(seedData, null, '  ')};\n\ndata: ${JSON.stringify(data, null, '  ')}`, { error : err })
               }
               seedData.push(item)
             }
