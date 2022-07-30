@@ -50,8 +50,8 @@ const Organization = class {
     return value
   }
 
-  hasStaffInRole(email, roleName) {
-    return this.staff.getByRoleName(roleName).some(s => s.email === email)
+  hasStaffInRole(email, roleName, options) {
+    return this.staff.getByRoleName(roleName, options).some(s => s.email === email)
   }
 
   getManagingRolesByManagedRoleName(roleName) {
@@ -80,8 +80,12 @@ const Organization = class {
               const mngrEmail = manager.email
               const managingRoles = this.getManagingRolesByManagedRoleName(r.getName())
               const managingRole = managingRoles.find(mngrRole =>
-                this.hasStaffInRole(mngrEmail, mngrRole.getName())
+                this.hasStaffInRole(mngrEmail, mngrRole.getName(), { ownRolesOnly : true })
               )
+                || managingRoles.find(mngrRole =>
+                  this.hasStaffInRole(mngrEmail, mngrRole.getName(), { ownRolesOnly : false })
+                )
+              
               /* `${mngrEmail}/${r.getName()}` === myKey
                 ? r
                 : this.getManagingRolesByManagedRoleName(r.getName()).find(mngrRole =>
@@ -101,6 +105,7 @@ const Organization = class {
       return result
     }
     else if (style === 'debang/OrgChart') {
+      console.error('starting debang breakdown...') // DEBUG
       // Converts array-based/tabular '[staff, manager, qualifier] to a JSON tree, allowing for the same staff member
       // to appear at multiple nodes using conversion algorithm from debang demos: https://codepen.io/dabeng/pen/mRZpLK
       const seedData = this
@@ -118,7 +123,7 @@ const Organization = class {
           const chartDatum = {
             id        : row[0],
             ids       : [row[0]],
-            parent_id : row[1],
+            parent_id : row[1], // manager key like "bob@acme.com/CTO"
             email     : email,
             name      : staffMember.getFullName(),
             titles    : [title],
@@ -152,11 +157,12 @@ const Organization = class {
           }
           // Search the built up data graph for a matching parent. If found, attach item into data. If not, stick it
           // back on the seedData and process the next item.
+          console.error(`looking at parent id: ${item.parent_id} of item ${item.id}`) // DEBUG
           jsonloop.findNodeById(data, item.parent_id, function(err, node) {
             if (err) { // try deferring the processing till the needed node is added...
               countSinceUpdate += 1
-              if (countSinceUpdate === seedData.length) {
-                throw new Error(`${seedData.length} entries could not be connected to parent. ${JSON.stringify(seedData, null, '  ')}\ndata: ${JSON.stringify(seedData, null, '  ')}`)
+              if (countSinceUpdate === seedData.length + 1) {
+                throw new Error(`${seedData.length} entries could not be connected to parent (e.g.: ${item.parent_id})\nseed data: ${JSON.stringify(seedData, null, '  ')};\n\ndata: ${JSON.stringify(data, null, '  ')}`, { error: err })
               }
               seedData.push(item)
             }
