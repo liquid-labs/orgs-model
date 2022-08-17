@@ -205,3 +205,11 @@
 * _**hotfix**_: clarified var rename: ownRoles -> ownRolesOnly _(zane@liquid-labs.com; 2022-07-26T02:10:30.000Z)_
 * _**hotfix**_: support raw data results which include 'allRoles' _(zane@liquid-labs.com; 2022-07-26T21:57:51.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-07-26T21:58:46.000Z)_
+
+## Release 1.0.0-beta.91
+* _**hotfix**_: support passing standard options to 'Organization.hasStaffInRole' _(zane@liquid-labs.com; 2022-07-30T22:57:25.000Z)_
+* _**hotfix**_: super roles imply same manager, not self; improved error message on bad mngProtocol; say which implication it is _(zane@liquid-labs.com; 2022-07-30T22:58:20.000Z)_
+* _**hotfix**_: removed debug _(zane@liquid-labs.com; 2022-07-30T22:59:26.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-07-30T22:59:44.000Z)_
+* _**hotfix**_: fix 'staffInRole' logic error _(zane@liquid-labs.com; 2022-08-17T23:25:35.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-08-17T23:25:59.000Z)_
