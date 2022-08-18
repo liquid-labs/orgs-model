@@ -255,6 +255,15 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
   } // frontier loop
 }
 
+const defaultFields = [
+  'email',
+  'familyName',
+  'givenName',
+  'roles',
+  'startDate',
+  'employmentStatus'
+]
+
 bindCreationConfig({
   allowSet    : ['familyName', 'givenName', 'roles'],
   dataCleaner : (data) => {
@@ -279,6 +288,7 @@ bindCreationConfig({
     data.roles = data.roles?.map(r => `${r.name}/${r.manager}`).join(';')
     return data
   },
+  defaultFields,
   itemClass    : StaffMember,
   itemName     : 'staff member',
   keyField     : 'email',
