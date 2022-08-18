@@ -213,3 +213,6 @@
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-07-30T22:59:44.000Z)_
 * _**hotfix**_: fix 'staffInRole' logic error _(zane@liquid-labs.com; 2022-08-17T23:25:35.000Z)_
 * _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-08-17T23:25:59.000Z)_
+
+## Release 1.0.0-beta.92
+* _**hotfix**_: define default fields for staff members _(zane@liquid-labs.com; 2022-08-18T20:32:46.000Z)_
