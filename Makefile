@@ -1,5 +1,5 @@
 .DELETE_ON_ERROR:
-.PHONY: all clean lint lint-fix qa test
+.PHONY: all build clean lint lint-fix qa test
 
 NPM_BIN:=$(shell npm bin)
 CATALYST_SCRIPTS:=$(NPM_BIN)/catalyst-scripts
@@ -11,9 +11,11 @@ ORGS_MODEL:=$(DIST)/orgs-model.js
 
 BUILD_TARGETS:=$(ORGS_MODEL)
 
-default: all
+default: build
 
-all: $(BUILD_TARGETS)
+build: $(BUILD_TARGETS)
+
+all: build # legacy makefile convention
 
 clean:
 	rm -rf $(DIST)
