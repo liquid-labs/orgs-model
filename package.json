@@ -9,8 +9,9 @@
   ],
   "scripts": {
     "build": "make",
+    "build:clean": "make clean build",
     "test": "make test",
-    "preversion": "npm run build && npm test && npm run lint",
+    "preversion": "npm run build:clean && npm test && npm run lint",
     "postversion": "git push --tags upstream",
     "lint": "make lint",
     "lint:fix": "make lint-fix",

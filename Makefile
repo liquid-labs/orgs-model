@@ -1,5 +1,5 @@
 .DELETE_ON_ERROR:
-.PHONY: all lint lint-fix qa test
+.PHONY: all clean lint lint-fix qa test
 
 NPM_BIN:=$(shell npm bin)
 CATALYST_SCRIPTS:=$(NPM_BIN)/catalyst-scripts
@@ -14,6 +14,9 @@ BUILD_TARGETS:=$(ORGS_MODEL)
 default: all
 
 all: $(BUILD_TARGETS)
+
+clean:
+	rm -rf $(DIST)
 
 $(ORGS_MODEL): $(ORGS_MODEL_FILES)
 	JS_SOURCEMAP=true $(CATALYST_SCRIPTS) build
