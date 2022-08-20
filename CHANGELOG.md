@@ -216,3 +216,7 @@
 
 ## Release 1.0.0-beta.92
 * _**hotfix**_: define default fields for staff members _(zane@liquid-labs.com; 2022-08-18T20:32:46.000Z)_
+
+## Release 1.0.0-beta.93
+* _**hotfix**_: support clean build and use in 'preversion' to better ensure actually deploying the right code _(zane@liquid-labs.com; 2022-08-20T20:16:32.000Z)_
+* _**hotfix**_: define 'build' in the Maketfile _(zane@liquid-labs.com; 2022-08-20T20:18:51.000Z)_
