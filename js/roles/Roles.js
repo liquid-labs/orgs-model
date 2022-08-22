@@ -2,7 +2,7 @@ import merge from 'lodash.merge'
 
 import { Evaluator } from '@liquid-labs/condition-eval'
 
-import { Resources } from '../lib/resources'
+import { Resources } from '../lib/Resources'
 import { Role } from './Role'
 
 const Roles = class extends Resources {

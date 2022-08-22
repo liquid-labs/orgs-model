@@ -1,6 +1,6 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
-import { Resources } from '../lib/resources'
+import { Resources } from '../lib/Resources'
 import { Technology } from './Technology'
 
 /**

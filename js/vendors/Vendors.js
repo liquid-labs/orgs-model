@@ -1,6 +1,6 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
-import { Resources } from '../lib/resources.js'
+import { Resources } from '../lib/Resources.js'
 import * as idxType from '../lib/index-relationships.js'
 import { Vendor } from './Vendor'
 

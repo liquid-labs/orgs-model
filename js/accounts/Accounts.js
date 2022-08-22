@@ -2,7 +2,7 @@ import { Evaluator } from '@liquid-labs/condition-eval'
 
 import { Account } from './Account'
 import * as idxType from '../lib/index-relationships.js'
-import { Resources } from '../lib/resources'
+import { Resources } from '../lib/Resources'
 
 /**
 * Public API for managing third-party account records. Uses the `Accounts` library, which actually implements the

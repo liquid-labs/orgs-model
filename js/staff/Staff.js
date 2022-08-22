@@ -1,7 +1,7 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import * as idxType from '../lib/index-relationships'
-import { Resources } from '../lib/resources'
+import { Resources } from '../lib/Resources'
 import { StaffMember } from './StaffMember'
 
 const Staff = class extends Resources {

@@ -1,5 +1,5 @@
 import { Audit } from './Audit'
-import { Resources } from '../lib/resources.js'
+import { Resources } from '../lib/Resources.js'
 import * as idxType from '../lib/index-relationships.js'
 
 /**
