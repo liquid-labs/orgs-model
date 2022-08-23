@@ -232,13 +232,18 @@ const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'resourceName']
 * - `idNormalizer`: (opt) A function used to normalize the key field when creating implied IDs. Will default to the
 *     `defaultIdNormalizer` if not specified.
 */
-const bindCreationConfig = (itemConfig) => {
+const bindCreationConfig = (itemConfig = {}) => {
   // verify required items
+  const missingFields = []
   for (const requiredConfig of requiredItemConfig) {
     if (itemConfig[requiredConfig] === undefined) {
-      throw new Error(`Missing required field '${requiredConfig}' when creating new Item type; got: ${JSON.stringify(itemConfig, null, '  ')}}`)
+      missingFields.push(requiredConfig)
     }
   }
+  if (missingFields.length > 0) {
+    throw new Error(`Error creating Item configuration; missing required field(s): '${missingFields.join("', '")}'; got: ${JSON.stringify(itemConfig, null, '  ')}}`)
+  }
+  
   if (itemConfig.idNormalizer === undefined) {
     itemConfig.idNormalizer = defaultIdNormalizer
   }
