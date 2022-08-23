@@ -94,6 +94,25 @@ describe('Item', () => {
       expect(rawData).toEqual(data)
       expect(rawData).toBe(data)
     })
+    
+    test("works with private fields", () => {
+      const Foo = class extends Item {
+        #bar = 'bar'
+        
+        constructor() {
+          super({ name: 'the foo' })
+        }
+        
+        getBar() {
+          return this.#bar
+        }
+      }
+      
+      bindCreationConfig({ itemClass: Foo, itemName: 'foo', resourceName: 'foos', keyField: 'name' })
+      
+      const foo = new Foo()
+      expect(foo.getBar()).toBe('bar')
+    })
   } // end 'basicAcessTests' test builder
   
   test("Trying to create an Item directl ('new Item(data)') raises an exception", () => {

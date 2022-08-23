@@ -92,12 +92,12 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
     // object method calls can go through the get handler first to retrieve the function
     // TODO: the 'private' thing is a workaround for a Babel bug (?) that messes up private calls
     else if (methodIndex[key] || propIndex[key] || key.match?.(/private/)) {
-      try {
+      // try { // TODO: see note on catch below
         return receiver
           ? Reflect.get(object, key, receiver)
           : Reflect.get(object, key)
-      }
-      catch (e) {
+      // }
+      /* catch (e) {  // TODO: maybe this was necessary at one point but is now moot?
         // So, it's not clear to me what's happening. We seem to be able to access private fields in the first instance,
         // but at some point in the function chain, it breaks down. But, the workaround is pretty simple.
         if (e instanceof TypeError) { // assume private field access error
@@ -106,7 +106,7 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
         else {
           throw e
         }
-      }
+      }*/
     }
     else {
       const value = data[key]
@@ -232,7 +232,7 @@ const requiredItemConfig = ['itemClass', 'itemName', 'keyField', 'resourceName']
 * - `idNormalizer`: (opt) A function used to normalize the key field when creating implied IDs. Will default to the
 *     `defaultIdNormalizer` if not specified.
 */
-const bindCreationConfig = (itemConfig = {}) => {
+const bindCreationConfig = (itemConfig = {}) => { // TODO: just take itemConfig as part of the constructor
   // verify required items
   const missingFields = []
   for (const requiredConfig of requiredItemConfig) {
