@@ -10,6 +10,7 @@ import { Item } from './Item'
 * Common class for base resources support simple get and list functions.
 */
 const Resources = class {
+  #itemConfigCache
   #itemCreationOptions
   #fileName
   /**
@@ -23,10 +24,12 @@ const Resources = class {
     additionalItemCreationOptions = {},
     // TODO: if itemName not specified, deduce from 'itemClass'
     items = [],
-    readFromFile = false
+    readFromFile = false,
+    itemConfig
   }) {
+    // set the source file
     this.#fileName = fileName || getSourceFile(items)
-
+    // read from source file if indicated
     if (readFromFile === true && items && items.length > 0) {
       throw new Error(`Cannot specify both 'readFromFile : true' and 'items' when loading ${this.resourceName}.`)
     }
@@ -38,6 +41,7 @@ const Resources = class {
     }
     // add standard 'id' field if not present.
     items = items || []
+    // normalize and guarantee uniqueness of items (based on ID)
     const seen = {}
     items.forEach((item) => {
       item.id = item.id || this.idNormalizer(item[this.keyField])
@@ -47,39 +51,50 @@ const Resources = class {
       seen[item.id] = true
     })
 
+    // set manuall set itemConfig
+    this.#itemConfigCache = itemConfig
+
+    // setup ListManager
     this.listManager = new ListManager({
       className    : this.resourceName,
       keyField     : this.keyField,
       idNormalizer : this.idNormalizer,
       items
     })
+    
+    // setup indexes
     this.#indexById = this.listManager.getIndex('byId')
     this.#itemCreationOptions = Object.assign({},
       additionalItemCreationOptions
     )
     this.#addIndexes(indexes)
   }
+  
+  // TODO: switch implementatiosn to set itemConfig directly, then we can do away with the 'Cache' convention and this constructor test.
+  get #itemConfig() {
+    return this.#itemConfigCache || this.constructor.itemConfig
+  }
 
   // item config convenience accessors
-  get dataCleaner() { return this.constructor.itemConfig.dataCleaner }
+  get dataCleaner() { return this.#itemConfig.dataCleaner }
 
-  get dataFlattener() { return this.constructor.itemConfig.dataFlattener }
+  get dataFlattener() { return this.#itemConfig.dataFlattener }
 
   /**
   * See [Item.idNormalizer](./Item.md#idnormalizer)
   */
-  get idNormalizer() { return this.constructor.itemConfig.idNormalizer }
+  get idNormalizer() { return this.#itemConfig.idNormalizer }
 
-  get itemClass() { return this.constructor.itemConfig.itemClass }
+  get itemClass() { return this.#itemConfig.itemClass }
 
-  get itemName() { return this.constructor.itemConfig.itemName }
+  get itemName() { return this.#itemConfig.itemName }
 
   /**
   * See [Item.keyField](./Item.md#keyfield)
   */
-  get keyField() { return this.constructor.itemConfig.keyField }
+  get keyField() { return this.#itemConfig.keyField }
 
-  get resourceName() { return this.constructor.itemConfig.resourceName }
+  get resourceName() { return this.#itemConfig.resourceName }
 
   add(data) {
     data = ensureRaw(data)
@@ -209,8 +224,8 @@ const Resources = class {
       throw new Error('Incompatible options; \'clean = true\' requires \'raw data = true\'')
     }
     if (required === true && data === undefined) {
-      errMsgGen = errMsgGen || (() => `Did not find required ${this.itemName}${id ? ` '${id}'.` : ''}.`)
-      throw new Error(errMsgGen(data[this.keyField]))
+      errMsgGen = errMsgGen || (() => `Did not find required ${this.itemName}${id ? ` '${id}'` : ''}.`)
+      throw new Error(errMsgGen())
     }
 
     if (data === undefined) return undefined
