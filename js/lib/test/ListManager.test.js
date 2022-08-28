@@ -273,26 +273,40 @@ describe('ListManager', () => {
   })
   
   describe('deleteItem', () => {
-    let oneToOne, oneToMany, itemToDelete
-    const items = [...testItems]
+    let expectedItems, oneToOne, oneToMany, itemToDelete
     
     beforeAll(() => {
-      const listManager = new ListManager({ items })
+      expectedItems = [testItems[0], testItems[1]]
+      
+      const listManager = new ListManager({ items: [...testItems] })
       oneToOne = listManager.getIndex('byId')
       oneToMany = listManager.addIndex(oneToManySpec)
       
-      itemToDelete = items[2]
+      itemToDelete = testItems[2]
       listManager.deleteItem(itemToDelete)
     })
     
-    test('properly deletes from ID index', () => {
-      verifyOneToOneIndex({ index: oneToOne, items })
+    test('deletes from ID index', () => {
+      verifyOneToOneIndex({ index: oneToOne, items: expectedItems })
       expect(oneToOne[3]).toBeUndefined()
     })
     
-    test('properly deletes from one-to-many index', () => {
-      verifyOneToManyIndex({ index: oneToMany, items, expectedSize: 2, listSizes : { foo: 1, bar: 1 } })
+    test('deletes from one-to-many index', () => {
+      verifyOneToManyIndex({ index: oneToMany, items: expectedItems, expectedSize: 2, listSizes : { foo: 1, bar: 1 } })
       expect(oneToMany['foo'][0]).not.toBe(itemToDelete)
+    })
+    
+    test('can delete a second item', () => {
+      const listManager = new ListManager({ items: [...testItems] })
+      const oneToOne = listManager.getIndex('byId')
+      const oneToMany = listManager.addIndex(oneToManySpec)
+      
+      listManager.deleteItem(testItems[2])
+      listManager.deleteItem(testItems[0])
+      const expectedItems = [testItems[1]]
+      
+      verifyOneToOneIndex({ index: oneToOne, items: expectedItems })
+      verifyOneToManyIndex({ index: oneToMany, items: expectedItems, expectedSize: 1, listSizes : { bar: 1 } })
     })
   })
 })

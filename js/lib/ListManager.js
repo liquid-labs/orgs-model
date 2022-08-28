@@ -243,20 +243,25 @@ const ListManager = class {
   }
 
   deleteItem(item) {
-    // check that this is a valid delete
+    // check that this is a valid delete TODO: replace this with 'hasItem'
     this.getItem(item[this.#keyField], { required : true, noClone : true })
 
-    const itemIndex = this.#items.findIndex((i) => i.id === item.id)
-    this.#items.splice(itemIndex, 1)
+    try {
+      const itemIndex = this.#items.findIndex((i) => i.id === item.id)
+      this.#items.splice(itemIndex, 1)
 
-    routeByRelationships({
-      item,
-      keyField     : this.#keyField,
-      idIndex      : this.#idIndex,
-      indexSpecs   : this.#indexSpecs,
-      one2oneFunc  : deleteOneToOne,
-      one2manyFunc : deleteOneToMany
-    })
+      routeByRelationships({
+        item,
+        keyField     : this.#keyField,
+        idIndex      : this.#idIndex,
+        indexSpecs   : this.#indexSpecs,
+        one2oneFunc  : deleteOneToOne,
+        one2manyFunc : deleteOneToMany
+      })
+    }
+    catch (e) {
+      throw new Error(`There was a problem deleting item '${item[this.#keyField]}'.`, { cause: e })
+    }
   }
 
   #getIndexSpec(nameOrIndex) {
@@ -303,7 +308,8 @@ const routeByRelationship = ({ indexSpec, one2oneFunc, one2manyFunc, ...rest }) 
 
 const routeByRelationships = ({ indexSpecs, ...args }) => {
   // the reversal is necessary to preserve the original item stored in the implicit, first ID index
-  for (const indexSpec of indexSpecs.reverse()) {
+  // the array copy is necessary because 'reverse' work in-place
+  for (const indexSpec of [...indexSpecs].reverse()) {
     routeByRelationship({ indexSpec, ...args })
   }
 }
@@ -388,6 +394,9 @@ const deleteOneToOne = ({ item, indexField, index, idIndex }) => {
 const deleteOneToMany = ({ item, idIndex, index, indexField, keyField }) => {
   const { origList, origListIndex } = getOrigData({ item, idIndex, indexField, keyField, index })
   origList.splice(origListIndex, 1)
+  if (origList.length === 0) {
+    delete index[item[indexField]]
+  }
 }
 
 /**
