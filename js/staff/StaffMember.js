@@ -173,7 +173,7 @@ const StaffMember = class extends Item {
 
     if (employmentStatus !== 'logical') {
       requireFields(
-        ['familyName', 'givenName', 'roles', 'startDate'],
+        ['familyName', 'roles' ],
         (field, data) =>
           `'${data.email || data.familyName}' is missing field '${field}' required for non-logical staff.`
       )
