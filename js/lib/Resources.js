@@ -61,7 +61,7 @@ const Resources = class {
       idNormalizer : this.idNormalizer,
       items
     })
-    
+
     // setup indexes
     this.#indexById = this.listManager.getIndex('byId')
     this.#itemCreationOptions = Object.assign({},
@@ -69,7 +69,7 @@ const Resources = class {
     )
     this.#addIndexes(indexes)
   }
-  
+
   // TODO: switch implementatiosn to set itemConfig directly, then we can do away with the 'Cache' convention and this constructor test.
   get #itemConfig() {
     return this.#itemConfigCache || this.constructor.itemConfig

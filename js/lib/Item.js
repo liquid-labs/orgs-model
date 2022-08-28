@@ -98,8 +98,8 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
           : Reflect.get(object, key)
       }
       catch (e) { // TODO: this needs more investigation; sometimes you seem to be able to peep private fields just
-                  // fine, but saw an error of this type (when this special handling was removed) while importing new
-                  // staff records using 'liq orgs XXX staff refresh'
+        // fine, but saw an error of this type (when this special handling was removed) while importing new
+        // staff records using 'liq orgs XXX staff refresh'
         // So, it's not clear to me what's happening. We seem to be able to access private fields in the first instance,
         // but at some point in the function chain, it breaks down. But, the workaround is pretty simple.
         if (e instanceof TypeError) { // assume private field access error
@@ -245,7 +245,7 @@ const bindCreationConfig = (itemConfig = {}) => { // TODO: just take itemConfig 
   if (missingFields.length > 0) {
     throw new Error(`Error creating Item configuration; missing required field(s): '${missingFields.join("', '")}'; got: ${JSON.stringify(itemConfig, null, '  ')}}`)
   }
-  
+
   if (itemConfig.idNormalizer === undefined) {
     itemConfig.idNormalizer = defaultIdNormalizer
   }

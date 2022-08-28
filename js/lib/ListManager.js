@@ -260,7 +260,7 @@ const ListManager = class {
       })
     }
     catch (e) {
-      throw new Error(`There was a problem deleting item '${item[this.#keyField]}'.`, { cause: e })
+      throw new Error(`There was a problem deleting item '${item[this.#keyField]}'.`, { cause : e })
     }
   }
 
