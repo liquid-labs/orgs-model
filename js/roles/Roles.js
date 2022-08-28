@@ -44,18 +44,23 @@ const Roles = class extends Resources {
       if (result === undefined && fuzzy === true) {
         const matchingRoles = this.list({ rawData : true, all : true }).filter((role) => {
           if (role.matcher !== undefined) {
-            const { antiPattern, pattern, qualifierGroup } = role.matcher
-            const match = name.match(new RegExp(pattern, 'i'))
-            if (match) {
-              // check anti-pattern first and bail out to avoid setting qualifier for disqualified match
-              if (antiPattern && name.match(new RegExp(antiPattern, 'i'))) {
-                return false
-              }
+            try {
+              const { antiPattern, pattern, qualifierGroup } = role.matcher
+              const match = name.match(new RegExp(pattern, 'i'))
+              if (match) {
+                // check anti-pattern first and bail out to avoid setting qualifier for disqualified match
+                if (antiPattern && name.match(new RegExp(antiPattern, 'i'))) {
+                  return false
+                }
 
-              if (qualifierGroup) {
-                qualifier = match[qualifierGroup]
+                if (qualifierGroup) {
+                  qualifier = match[qualifierGroup]
+                }
+                return true
               }
-              return true
+            }
+            catch (e) {
+              throw new Error(`Encountered an error while trying to match role name '${name}'.`, { cause: e })
             }
           }
           return false
