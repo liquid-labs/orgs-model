@@ -92,12 +92,14 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
     // object method calls can go through the get handler first to retrieve the function
     // TODO: the 'private' thing is a workaround for a Babel bug (?) that messes up private calls
     else if (methodIndex[key] || propIndex[key] || key.match?.(/private/)) {
-      // try { // TODO: see note on catch below
+      try { // TODO: see note on catch below
         return receiver
           ? Reflect.get(object, key, receiver)
           : Reflect.get(object, key)
-      // }
-      /* catch (e) {  // TODO: maybe this was necessary at one point but is now moot?
+      }
+      catch (e) { // TODO: this needs more investigation; sometimes you seem to be able to peep private fields just
+                  // fine, but saw an error of this type (when this special handling was removed) while importing new
+                  // staff records using 'liq orgs XXX staff refresh'
         // So, it's not clear to me what's happening. We seem to be able to access private fields in the first instance,
         // but at some point in the function chain, it breaks down. But, the workaround is pretty simple.
         if (e instanceof TypeError) { // assume private field access error
@@ -106,7 +108,7 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
         else {
           throw e
         }
-      }*/
+      }
     }
     else {
       const value = data[key]
