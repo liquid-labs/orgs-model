@@ -159,23 +159,30 @@ const StaffMember = class extends Item {
 
     const requireFields = (fields, errMsgFunc) => {
       fields.reduce((acc, field) => {
-        if (data[field] === undefined) acc.push(errMsgFunc(field, data))
+        const value = data[field]
+        if (value === undefined
+            || value === null
+            || value === ''
+            || (Array.isArray(value) && value.length === 0)
+          ) {
+          acc.push(errMsgFunc(field, data))
+        }
         return acc
       }, errors)
     }
 
     requireFields(
       ['email', 'employmentStatus'],
-      (field, data) => `'${data.email || data.familyName}' is missing required field '${field}'.`
+      (field, data) => `'${data.email || data.familyName}' is missing or has empty required field '${field}'.`
     )
 
     const { employmentStatus, roles } = data
 
     if (employmentStatus !== 'logical') {
       requireFields(
-        ['familyName', 'roles' ],
+        ['givenName', 'roles' ],
         (field, data) =>
-          `'${data.email || data.familyName}' is missing field '${field}' required for non-logical staff.`
+          `'${data.email || data.familyName}' is missing or has empty field '${field}' required for non-logical staff.`
       )
     }
 
