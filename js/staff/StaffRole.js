@@ -42,28 +42,39 @@ const StaffRole = class extends Role {
   get isActing() { return this.rawData.acting }
 
   static validateData({ data, errors = [], memberEmail, org }) {
-    if (data.name) {
-      const orgRole = org.roles.get(data.name, { fuzzy : true, rawData : true })
-      if (orgRole === undefined) {
-        errors.push(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
-      }
-      else if (orgRole.qualifiable !== true && data.qualifier) {
-        errors.push(validationMsg({
-          name   : data.name,
-          memberEmail,
-          reason : `specifies qualifier '${data.qualifier}', but the role is not qualifiable`
-        }))
-      }
-    }
-    else {
+    if (!data.name) {
       errors.push(validationMsg({
         name   : data.name,
         memberEmail,
         reason : 'is missing required field \'name\''
       }))
+      return errors
+    }
+    // else: data.name is good
+    
+    const orgRole = org.roles.get(data.name, { fuzzy : true, rawData : true })
+  
+    if (orgRole === undefined) {
+      errors.push(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
+      return errors
+    }
+    else if (orgRole.qualifiable !== true && data.qualifier) {
+      errors.push(validationMsg({
+        name   : data.name,
+        memberEmail,
+        reason : `specifies qualifier '${data.qualifier}', but the role is not qualifiable`
+      }))
     }
 
-    if (data.manager) {
+    if (!orgRole.designated && !data.manager && !orgRole.selfManaged) {
+      errors.push(validationMsg({
+        name: data.name,
+        memberEmail,
+        reason: `does not specify a manager for managed role '${orgRole.name}'`
+          + (orgRole.name !== data.name ? `('${data.name}')` : '')
+      }))
+    }
+    else if (!orgRole.designated && !orgRole.selfManaged) {
       const manager = org.staff.get(data.manager, { rawData : true })
       if (manager === undefined) {
         errors.push(validationMsg({
