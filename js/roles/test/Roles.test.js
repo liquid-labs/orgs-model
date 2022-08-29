@@ -30,6 +30,6 @@ describe('Roles', () => {
       expect(testRoles.list({ sort: false }).some((r) => r.name === 'CEO')).toBe(true))
       
     test("respects 'excludeDesignated=true' option", () =>
-      expect(testRoles.list({ excludeDesignated: true })).toHaveLength(6)) // 5 of 11 are designated
+      expect(testRoles.list({ excludeDesignated: true })).toHaveLength(5)) // 6 of 11 are designated
   })
 })

@@ -27,7 +27,7 @@ describe('StaffMember', () => {
         givenName,
         familyName,
         startDate: '2022-01-01',
-        roles: [ { name: 'Developer' } ],
+        roles: [ { name: 'Developer', manager: 'ceo@foo.com' } ],
         employmentStatus: 'employee'
       }
       const staffMember = new StaffMember(data, { org })
@@ -36,22 +36,27 @@ describe('StaffMember', () => {
   )
   
   test.each`
-  givenName | familyName | options
-  ${'John'} | ${undefined} | ${undefined}
-  ${undefined} | ${'Smith'} | ${undefined}
-  ${'John'} | ${undefined} | ${{ officialFormat : true }}
-  ${undefined} | ${'Smith'} | ${{ officialFormat : true }}
-  `('given: $givenName, family: ${familyName}, options: ${options} raises an error',
-    ({ givenName, familyName, options }) => {
+  givenName | familyName | options | good
+  ${'John'} | ${undefined} | ${undefined} | ${true}
+  ${undefined} | ${'Smith'} | ${undefined} | ${false}
+  ${'John'} | ${undefined} | ${{ officialFormat : true }} | ${true}
+  ${undefined} | ${'Smith'} | ${{ officialFormat : true }} | ${false}
+  `('given: $givenName, family: $familyName, options: $options is good: $good',
+    ({ givenName, familyName, options, good }) => {
       const data = {
         email: 'notused@foo.com',
         givenName,
         familyName,
         startDate: '2022-01-01',
-        roles: [ { name: 'Developer' } ],
+        roles: [ { name: 'Developer', manager: 'ceo@foo.com' } ],
         employmentStatus: 'employee'
       }
-      expect(() => new StaffMember(data, { org })).toThrow(new RegExp(`missing field.*(givenName|familyName)`))
+      if (!good) {
+        expect(() => new StaffMember(data, { org })).toThrow(new RegExp(`missing.*field.*(givenName|familyName)`))
+      }
+      else {
+        expect(() => new StaffMember(data, { org })).not.toThrow()
+      }
     })
 
   test('processes designated role (Sensitive Data Handler)', () => {
