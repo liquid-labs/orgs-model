@@ -60,7 +60,7 @@ const Roles = class extends Resources {
               }
             }
             catch (e) {
-              throw new Error(`Encountered an error while trying to match role name '${name}'.`, { cause: e })
+              throw new Error(`Encountered an error while trying to match role name '${name}'.`, { cause : e })
             }
           }
           return false

@@ -164,12 +164,12 @@ const StaffMember = class extends Item {
             || value === null
             || value === ''
             || (Array.isArray(value) && value.length === 0)
-          ) {
+        ) {
           acc.push(errMsgFunc(field, data))
         }
         return acc
       }, errors)
-      
+
       return errors // TODO: I don't think this is necessary
     }
 
@@ -182,7 +182,7 @@ const StaffMember = class extends Item {
 
     if (employmentStatus !== 'logical') {
       requireFields(
-        ['givenName', 'roles' ],
+        ['givenName', 'roles'],
         (field, data) =>
           `'${data.email || data.familyName}' is missing or has empty field '${field}' required for non-logical staff.`
       )

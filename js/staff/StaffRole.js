@@ -51,9 +51,9 @@ const StaffRole = class extends Role {
       return errors
     }
     // else: data.name is good
-    
+
     const orgRole = org.roles.get(data.name, { fuzzy : true, rawData : true })
-  
+
     if (orgRole === undefined) {
       errors.push(validationMsg({ name : data.name, memberEmail, reason : 'references an invalid role' }))
       return errors
@@ -68,9 +68,9 @@ const StaffRole = class extends Role {
 
     if (!orgRole.designated && !data.manager && !orgRole.selfManaged) {
       errors.push(validationMsg({
-        name: data.name,
+        name   : data.name,
         memberEmail,
-        reason: `does not specify a manager for managed role '${orgRole.name}'`
+        reason : `does not specify a manager for managed role '${orgRole.name}'`
           + (orgRole.name !== data.name ? `('${data.name}')` : '')
       }))
     }
