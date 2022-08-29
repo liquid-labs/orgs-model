@@ -169,6 +169,8 @@ const StaffMember = class extends Item {
         }
         return acc
       }, errors)
+      
+      return errors // TODO: I don't think this is necessary
     }
 
     requireFields(
@@ -184,6 +186,13 @@ const StaffMember = class extends Item {
         (field, data) =>
           `'${data.email || data.familyName}' is missing or has empty field '${field}' required for non-logical staff.`
       )
+      // By the time we get here, the staff has been fleshed out and will have the implied staff + contractor/employee
+      // roles. We want to check that there is *some* other role.
+      const assignedRoles = (data.roles || [])
+        .filter((r) => !(r.name === 'Staff' || r.name === 'Employee' || r.name === 'Contractor'))
+      if (assignedRoles.length === 0) {
+        errors.push(`'${data.email} has no assigned roles (only implicit roles)'`)
+      }
     }
 
     for (const roleData of roles || []) {
