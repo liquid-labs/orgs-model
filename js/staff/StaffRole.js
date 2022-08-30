@@ -80,7 +80,7 @@ const StaffRole = class extends Role {
         errors.push(validationMsg({
           name   : data.name,
           memberEmail,
-          reason : `references invalid manager '${data.manager}'`
+          reason : `references unknown manager '${data.manager}'`
         }))
       }
     }

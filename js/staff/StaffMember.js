@@ -191,7 +191,7 @@ const StaffMember = class extends Item {
       const assignedRoles = (data.roles || [])
         .filter((r) => !(r.name === 'Staff' || r.name === 'Employee' || r.name === 'Contractor'))
       if (assignedRoles.length === 0) {
-        errors.push(`'${data.email} has no assigned roles (only implicit roles)'`)
+        errors.push(`${data.givenName}${data.familyName ? ' ' + data.familyName : ''} <${data.email}> has no assigned roles (only implicit roles).`)
       }
     }
 
@@ -200,8 +200,8 @@ const StaffMember = class extends Item {
     }
 
     return errors
-  }
-}
+  } // end static validateData
+} // end class StaffMember
 
 const initializeAllRoles = ({ self, roles, allRoles, org }) => {
   const frontier = [...roles]
