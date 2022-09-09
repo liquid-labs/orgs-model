@@ -95,23 +95,37 @@ describe('Item', () => {
       expect(rawData).toBe(data)
     })
     
-    test("works with private fields", () => {
+    describe("private fields", () => {
       const Foo = class extends Item {
         #bar = 'bar'
+        #baz
         
         constructor() {
           super({ name: 'the foo' })
+          this.#baz = new Object()
+          this.#baz.func = () => 'bazzy'
         }
         
         getBar() {
           return this.#bar
         }
-      }
-      
+        
+        getBazzy() {
+          return this.#baz.func()
+        }
+        
+        get anotherBar() {
+          return this.getBar()
+        }
+      } // class Foo
       bindCreationConfig({ itemClass: Foo, itemName: 'foo', resourceName: 'foos', keyField: 'name' })
-      
       const foo = new Foo()
-      expect(foo.getBar()).toBe('bar')
+    
+      test("works with private value fields", () => expect(foo.getBar()).toBe('bar'))
+      
+      test("works with private object fields", () => expect(foo.getBazzy()).toBe('bazzy'))
+      
+      test("works with indirect private access", () => expect(foo.anotherBar).toBe('bar'))
     })
   } // end 'basicAcessTests' test builder
   
