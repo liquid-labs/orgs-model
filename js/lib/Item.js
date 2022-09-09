@@ -45,6 +45,12 @@ import structuredClone from 'core-js-pure/actual/structured-clone'
 * [John L.](https://stackoverflow.com/users/2437716/john-l). I'm blown away this technique isn't more widely cited.
 */
 
+/**
+* Index to map proxies to underlying objects. We use a weak map so that once the proxy goes out of scope, the underlying
+* object can also be garbage collected.
+*/
+const thisMapper = new WeakMap()
+
 // TODO: more robust to build from 'Object.prototype'?
 const SKIP_METHODS = ['constructor', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__', '__lookupSetter__', '__proto__', 'isPrototypeOf']
 
@@ -97,13 +103,12 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
           ? Reflect.get(object, key, receiver)
           : Reflect.get(object, key)
       }
-      catch (e) { // TODO: this needs more investigation; sometimes you seem to be able to peep private fields just
-        // fine, but saw an error of this type (when this special handling was removed) while importing new
-        // staff records using 'liq orgs XXX staff refresh'
+      catch (e) {
         // So, it's not clear to me what's happening. We seem to be able to access private fields in the first instance,
-        // but at some point in the function chain, it breaks down. But, the workaround is pretty simple.
+        // but at some point in the function chain, it breaks down. But, the workaround is pretty simple, we just go to
+        // the underlying object directly.
         if (e instanceof TypeError) { // assume private field access error
-          return Reflect.get(object, key)
+          return Reflect.get(thisMapper[object], key)
         }
         else {
           throw e
@@ -154,6 +159,7 @@ const defaultIdNormalizer = (id) => typeof id === 'string' ? id.toLowerCase() : 
 
 const Item = class {
   #data
+  #self
 
   constructor(data, { allowSet = [], ...rest } = {}) {
     if (Object.getPrototypeOf(this) === Item.prototype) {
@@ -181,6 +187,9 @@ const Item = class {
       methodIndex,
       allowSet
     }))
+
+    // since we return the proxy, we save the real underlying object internally
+    thisMapper[proxy] = this
 
     return proxy // Note, this overrides the default + implicit 'return this'
   } // end constructor
