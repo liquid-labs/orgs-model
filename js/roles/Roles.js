@@ -18,7 +18,6 @@ const Roles = class extends Resources {
       }
     ))
 
-    this.org = org // TODO: deprecated
     this.#org = org
     this.checkCondition = checkCondition
   }
@@ -27,8 +26,8 @@ const Roles = class extends Resources {
     const superOptions = fuzzy === true
       // then we need to generate matching options but with required guaranteed false because if there's not an exact
       // match, we'll use the fuzzy matching logic.
-      ? Object.assign({}, options, { required : false, org : this.org })
-      : Object.assign({}, options, { org : this.org })
+      ? Object.assign({}, options, { required : false, org : this.#org })
+      : Object.assign({}, options, { org : this.#org })
 
     let result = super.get(name, superOptions)
     const {
@@ -78,7 +77,7 @@ const Roles = class extends Resources {
         throw new Error(errMsgGen?.(name) || `Did not find requried role '${name}'.`)
       }
 
-      if (rawData !== true && result) result = new Role(result, { org : this.org })
+      if (rawData !== true && result) result = new Role(result, { org : this.#org })
 
       if (includeQualifier === true) {
         return [result, qualifier]
@@ -106,7 +105,7 @@ const Roles = class extends Resources {
       filters.push(({ employmentStatus }) => employmentStatus !== 'logical')
     }
 
-    return this.org.staff.list()
+    return this.#org.staff.list()
       .filter((s) => {
         for (const f of filters) {
           if (!f(s)) {
@@ -117,11 +116,11 @@ const Roles = class extends Resources {
       })
 
     /*    return impliedRoles === true
-      ? this.org.staff.list()
+      ? this.#org.staff.list()
           .filter((s) => s.hasRole(roleName))
           .map((s) => s.data)
           // .filter((s, i, l) => l.indexOf(s) === i) // the same person can trigger with different roles, so we uniq-ify
-      : this.org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName)) */
+      : this.#org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName)) */
   }
 
   /**
@@ -155,7 +154,7 @@ const Roles = class extends Resources {
     const filters = []
 
     if (includeIndirect === false) {
-      const indirectFilter = notImpliedTitularFilterGenerator(this.org.orgStructure)
+      const indirectFilter = notImpliedTitularFilterGenerator(this.#org.orgStructure)
       filters.push(indirectFilter)
     }
     if (excludeDesignated) {
@@ -180,7 +179,7 @@ const Roles = class extends Resources {
   get fullyIndexedGlobalDuties() {
     if (this.#dutiesByDomain === undefined) {
       this.#dutiesByDomain = {}
-      const allDomains = this.org.innerState.roleDuties.reduce((domainNames, { domain }) => {
+      const allDomains = this.#org.innerState.roleDuties.reduce((domainNames, { domain }) => {
         domainNames.push(domain)
         return domainNames
       }, [])
