@@ -26,9 +26,19 @@ const StaffRole = class extends Role {
       return undefined // root nodes are unmanaged
     }
     const myNode = this.#org.orgStructure.getNodeByRoleName(this.name)
+    if (myNode === undefined) {
+      throw new Error(`Could not determine manager role for '${this.memberEmail}' role '${this.name}'; though did identify manager: ${this.managerEmail}; verify the org structure includes '${this.name}'.`)
+    }
     for (const { name : managingRoleName } of myNode.getPossibleManagerNodes()) {
       if (myManager.hasRole(managingRoleName)) {
-        return managingRoleName
+        // then we need to find their own role. We want to allow this to be different because we want the organization
+        // of roles to be flexible and minimal. So the org chart may be generic, but the company titles are customized
+        // sub-types for example.
+        for (const ownRole of myManager.getOwnRoles()) {
+          if (ownRole.impliesRole(managingRoleName)) {
+            return ownRole.name
+          }
+        }
       }
     }
     // Should be impossible...
