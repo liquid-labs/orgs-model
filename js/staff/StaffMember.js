@@ -219,7 +219,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
       {
         fuzzy     : true,
         required  : true,
-        errMsgGen : (name) => `Staff member '${this.email}' claims unknown role '${name}'.`
+        errMsgGen : (name) => `Staff member '${self.email}' claims unknown role '${name}'.`
       })
     const impliedRoles = []
     if (orgRole.implies !== undefined) {
@@ -243,7 +243,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
         {
           required  : true,
           errMsgGen : (name) => {
-            return `Role '${orgRole.name}' implies unknown role '${name}' (triggered while processing staff member '${self.data.email}').`
+            return `Role '${orgRole.name}' implies unknown role '${name}' (triggered while processing staff member '${self.email}').`
           }
         })
       const impliedStaffRoleData = {
@@ -257,7 +257,7 @@ const initializeAllRoles = ({ self, roles, allRoles, org }) => {
       }
 
       if (mngrProtocol === 'self') {
-        impliedStaffRoleData.manager = self.data.email // remember, the proxy chain is broken
+        impliedStaffRoleData.manager = self.email
       }
       else if (mngrProtocol === 'same') {
         impliedStaffRoleData.manager = staffRole.manager

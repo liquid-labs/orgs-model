@@ -6,6 +6,14 @@
   { "name": "CTO", "singular": true, "titular": true, "jobDescription": "Chief technical officer." },
   { "name": "Developer", "titular": true, "qualifiable": true, "jobDescription": "Hacker." },
   { "name": "Senior Developer", "titular": true, "qualifiable": true, "superRole": "Developer", "jobDescription": "Hacker." },
+  {
+    "name": "Lead Developer",
+    "superRole": "Senior Developer",
+    "titular": true,
+    "implies": [
+       { "name": "Sensitive Data Handler" }
+    ]
+  },
   { "name": "Tester", "titular": true, "qualifiable": true, "jobDescription": "QA." },
   { "name": "Sensitive Data Handler", "designated": true, "jobDescription": "Knows secrets." },
   { "name": "Acme Admin", "designated": true, "jobDescription": "Administers the Acme account." },
