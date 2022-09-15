@@ -91,7 +91,6 @@ const Roles = class extends Resources {
   }
 
   // TODO: the convention here is reversed; in StaffMember.hasRole(), the option is 'ownRolesOnly' which defaults false.
-  // TODO: this is also idiomatic by returning data objects by default rather than the full class
   getStaffInRole(roleName, { impliedRoles = false, excludeLogical = false } = {}) {
     const filters = []
     if (impliedRoles === true) {
@@ -114,13 +113,6 @@ const Roles = class extends Resources {
         }
         return true
       })
-
-    /*    return impliedRoles === true
-      ? this.#org.staff.list()
-          .filter((s) => s.hasRole(roleName))
-          .map((s) => s.data)
-          // .filter((s, i, l) => l.indexOf(s) === i) // the same person can trigger with different roles, so we uniq-ify
-      : this.#org.staff.list({ rawData : true }).filter((s) => s.roles.some((r) => r.name === roleName)) */
   }
 
   /**
@@ -129,7 +121,7 @@ const Roles = class extends Resources {
   * - `excludeDesignated`: if true, only include titular roles. Incompatible with `excludeTitular`.
   * - `excludeStaffRoles`: if true, excludes the the global, implicit 'staff' role.
   * - `excludeTitular`: if true, only includes designated roles. Incompatible with `excludeDesignated`.
-  * - `includeIndirect`: if true, include indirect roles which may be defined by the system but are never directly assigned to staff members.
+  * - `includeIndirect`: if true, include indirect roles which may be defined by the system but are not defined in the org structure.
   */
   list({
     all = false,
@@ -148,7 +140,7 @@ const Roles = class extends Resources {
       listOptions.sortFunc = employmentSorter
     }
 
-    if (all === true || (includeIndirect === true && excludeDesignated === false && excludeStaffRoles === true)) {
+    if (all === true || (includeIndirect === true && excludeDesignated === false && excludeStaffRoles === false)) {
       return super.list(listOptions)
     }
     const filters = []
