@@ -108,6 +108,10 @@ const handler = ({ allowSet, data, propIndex, methodIndex }) => ({
         // but at some point in the function chain, it breaks down. But, the workaround is pretty simple, we just go to
         // the underlying object directly.
         if (e instanceof TypeError) { // assume private field access error
+          /* Needs further testing, but I believe trying to use the reciever was causing 'TypeErrors'.
+          return receiver
+            ? Reflect.get(thisMapper[object].deref(), key, receiver)
+            : Reflect.get(thisMapper[object].deref(), key) */
           return Reflect.get(thisMapper[object], key)
         }
         else {
@@ -189,7 +193,7 @@ const Item = class {
     }))
 
     // since we return the proxy, we save the real underlying object internally
-    thisMapper[proxy] = this
+    thisMapper[proxy] = new WeakRef(this)
 
     return proxy // Note, this overrides the default + implicit 'return this'
   } // end constructor
