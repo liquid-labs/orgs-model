@@ -40,17 +40,17 @@ const Organization = class {
     this.validate()
     this.staff.validate({ required : true })
   }
-  
+
   validate() {
     const settings = this.#innerState[SETTINGS_KEY]
     if (settings === undefined) {
       throw new Error("No 'settings' were found on the organization. Are you missing the 'settings.yaml' file?")
     }
-    
+
     if (settings[ORG_ID] === undefined) {
       throw new Error("Did not find expected 'ORG_ID' setting.")
     }
-    
+
     const playground = `${process.env.HOME}/.liq/playground`
     const stats = statSync(playground, { throwIfNoEntry : false })
     if (stats === undefined) {
@@ -59,12 +59,12 @@ const Organization = class {
     else if (!stats.isDirectory()) {
       throw new Error(`Playground '${playground}' is not a directory as expected.`)
     }
-    
+
     // TODO: once we do plugins, this will be a policy plugin validation
     if (settings[ORG_POLICY_DATA_REPO] === undefined) {
       throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.id}' data.`)
     }
-    
+
     // TODO: once we do plugins, this will be a policy plugin validation
     if (settings[ORG_POLICY_REPO] === undefined) {
       throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.id}' data.`)
