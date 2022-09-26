@@ -121,31 +121,31 @@ const Role = class extends Item {
 
     return structuredClone(this.#dutiesByDomain) // eslint-disable-line no-undef -- defined in node 17.0.0
   }
-  
+
   get allImpliedRoleNames() {
     const impliedRoleNames = []
-    
+
     const frontierNames = []
     const loadFrontier = (role) => {
       if (role.superRole) frontierNames.push(role.superRole)
       if (role.implies) frontierNames.push(...role.implies.map((r) => r.name))
     }
     loadFrontier(this)
-    
-    const visited = { [this.name]: true }
-    
+
+    const visited = { [this.name] : true }
+
     while (frontierNames.length > 0) {
       const frontierName = frontierNames.shift()
-      
+
       if (visited[frontierName]) continue
       // else
       impliedRoleNames.push(frontierName)
       visited[frontierName] = true
-      
-      const frontierRole = this.#org.roles.get(frontierName, { rawData: true })
+
+      const frontierRole = this.#org.roles.get(frontierName, { rawData : true })
       loadFrontier(frontierRole)
     }
-    
+
     return impliedRoleNames
   }
 

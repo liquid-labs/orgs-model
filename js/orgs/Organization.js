@@ -33,6 +33,7 @@ const Organization = class {
       sources : new Sources({ items : this.#innerState.alerts.sources })
     }
 
+    this.validate()
     this.staff.validate({ required : true })
   }
 
@@ -61,33 +62,37 @@ const Organization = class {
     return this.orgStructure.getNodeByRoleName(roleName).getPossibleManagerNodes()
   }
 
+  get id() {
+    return this.#innerState.ORG_ID
+  }
+
   get playground() { // TODO: could be static... static gets?
     if (this.#cachedPlayground !== undefined) return this.#cachedPlayground
-    
+
     const playground = `${process.env.HOME}/.liq/playground`
-    const stats = statSync(playground, { throwIfNoEntry: false })
+    const stats = statSync(playground, { throwIfNoEntry : false })
     if (stats === undefined) {
       throw new Error(`Did not find expected playgroudn location at '${playground}'.`)
     }
     else if (!stats.isDirectory()) {
       throw new Error(`Playground '${playground}' is not a directory as expected.`)
     }
-    
+
     this.#cachedPlayground = playground
     return playground
   }
-  
+
   get policyRepo() {
-    const policyRepo = this.innerState.settings?.ORG_POLICY_REPO
+    const policyRepo = this.#innerState.settings?.ORG_POLICY_REPO
     if (policyRepo === undefined) {
-      throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${req.params.orgKey}' data.`)
+      throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.ORG_ID}' data.`)
     }
-    
+
     return policyRepo.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
-  
+
   get policyRepoPath() {
-    return this.playground + '/' + tthis.policyRepo
+    return this.playground + '/' + this.policyRepo
   }
 
   generateOrgChartData(style = 'debang/OrgChart') {
