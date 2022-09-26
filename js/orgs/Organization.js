@@ -1,3 +1,5 @@
+import { statSync } from 'node:fs'
+
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
@@ -12,6 +14,7 @@ import { Vendors } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
 const Organization = class {
+  #cachedPlayground
   #innerState
 
   constructor({ dataPath, ...rest }) {
@@ -56,6 +59,35 @@ const Organization = class {
 
   getManagingRolesByManagedRoleName(roleName) {
     return this.orgStructure.getNodeByRoleName(roleName).getPossibleManagerNodes()
+  }
+
+  get playground() { // TODO: could be static... static gets?
+    if (this.#cachedPlayground !== undefined) return this.#cachedPlayground
+    
+    const playground = `${process.env.HOME}/.liq/playground`
+    const stats = statSync(playground, { throwIfNoEntry: false })
+    if (stats === undefined) {
+      throw new Error(`Did not find expected playgroudn location at '${playground}'.`)
+    }
+    else if (!stats.isDirectory()) {
+      throw new Error(`Playground '${playground}' is not a directory as expected.`)
+    }
+    
+    this.#cachedPlayground = playground
+    return playground
+  }
+  
+  get policyRepo() {
+    const policyRepo = this.innerState.settings?.ORG_POLICY_REPO
+    if (policyRepo === undefined) {
+      throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${req.params.orgKey}' data.`)
+    }
+    
+    return policyRepo.startsWith('@') ? policyRepo.slice(1) : policyRepo
+  }
+  
+  get policyRepoPath() {
+    return this.playground + '/' + tthis.policyRepo
   }
 
   generateOrgChartData(style = 'debang/OrgChart') {
