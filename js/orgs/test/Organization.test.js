@@ -26,6 +26,17 @@ describe('Organization', () => {
   })
 
   test('successfully initializes with good data', () => expect(org).not.toBe(undefined))
+  
+  const expectedPlayground = `${process.env.HOME}/.liq/playground`
+  test
+    .each([
+      [ 'id', 'test-org' ],
+      [ 'playground', expectedPlayground ],
+      [ 'policyDataRepo', 'acme/policy-data' ],
+      [ 'policyDataRepoPath', `${expectedPlayground}/acme/policy-data` ],
+      [ 'policyRepo', 'acme/policy' ],
+      [ 'policyRepoPath', `${expectedPlayground}/acme/policy` ]])
+    ("attribute '%s' is '%s'", (key, value) => expect(org[key]).toBe(value))
 
   test('loads basic staff data', () => {
     const ceo = org.staff.get('ceo@foo.com')

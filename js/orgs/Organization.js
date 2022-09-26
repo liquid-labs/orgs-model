@@ -13,8 +13,12 @@ import { Technologies } from '../technologies'
 import { Vendors } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
+const SETTINGS_KEY = 'settings'
+const ORG_ID = 'ORG_ID'
+const ORG_POLICY_DATA_REPO = 'ORG_POLICY_DATA_REPO'
+const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
+
 const Organization = class {
-  #cachedPlayground
   #innerState
 
   constructor({ dataPath, ...rest }) {
@@ -35,6 +39,36 @@ const Organization = class {
 
     this.validate()
     this.staff.validate({ required : true })
+  }
+  
+  validate() {
+    const settings = this.#innerState[SETTINGS_KEY]
+    if (settings === undefined) {
+      throw new Error("No 'settings' were found on the organization. Are you missing the 'settings.yaml' file?")
+    }
+    
+    if (settings[ORG_ID] === undefined) {
+      throw new Error("Did not find expected 'ORG_ID' setting.")
+    }
+    
+    const playground = `${process.env.HOME}/.liq/playground`
+    const stats = statSync(playground, { throwIfNoEntry : false })
+    if (stats === undefined) {
+      throw new Error(`Did not find expected playgroudn location at '${playground}'.`)
+    }
+    else if (!stats.isDirectory()) {
+      throw new Error(`Playground '${playground}' is not a directory as expected.`)
+    }
+    
+    // TODO: once we do plugins, this will be a policy plugin validation
+    if (settings[ORG_POLICY_DATA_REPO] === undefined) {
+      throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.id}' data.`)
+    }
+    
+    // TODO: once we do plugins, this will be a policy plugin validation
+    if (settings[ORG_POLICY_REPO] === undefined) {
+      throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.id}' data.`)
+    }
   }
 
   // TODO: some external code relies on access to inner state; remove this once that's fixed; if it's 'read-only', then keep this, but return a structuredClone?
@@ -63,31 +97,24 @@ const Organization = class {
   }
 
   get id() {
-    return this.#innerState.ORG_ID
+    return this.#innerState[SETTINGS_KEY][ORG_ID]
   }
 
   get playground() { // TODO: could be static... static gets?
-    if (this.#cachedPlayground !== undefined) return this.#cachedPlayground
+    return `${process.env.HOME}/.liq/playground` // this is a validated as an existing directory
+  }
 
-    const playground = `${process.env.HOME}/.liq/playground`
-    const stats = statSync(playground, { throwIfNoEntry : false })
-    if (stats === undefined) {
-      throw new Error(`Did not find expected playgroudn location at '${playground}'.`)
-    }
-    else if (!stats.isDirectory()) {
-      throw new Error(`Playground '${playground}' is not a directory as expected.`)
-    }
+  get policyDataRepo() {
+    const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_DATA_REPO] // this is validated (exists) value
+    return policyRepo.startsWith('@') ? policyRepo.slice(1) : policyRepo
+  }
 
-    this.#cachedPlayground = playground
-    return playground
+  get policyDataRepoPath() {
+    return this.playground + '/' + this.policyDataRepo
   }
 
   get policyRepo() {
-    const policyRepo = this.#innerState.settings?.ORG_POLICY_REPO
-    if (policyRepo === undefined) {
-      throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.ORG_ID}' data.`)
-    }
-
+    const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_REPO] // this is a validated (exists) value
     return policyRepo.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 
@@ -137,7 +164,6 @@ const Organization = class {
           }
         })
       })
-      // console.error(result) // DEBUG
 
       return result
     }
