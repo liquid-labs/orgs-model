@@ -82,9 +82,9 @@ const Role = class extends Item {
     if (this.#allMyDuties !== undefined) {
       return this.#allMyDuties
     }
-    // else figure out all duties
+    // else figure out all duties that flow from the role
     this.#allMyDuties = {}
-    const frontier = [this.data] // We will need both the duties and the role name, so we work with the role as a whole
+    const frontier = [this]
     while (frontier.length > 0) {
       const edge = frontier.shift()
       if (edge.duties) {
