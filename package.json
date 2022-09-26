@@ -11,6 +11,7 @@
     "build": "make",
     "build:clean": "make clean build",
     "test": "make test",
+    "prepublishOnly": "npm run build",
     "preversion": "npm run build:clean && npm test && npm run lint",
     "postversion": "git push --tags upstream",
     "lint": "make lint",
