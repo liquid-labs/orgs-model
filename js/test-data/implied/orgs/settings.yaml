@@ -1,1 +1,3 @@
 ORG_ID: test-org
+ORG_POLICY_REPO: acme/policy
+ORG_POLICY_DATA_REPO: acme/policy-data
