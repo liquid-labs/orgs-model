@@ -117,7 +117,8 @@ const Roles = class extends Resources {
 
   /**
   * Options:
-  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, and `excludeStaffRoles=false`.
+  * - `all`: equivalent to `includeIndirect=true`, `excludeDesignated=false`, `excludeTitular=false', and
+  *   `excludeStaffRoles=false`.
   * - `excludeDesignated`: if true, only include titular roles. Incompatible with `excludeTitular`.
   * - `excludeStaffRoles`: if true, excludes the the global, implicit 'staff' role.
   * - `excludeTitular`: if true, only includes designated roles. Incompatible with `excludeDesignated`.
@@ -140,7 +141,11 @@ const Roles = class extends Resources {
       listOptions.sortFunc = employmentSorter
     }
 
-    if (all === true || (includeIndirect === true && excludeDesignated === false && excludeStaffRoles === false)) {
+    if (all === true
+        || (includeIndirect === true
+          && excludeDesignated === false
+          && excludeStaffRoles === false
+          && excludeTitular === false)) {
       return super.list(listOptions)
     }
     const filters = []

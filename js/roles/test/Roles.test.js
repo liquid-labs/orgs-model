@@ -46,5 +46,14 @@ describe('Roles', () => {
         expect(role.designated).toBe(true)
       }
     })
+    
+    test("'notTitular=true' and 'includeIndirect=true' excludes titular roles", () => {
+      const roles = testRoles.list({ excludeTitular: true, includeIndirect: true })
+      expect(roles).toHaveLength(6) // 6 of 12 are titular
+      for (const role of roles) {
+        expect(role.titular).toBe(undefined)
+        expect(role.designated).toBe(true)
+      }
+    })
   })
 })
