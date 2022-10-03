@@ -29,7 +29,22 @@ describe('Roles', () => {
     test("respects 'sort=false' option", () =>
       expect(testRoles.list({ sort: false }).some((r) => r.name === 'CEO')).toBe(true))
       
-    test("respects 'excludeDesignated=true' option", () =>
-      expect(testRoles.list({ excludeDesignated: true })).toHaveLength(6)) // 6 of 11 are designated
+    test("respects 'excludeDesignated=true' option", () => {
+      const roles = testRoles.list({ excludeDesignated: true })
+      expect(roles).toHaveLength(6) // 6 of 12 are designated
+      for (const role of roles) {
+        expect(role.titular).toBe(true)
+        expect(role.designated).toBe(undefined)
+      }
+    })
+    
+    test("'notTitular=true' excludes titular roles", () => {
+      const roles = testRoles.list({ excludeTitular: true })
+      expect(roles).toHaveLength(6) // 6 of 12 are titular
+      for (const role of roles) {
+        expect(role.titular).toBe(undefined)
+        expect(role.designated).toBe(true)
+      }
+    })
   })
 })
