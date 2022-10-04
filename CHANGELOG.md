@@ -220,3 +220,37 @@
 ## Release 1.0.0-beta.93
 * _**hotfix**_: support clean build and use in 'preversion' to better ensure actually deploying the right code _(zane@liquid-labs.com; 2022-08-20T20:16:32.000Z)_
 * _**hotfix**_: define 'build' in the Maketfile _(zane@liquid-labs.com; 2022-08-20T20:18:51.000Z)_
+
+## Release 1.0.0-beta.94
+* _**hotfix**_: 'resources.js' -> 'Resources.js' _(zane@liquid-labs.com; 2022-08-22T18:48:16.000Z)_
+* _**hotfix**_: improve setup function 'bindCreationConfig' error messages _(zane@liquid-labs.com; 2022-08-23T21:12:20.000Z)_
+* _**hotfix**_: enable directly setting itemConfig directly in constructor _(zane@liquid-labs.com; 2022-08-23T21:16:21.000Z)_
+* _**hotfix**_: started basic resources test _(zane@liquid-labs.com; 2022-08-23T21:16:48.000Z)_
+* _**hotfix**_: tested and removed (commented) possibly unnecessary private field special case handling _(zane@liquid-labs.com; 2022-08-23T21:59:20.000Z)_
+* _**hotfix**_: re-enabled private field special handling _(zane@liquid-labs.com; 2022-08-28T02:43:03.000Z)_
+* _**hotfix**_: improved error reporting when deleting item and fixed erronous reversal of canonical index list _(zane@liquid-labs.com; 2022-08-28T02:45:18.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-08-28T02:50:25.000Z)_
+* _**hotfix**_: better error message when role name match fails _(zane@liquid-labs.com; 2022-08-28T08:57:47.000Z)_
+* _**hotfix**_: ease up on required field restrictions _(zane@liquid-labs.com; 2022-08-28T08:58:05.000Z)_
+* _**hotfix**_: require given name (and not family name for non-logical staff; test for empty as well as undefined required fields _(zane@liquid-labs.com; 2022-08-28T19:18:13.000Z)_
+* _**hotfix**_: verify that ever staff member has at least one assigned role _(zane@liquid-labs.com; 2022-08-29T00:08:35.000Z)_
+* _**hotfix**_: smarter role checking; require a manager unless marked 'selfManaged' _(zane@liquid-labs.com; 2022-08-29T00:09:17.000Z)_
+* _**hotfix**_: update tests for latest validation rules _(zane@liquid-labs.com; 2022-08-29T00:10:32.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-08-29T00:10:52.000Z)_
+* _**hotfix**_: better error messages and some inline notes _(zane@liquid-labs.com; 2022-08-30T16:03:28.000Z)_
+* _**hotfix**_: addtional private feld tests _(zane@liquid-labs.com; 2022-09-09T00:08:40.000Z)_
+* _**hotfix**_: make org fully private _(zane@liquid-labs.com; 2022-09-09T00:54:47.000Z)_
+* _**hotfix**_: track real objects for better private field access _(zane@liquid-labs.com; 2022-09-09T16:05:06.000Z)_
+* _**hotfix**_: ensure we're connecting org chart nodes with 'own role' _(zane@liquid-labs.com; 2022-09-09T16:05:35.000Z)_
+* _**hotfix**_: fix memory leak (I think, it's hard to test); add explanatory note _(zane@liquid-labs.com; 2022-09-15T03:20:49.000Z)_
+* _**hotfix**_: implement and test 'Role.allImpliedRoleNames' _(zane@liquid-labs.com; 2022-09-15T03:21:54.000Z)_
+* _**hotfix**_: fix erroneous 'all' equivalency; correct inline notes _(zane@liquid-labs.com; 2022-09-15T16:22:41.000Z)_
+* _**hotfix**_: added some useful getters to Organization _(zane@liquid-labs.com; 2022-09-26T00:16:54.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-09-26T00:29:05.000Z)_
+* _**hotfix**_: added attribute getters; reduce reliance on directly accessing settings _(zane@liquid-labs.com; 2022-09-26T19:22:11.000Z)_
+* _**hotfix**_: fixed duties processing bug _(zane@liquid-labs.com; 2022-09-26T19:23:52.000Z)_
+* _**hotfix**_: added expected settings to pass validate _(zane@liquid-labs.com; 2022-09-26T19:24:06.000Z)_
+* _**hotfix**_: lint fixes _(zane@liquid-labs.com; 2022-09-26T19:24:22.000Z)_
+* _**hotfix**_: make sure we build everything before publishing _(zane@liquid-labs.com; 2022-09-26T19:39:48.000Z)_
+* _**hotfix**_: tightened testing of Roles.list() 'excludeDesignated' and added 'excludeTitular' test _(zane@liquid-labs.com; 2022-10-03T22:33:52.000Z)_
+* _**hotfix**_: test and fix bug where 'excludeTitular' can be ignored _(zane@liquid-labs.com; 2022-10-03T22:39:27.000Z)_
