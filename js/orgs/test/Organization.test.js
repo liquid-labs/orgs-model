@@ -31,6 +31,9 @@ describe('Organization', () => {
   test
     .each([
       [ 'id', 'test-org' ],
+      [ 'key', 'test-org' ],
+      [ 'commonName', 'Test Org' ],
+      [ 'legalName', 'Test Org LLC' ],
       [ 'playground', expectedPlayground ],
       [ 'policyDataRepo', 'acme/policy-data' ],
       [ 'policyDataRepoPath', `${expectedPlayground}/acme/policy-data` ],

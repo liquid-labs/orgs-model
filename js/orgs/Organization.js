@@ -1,4 +1,5 @@
 import { statSync } from 'node:fs'
+import structuredClone from 'core-js-pure/actual/structured-clone'
 
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
@@ -70,6 +71,31 @@ const Organization = class {
       throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.id}' data.`)
     }
   }
+  
+  get key() { return this.getSetting('KEY') }
+
+  get commonName() { return this.getSetting('COMMON_NAME') }
+  
+  get legalName() { return this.getSetting('LEGAL_NAME') }
+    
+  getSetting(keyPath) {
+    let value = process.env[keyPath]
+    if (value !== undefined) {
+      return value
+    }
+    // else
+    value = this.#innerState.settings.s
+    for (const key of keyPath?.split('.') || []) {
+      value = value?.[key]
+    }
+    return structuredClone(value)
+  }
+
+  requireSetting(key) {
+    const value = this.getSetting(key)
+    if (value === undefined) { throw new Error(`No such company setting '${key}'.`) }
+    return value
+  }
 
   // TODO: some external code relies on access to inner state; remove this once that's fixed; if it's 'read-only', then keep this, but return a structuredClone?
   get innerState() { return this.#innerState }
@@ -79,14 +105,6 @@ const Organization = class {
 
   // TODO: deprecated; just use 'org.staff'
   getStaff() { return this.staff }
-
-  getSetting(key) { return process.env[key] }
-
-  requireSetting(key) {
-    const value = this.getSetting(key)
-    if (value === undefined) { throw new Error(`No such company setting '${key}'.`) }
-    return value
-  }
 
   hasStaffInRole(email, roleName, options) {
     return this.staff.getByRoleName(roleName, options).some(s => s.email === email)
