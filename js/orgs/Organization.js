@@ -71,13 +71,13 @@ const Organization = class {
       throw new Error(`Did not find expected 'settings.ORG_POLICY_REPO' while processing org '${this.id}' data.`)
     }
   }
-  
+
   get key() { return this.getSetting('KEY') }
 
   get commonName() { return this.getSetting('COMMON_NAME') }
-  
+
   get legalName() { return this.getSetting('LEGAL_NAME') }
-    
+
   getSetting(keyPath) {
     let value = process.env[keyPath]
     if (value !== undefined) {
