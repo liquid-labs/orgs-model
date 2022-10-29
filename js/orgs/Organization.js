@@ -1,5 +1,8 @@
 import { statSync } from 'node:fs'
+
 import structuredClone from 'core-js-pure/actual/structured-clone'
+
+import * as fjson from '@liquid-labs/federated-json'
 
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
@@ -21,9 +24,11 @@ const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
 
 const Organization = class {
   #innerState
+  #lastModified
 
   constructor({ dataPath, ...rest }) {
     this.#innerState = loadOrgState({ dataPath, ...rest })
+    this.#lastModified = fjson.lastModificationMs(this.#innerState)
 
     this.dataPath = dataPath
     this.roles = new Roles({ items : this.#innerState.roles, org : this })
@@ -65,6 +70,8 @@ const Organization = class {
   get key() { return this.getSetting('KEY') }
 
   get commonName() { return this.getSetting('COMMON_NAME') }
+
+  get lastModified() { return this.#lastModified }
 
   get legalName() { return this.getSetting('LEGAL_NAME') }
 
