@@ -87,7 +87,7 @@ const bindAddEmploymentRoles = (org) => (data) => {
     if (!['employee', 'contractor'].includes(employmentStatus)) {
       throw new Error(`Staff member '${data.email}' has invalid employment status '${employmentStatus}'`)
     }
-    
+
     // Depending on the flow, the implicit staff roles may already be present
     if (employmentStatus === 'contractor' && !roles.some((r) => r.name === 'Contractor')) {
       roles.push(org.roles.get('Contractor', { rawData : true, required : true }))
@@ -95,7 +95,7 @@ const bindAddEmploymentRoles = (org) => (data) => {
     else if (employmentStatus === 'employee' && !roles.some((r) => r.name === 'Employee')) {
       roles.push(org.roles.get('Employee', { rawData : true, required : true }))
     }
-    
+
     if (!roles.some((r) => r.name === 'Staff')) {
       roles.push(org.roles.get('Staff', { rawData : true, required : true }))
     }
