@@ -69,8 +69,8 @@ const OrgStructure = class {
       const role = roles.get(node.name,
         {
           errMsgGen : (name) => `Could not retrieve ${node.implied ? 'implied ' : ''}role '${name}' while building org structure.`,
-          fuzzy : true,
-          required: true
+          fuzzy     : true,
+          required  : true
         })
       if (!role) {
         throw new Error(`Failed to build org structure. Could not find '${node.name}' of:\n${JSON.stringify(node, (key) => `${key} {}`, '  ')}`)
@@ -111,7 +111,7 @@ const OrgStructure = class {
 
     const orgRoles = this.getNodes().map(n => n.getName())
     // check all org role names reference defined roles
-    const undefinedRoles = orgRoles.filter((roleName) => roles.get(roleName, { fuzzy: true }) === undefined)
+    const undefinedRoles = orgRoles.filter((roleName) => roles.get(roleName, { fuzzy : true }) === undefined)
     if (undefinedRoles.length > 0) {
       throw new Error('Found undefined role reference'
                       + `${undefinedRoles.length > 1 ? 's' : ''}: ${undefinedRoles.join(', ')}`)

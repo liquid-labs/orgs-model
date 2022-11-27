@@ -25,13 +25,13 @@ const StaffRole = class extends Role {
     if (myManager === undefined) {
       return undefined // root nodes are unmanaged
     }
-    const myNormalizedRole = this.#org.roles.get(this.name, { fuzzy: true })
+    const myNormalizedRole = this.#org.roles.get(this.name, { fuzzy : true })
     if (myNormalizedRole === undefined) {
       throw new Error(`Could not determine normalized role for '${this.memberEmail}' role '${this.name}'.`)
     }
     const myNode = this.#org.orgStructure.getNodeByRoleName(myNormalizedRole.name)
     if (myNode === undefined) {
-      throw new Error(`Could not determine manager role for '${this.memberEmail}' role '${this.name}'${ this.name === myNormalizedRole.name ? '' : ` (normalized name: '${myNormalizedRole.name}')`}; though did identify manager: ${this.managerEmail}; verify the org structure includes '${this.name}'.`)
+      throw new Error(`Could not determine manager role for '${this.memberEmail}' role '${this.name}'${this.name === myNormalizedRole.name ? '' : ` (normalized name: '${myNormalizedRole.name}')`}; though did identify manager: ${this.managerEmail}; verify the org structure includes '${this.name}'.`)
     }
     for (const { name : managingRoleName } of myNode.getPossibleManagerNodes()) {
       if (myManager.hasRole(managingRoleName)) {
@@ -46,7 +46,7 @@ const StaffRole = class extends Role {
       }
     }
     // Should be impossible...
-    throw new Error(`Could not verify role for '${this.memberEmail}' role '${this.name}'${ this.name === myNormalizedRole.name ? '' : ` (normalized name: '${myNormalizedRole.name}')`}; though did identify manager: ${this.managerEmail}; verify the org structure includes '${this.name}'.`)
+    throw new Error(`Could not verify role for '${this.memberEmail}' role '${this.name}'${this.name === myNormalizedRole.name ? '' : ` (normalized name: '${myNormalizedRole.name}')`}; though did identify manager: ${this.managerEmail}; verify the org structure includes '${this.name}'.`)
   }
 
   get memberEmail() { return this.#memberEmail }

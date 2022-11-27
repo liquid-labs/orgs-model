@@ -153,8 +153,8 @@ const Role = class extends Item {
     if (roleName === this.name) {
       return true
     }
-    const myNormalizedRole = this.#org.roles.get(this.name, { fuzzy: true })
-  
+    const myNormalizedRole = this.#org.roles.get(this.name, { fuzzy : true })
+
     if (roleName === myNormalizedRole.name) {
       return true
     }
