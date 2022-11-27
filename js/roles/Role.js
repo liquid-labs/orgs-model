@@ -153,8 +153,12 @@ const Role = class extends Item {
     if (roleName === this.name) {
       return true
     }
-
-    const myName = this.name
+    const myNormalizedRole = this.#org.roles.get(this.name, { fuzzy: true })
+  
+    if (roleName === myNormalizedRole.name) {
+      return true
+    }
+    const myName = myNormalizedRole.name
     if (!(myName in impliesCache)) {
       impliesCache[myName] = {}
     }
@@ -166,7 +170,7 @@ const Role = class extends Item {
     // else, we gotta figure it out
     const toCheck = (this.implies && this.implies.map(r => r.name)) || []
     if (this.superRole) {
-      toCheck.push(this.superRole)
+      toCheck.unshift(this.superRole) // is a name reference
     }
 
     for (const impliedRoleName of toCheck) {
