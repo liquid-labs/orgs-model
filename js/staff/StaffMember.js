@@ -68,7 +68,7 @@ const StaffMember = class extends Item {
     if (excludeTitular === true && excludeDesignated === true) {
       throw new Error("Invalid arguments; 'excludeTitular' and 'excludeDesignated' cannot both be positive.")
     }
-    
+
     let roles = rawData === true
       ? [...this.roles]
       : this.roles.map((data) => new StaffRole(data, { memberEmail : this.email, org : this.#org }))
@@ -78,7 +78,7 @@ const StaffMember = class extends Item {
     else if (excludeTitular) {
       roles = roles.filter((r) => r.designated)
     }
-    
+
     return roles
   }
 
