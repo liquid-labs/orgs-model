@@ -97,7 +97,7 @@ const Roles = class extends Resources {
       filters.push((s) => s.hasRole(roleName))
     }
     else { // requires 'own' role
-      filters.push((s) => s.roles.some((r) => r.name === roleName))
+      filters.push((s) => s.getOwnRoles().some((r) => r.name === roleName))
     }
 
     if (excludeLogical === true) {
