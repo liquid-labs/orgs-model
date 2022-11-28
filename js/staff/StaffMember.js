@@ -54,10 +54,32 @@ const StaffMember = class extends Item {
   */
   getOwnRoleNames() { return this.roles.map((r) => r.name) }
 
-  getOwnRoles({ rawData = false } = {}) {
-    return rawData === true
+  /**
+  * Returns the roles directly assigned to the staff member. By default will return `Roles` objects unless the
+  * `rawData` option is set to true. Setting `excludeDesignated` and `excludeTitular` will result in an error being
+  * thrown.
+  *
+  * Options:
+  * - `excludeDesignated`: Exclude designated roles and only return titular roles.
+  * - `excludeTitular`: Exclude titular roles and only return designated roles.
+  * - `rawData`: Return raw data objects rather than the default `Roles` objects.
+  */
+  getOwnRoles({ excludeDesignated = false, excludeTitular = false, rawData = false } = {}) {
+    if (excludeTitular === true && excludeDesignated === true) {
+      throw new Error("Invalid arguments; 'excludeTitular' and 'excludeDesignated' cannot both be positive.")
+    }
+    
+    let roles = rawData === true
       ? [...this.roles]
       : this.roles.map((data) => new StaffRole(data, { memberEmail : this.email, org : this.#org }))
+    if (excludeDesignated) {
+      roles = roles.filter((r) => !r.designated)
+    }
+    else if (excludeTitular) {
+      roles = roles.filter((r) => r.designated)
+    }
+    
+    return roles
   }
 
   getAllRoleNames() { return this.getAllRolesData().map((r) => r.name) }
