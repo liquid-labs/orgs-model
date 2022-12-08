@@ -81,9 +81,12 @@ const Organization = class {
       return value
     }
     // else
-    value = this.#innerState.settings.s
-    for (const key of keyPath?.split('.') || []) {
-      value = value?.[key]
+    value = this.#innerState.settings[keyPath]
+    if (value === undefined) {
+      value = this.#innerState.settings.s
+      for (const key of keyPath?.split('.') || []) {
+        value = value?.[key]
+      }
     }
     return structuredClone(value)
   }
