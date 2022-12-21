@@ -1,6 +1,8 @@
-import { statSync } from 'node:fs'
+import { statSync, writeFileSync } from 'node:fs'
+import * as path from 'node:path'
 
 import structuredClone from 'core-js-pure/actual/structured-clone'
+import * as yaml from 'js-yaml'
 
 import * as fjson from '@liquid-labs/federated-json'
 
@@ -17,7 +19,8 @@ import { Technologies } from '../technologies'
 import { Vendors } from '../vendors'
 import { loadOrgState } from '../lib/org-state'
 
-const SETTINGS_KEY = 'settings'
+// TODO: pull these (or at least 'SETTINGS_KEY' -> 'SETTINGS') out and use in loadOrgState
+const SETTINGS_KEY = 'settings' // to avoid basic mis-typing errors
 const ORG_ID = 'ORG_ID'
 const ORG_POLICY_DATA_REPO = 'ORG_POLICY_DATA_REPO'
 const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
@@ -26,8 +29,8 @@ const Organization = class {
   #innerState
   #lastModified
 
-  constructor({ dataPath, ...rest }) {
-    this.#innerState = loadOrgState({ dataPath, ...rest })
+  constructor({ dataPath, ...fjsonOptions }={}) {
+    this.#innerState = loadOrgState({ dataPath, ...fjsonOptions })
     this.#lastModified = fjson.lastModificationMs(this.#innerState)
 
     this.dataPath = dataPath
@@ -67,6 +70,50 @@ const Organization = class {
     }
   }
 
+  static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
+    const orgData = {
+      commonName,
+      auditRecords: './audits/auditRecords.json',
+      dutyDescriptions: './roles/duty-descriptions.json',
+      roles: './roles/roles.json',
+      rolesAccess: './roles/access.json',
+      roleDuties: './roles/duties.json',
+      rolePolicies: './roles/role-policies.json',
+      staff: './staff.json',
+      technologies: './technologies.json',
+      thirdPartyAccounts: './third-party-accounts.json',
+      vendors: './vendors.json'
+    }
+    for (const [ key, file ] of Object.entries(orgData)) {
+      fjson.addMountPoint({ data: orgData, path: '.' + key, file })
+      orgData[key] = []
+    }
+    orgData.alerts = {
+      sources: [],
+      reviews: []
+    }
+    orgData.audits = []
+
+    const settings = {
+      ORG_ID: orgKey,
+      ORG_COMMON_NAME: commonName,
+      ORG_LEGAL_NAME: legalName,
+      s : {
+        KEY: orgKey,
+        COMMON_NAME : commonName,
+        LEGAL_NAME : legalName
+      }
+    }
+
+    const settingsPath = dataPath + '/orgs/settings.yaml'
+    const rootFile = dataPath + '/orgs/org.json'
+
+    fjson.write({ data: orgData, file: rootFile })
+    writeFileSync(settingsPath, yaml.dump(settings))
+
+    return new Organization({ dataPath })
+  }
+
   get key() { return this.getSetting('KEY') }
 
   get commonName() { return this.getSetting('COMMON_NAME') }
@@ -81,14 +128,29 @@ const Organization = class {
       return value
     }
     // else
-    value = this.#innerState.settings[keyPath]
+    value = this.#innerState[SETTINGS_KEY][keyPath]
     if (value === undefined) {
-      value = this.#innerState.settings.s
+      value = this.#innerState[SETTINGS_KEY].s
       for (const key of keyPath?.split('.') || []) {
         value = value?.[key]
       }
     }
     return structuredClone(value)
+  }
+
+  updateSetting(keyPath, value) {
+    keyPath.split('.').reduce((workingData, key, i, arr) => {
+      if ((i - 1) === arr.length) {
+        workingData[key] = value
+        return null
+      }
+      else {
+        if (!(key in workingData)) {
+          workingData[key] = {}
+        }
+        return workingData[key]
+      }
+    }, this.#innerState[SETTINGS_KEY])
   }
 
   requireSetting(key) {
