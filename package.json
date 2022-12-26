@@ -34,7 +34,7 @@
   "devDependencies": {
     "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.54",
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
-    "@liquid-labs/federated-json": "file:.yalc/@liquid-labs/federated-json",
+    "@liquid-labs/federated-json": "^1.0.0-alpha.25",
     "core-js-pure": "^3.21.1",
     "dotenv": "^16.0.0",
     "lodash.merge": "^4.6.2"
