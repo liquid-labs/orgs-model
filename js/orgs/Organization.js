@@ -72,7 +72,6 @@ const Organization = class {
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
     const orgData = {
-      commonName,
       auditRecords: './audits/auditRecords.json',
       dutyDescriptions: './roles/duty-descriptions.json',
       roles: './roles/roles.json',
@@ -88,6 +87,7 @@ const Organization = class {
       fjson.addMountPoint({ data: orgData, path: '.' + key, file })
       orgData[key] = []
     }
+    orgData.commonName = commonName
     orgData.alerts = {
       sources: [],
       reviews: []
@@ -105,11 +105,14 @@ const Organization = class {
       }
     }
 
-    const settingsPath = dataPath + '/orgs/settings.yaml'
     const rootFile = dataPath + '/orgs/org.json'
+    const settingsPath = dataPath + '/orgs/settings.yaml'
+    const orgStructurePath = dataPath + '/orgs/org_structure.json'
 
     fjson.write({ data: orgData, file: rootFile })
+    // TODO: both of these should be part of the federated structure (need to support YAML)
     writeFileSync(settingsPath, yaml.dump(settings))
+    writeFileSync(orgStructurePath, '[]')
 
     return new Organization({ dataPath })
   }
@@ -186,7 +189,7 @@ const Organization = class {
 
   get policyDataRepo() {
     const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_DATA_REPO] // this is validated (exists) value
-    return policyRepo.startsWith('@') ? policyRepo.slice(1) : policyRepo
+    return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 
   get policyDataRepoPath() {
@@ -195,7 +198,7 @@ const Organization = class {
 
   get policyRepo() {
     const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_REPO] // this is a validated (exists) value
-    return policyRepo.startsWith('@') ? policyRepo.slice(1) : policyRepo
+    return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 
   get policyRepoPath() {
