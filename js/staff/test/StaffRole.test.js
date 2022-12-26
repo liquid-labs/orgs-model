@@ -19,7 +19,8 @@ describe('StaffRole', () => {
     test('are detected when invalid', () => {
       expect(() => new Organization({
         dataPath :'./js/test-data',
-        overrides: { '.staff' : 'file:./js/staff/test/invalid_qualifier_staff.json' }
+        // this is relative to the root FJSON file
+        overrides: { '.staff' : 'file:../../staff/test/invalid_qualifier_staff.json' }
       }))
       .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
     })

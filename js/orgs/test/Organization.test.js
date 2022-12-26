@@ -11,7 +11,8 @@ describe('Organization', () => {
     expect(() =>
       new Organization({
         dataPath : './js/test-data',
-        overrides : { '.staff' : 'file:./js/staff/test/bad_role_staff.json'}
+        // this is relative to the root FJSON file
+        overrides : { '.staff' : 'file:../../staff/test/bad_role_staff.json' } 
       }))
       .toThrow(/Bad Role.*badrole@foo\.com/)
   })
@@ -20,7 +21,8 @@ describe('Organization', () => {
     expect(() =>
       new Organization({
         dataPath : './js/test-data',
-        overrides : { '.staff' : 'file:./js/staff/test/bad_manager_staff.json' }
+        // this is relative to the root FJSON file
+        overrides : { '.staff' : 'file:../../staff/test/bad_manager_staff.json' }
       }))
       .toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
   })
