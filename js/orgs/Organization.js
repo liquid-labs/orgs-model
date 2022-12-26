@@ -1,5 +1,4 @@
 import { statSync, writeFileSync } from 'node:fs'
-import * as path from 'node:path'
 
 import structuredClone from 'core-js-pure/actual/structured-clone'
 import * as yaml from 'js-yaml'
@@ -29,7 +28,7 @@ const Organization = class {
   #innerState
   #lastModified
 
-  constructor({ dataPath, ...fjsonOptions }={}) {
+  constructor({ dataPath, ...fjsonOptions } = {}) {
     this.#innerState = loadOrgState({ dataPath, ...fjsonOptions })
     this.#lastModified = fjson.lastModificationMs(this.#innerState)
 
@@ -72,36 +71,36 @@ const Organization = class {
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
     const orgData = {
-      auditRecords: './audits/auditRecords.json',
-      dutyDescriptions: './roles/duty-descriptions.json',
-      roles: './roles/roles.json',
-      rolesAccess: './roles/access.json',
-      roleDuties: './roles/duties.json',
-      rolePolicies: './roles/role-policies.json',
-      staff: './staff.json',
-      technologies: './technologies.json',
-      thirdPartyAccounts: './third-party-accounts.json',
-      vendors: './vendors.json'
+      auditRecords       : './audits/auditRecords.json',
+      dutyDescriptions   : './roles/duty-descriptions.json',
+      roles              : './roles/roles.json',
+      rolesAccess        : './roles/access.json',
+      roleDuties         : './roles/duties.json',
+      rolePolicies       : './roles/role-policies.json',
+      staff              : './staff.json',
+      technologies       : './technologies.json',
+      thirdPartyAccounts : './third-party-accounts.json',
+      vendors            : './vendors.json'
     }
-    for (const [ key, file ] of Object.entries(orgData)) {
-      fjson.addMountPoint({ data: orgData, path: '.' + key, file })
+    for (const [key, file] of Object.entries(orgData)) {
+      fjson.addMountPoint({ data : orgData, path : '.' + key, file })
       orgData[key] = []
     }
     orgData.commonName = commonName
     orgData.alerts = {
-      sources: [],
-      reviews: []
+      sources : [],
+      reviews : []
     }
     orgData.audits = []
 
     const settings = {
-      ORG_ID: orgKey,
-      ORG_COMMON_NAME: commonName,
-      ORG_LEGAL_NAME: legalName,
-      s : {
-        KEY: orgKey,
+      ORG_ID          : orgKey,
+      ORG_COMMON_NAME : commonName,
+      ORG_LEGAL_NAME  : legalName,
+      s               : {
+        KEY         : orgKey,
         COMMON_NAME : commonName,
-        LEGAL_NAME : legalName
+        LEGAL_NAME  : legalName
       }
     }
 
@@ -109,7 +108,7 @@ const Organization = class {
     const settingsPath = dataPath + '/orgs/settings.yaml'
     const orgStructurePath = dataPath + '/orgs/org_structure.json'
 
-    fjson.write({ data: orgData, file: rootFile })
+    fjson.write({ data : orgData, file : rootFile })
     // TODO: both of these should be part of the federated structure (need to support YAML)
     writeFileSync(settingsPath, yaml.dump(settings))
     writeFileSync(orgStructurePath, '[]')
