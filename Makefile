@@ -1,8 +1,8 @@
 .DELETE_ON_ERROR:
 .PHONY: all build clean lint lint-fix qa test
 
-NPM_BIN:=$(shell npm bin)
-CATALYST_SCRIPTS:=$(NPM_BIN)/catalyst-scripts
+NPM_BIN:=npm exec
+CATALYST_SCRIPTS:=$(NPM_BIN) catalyst-scripts
 
 DIST=dist
 ORGS_MODEL_SRC:=js/
