@@ -1,8 +1,8 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
-import { AuditRecord } from './AuditRecord.js'
-import { Resources } from '../lib/Resources.js'
-import * as idxType from '../lib/index-relationships.js'
+import { AuditRecord } from './AuditRecord'
+import { Resources } from '../lib/Resources'
+import * as idxType from '../lib/index-relationships'
 
 /**
 * Basic class for accessing the audit record data.

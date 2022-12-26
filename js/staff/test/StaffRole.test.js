@@ -5,7 +5,7 @@ const ceoEmail = 'ceo@foo.com'
 
 describe('StaffRole', () => {
   let org
-  beforeAll(() => { org = new Organization({ dataPath: './js/test-data' }) })
+  beforeAll(() => { org = new Organization({ dataPath : './js/test-data' }) })
 
   test.each`
   email | roleName
@@ -18,11 +18,11 @@ describe('StaffRole', () => {
   describe('qualifiers', () => {
     test('are detected when invalid', () => {
       expect(() => new Organization({
-        dataPath :'./js/test-data',
+        dataPath  : './js/test-data',
         // this is relative to the root FJSON file
-        overrides: { '.staff' : 'file:../../staff/test/invalid_qualifier_staff.json' }
+        overrides : { '.staff' : 'file:../../staff/test/invalid_qualifier_staff.json' }
       }))
-      .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
+        .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
     })
 
     test.each`
@@ -42,25 +42,25 @@ describe('StaffRole', () => {
       expect(org.staff.get(email).getRole(roleName).qualifier).toBe(qualifier)
     })
   })
-  
+
   describe('implied roles', () => {
     let impliedOrg
     let ceo
     beforeAll(() => {
-      impliedOrg = new Organization({ dataPath :'./js/test-data/implied' })
+      impliedOrg = new Organization({ dataPath : './js/test-data/implied' })
       ceo = impliedOrg.staff.get(ceoEmail)
     })
-    
+
     test("implied-CEO has implied titular role 'Head Developer'", () => {
       expect(ceo.hasRole('Head Developer')).toBe(true)
       expect(ceo.getRole('Head Developer')).toBeTruthy()
     })
-    
+
     test("implied-CEO has implied non-titular role 'Sensitive Data Handler'", () => {
       expect(ceo.hasRole('Sensitive Data Handler')).toBe(true)
       expect(ceo.getRole('Sensitive Data Handler')).toBeTruthy()
     })
-    
+
     test("implied CEO is their own manager as 'Head Developer'", () =>
       expect(ceo.getRole('Head Developer').managerEmail).toBe(ceoEmail))
   })

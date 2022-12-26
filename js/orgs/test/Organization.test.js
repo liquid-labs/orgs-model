@@ -4,15 +4,15 @@ import { Organization } from '../'
 describe('Organization', () => {
   let org
   beforeAll(() => {
-    org = new Organization({ dataPath: './js/test-data' })
+    org = new Organization({ dataPath : './js/test-data' })
   })
 
   test('detects staff with invalid roles', () => {
     expect(() =>
       new Organization({
-        dataPath : './js/test-data',
+        dataPath  : './js/test-data',
         // this is relative to the root FJSON file
-        overrides : { '.staff' : 'file:../../staff/test/bad_role_staff.json' } 
+        overrides : { '.staff' : 'file:../../staff/test/bad_role_staff.json' }
       }))
       .toThrow(/Bad Role.*badrole@foo\.com/)
   })
@@ -20,7 +20,7 @@ describe('Organization', () => {
   test('detects staff with invalid manaagers', () => {
     expect(() =>
       new Organization({
-        dataPath : './js/test-data',
+        dataPath  : './js/test-data',
         // this is relative to the root FJSON file
         overrides : { '.staff' : 'file:../../staff/test/bad_manager_staff.json' }
       }))
@@ -28,21 +28,21 @@ describe('Organization', () => {
   })
 
   test('successfully initializes with good data', () => expect(org).not.toBe(undefined))
-  
+
   const expectedPlayground = `${process.env.HOME}/.liq/playground`
   test
     .each([
-      [ 'id', 'test-org' ],
-      [ 'key', 'test-org' ],
-      [ 'commonName', 'Test Org' ],
-      [ 'legalName', 'Test Org LLC' ],
-      [ 'playground', expectedPlayground ],
-      [ 'policyDataRepo', 'acme/policy-data' ],
-      [ 'policyDataRepoPath', `${expectedPlayground}/acme/policy-data` ],
-      [ 'policyRepo', 'acme/policy' ],
-      [ 'policyRepoPath', `${expectedPlayground}/acme/policy` ]])
-    ("attribute '%s' is '%s'", (key, value) => expect(org[key]).toBe(value))
-
+      ['id', 'test-org'],
+      ['key', 'test-org'],
+      ['commonName', 'Test Org'],
+      ['legalName', 'Test Org LLC'],
+      ['playground', expectedPlayground],
+      ['policyDataRepo', 'acme/policy-data'],
+      ['policyDataRepoPath', `${expectedPlayground}/acme/policy-data`],
+      ['policyRepo', 'acme/policy'],
+      ['policyRepoPath', `${expectedPlayground}/acme/policy`]])(
+      "attribute '%s' is '%s'", (key, value) => expect(org[key]).toBe(value)
+    )
   test('loads basic staff data', () => {
     const ceo = org.staff.get('ceo@foo.com')
     expect(ceo).not.toBe(undefined)
@@ -107,7 +107,7 @@ describe('Organization', () => {
   describe('generateOrgChartData', () => {
     test('for debang/OrgChart', () => {
       // console.log(JSON.stringify(org.generateOrgChartData('debang/OrgChart')))
-      const expected = { id : 'ceo@foo.com/CEO', ids : ['ceo@foo.com/CEO', 'ceo@foo.com/CTO'], parent_id : '', email : 'ceo@foo.com', name : 'CEO Foo', titles : ['CEO', 'CTO'], roles : [ { name : 'CEO', singular : true, titular : true, selfManaged:true, jobDescription : 'Chief executive officer.', id : 'ceo' }, { name : 'CTO', singular : true, titular : true, jobDescription : 'Chief technical officer.', id : 'cto' }], children : [{ id : 'dev@foo.com/Developer', ids : ['dev@foo.com/Developer'], parent_id : 'ceo@foo.com/CTO', email : 'dev@foo.com', name : 'Dev Bar', titles : ['Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'developer' }], children : [{ id : 'uidev@foo.com/Developer', ids : ['uidev@foo.com/Developer'], parent_id : 'dev@foo.com/Developer', email : 'uidev@foo.com', name : 'UI Bar', titles : ['UI Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'developer' }] }] }, { id : 'test@foo.com/Tester', ids : ['test@foo.com/Tester'], parent_id : 'ceo@foo.com/CTO', email : 'test@foo.com', name : 'Test Baz', titles : ['Tester'], roles : [{ name : 'Tester', titular : true, qualifiable : true, jobDescription : 'QA.', id : 'tester' }] }] }
+      const expected = { id : 'ceo@foo.com/CEO', ids : ['ceo@foo.com/CEO', 'ceo@foo.com/CTO'], parent_id : '', email : 'ceo@foo.com', name : 'CEO Foo', titles : ['CEO', 'CTO'], roles : [{ name : 'CEO', singular : true, titular : true, selfManaged : true, jobDescription : 'Chief executive officer.', id : 'ceo' }, { name : 'CTO', singular : true, titular : true, jobDescription : 'Chief technical officer.', id : 'cto' }], children : [{ id : 'dev@foo.com/Developer', ids : ['dev@foo.com/Developer'], parent_id : 'ceo@foo.com/CTO', email : 'dev@foo.com', name : 'Dev Bar', titles : ['Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'developer' }], children : [{ id : 'uidev@foo.com/Developer', ids : ['uidev@foo.com/Developer'], parent_id : 'dev@foo.com/Developer', email : 'uidev@foo.com', name : 'UI Bar', titles : ['UI Developer'], roles : [{ name : 'Developer', titular : true, qualifiable : true, jobDescription : 'Hacker.', id : 'developer' }] }] }, { id : 'test@foo.com/Tester', ids : ['test@foo.com/Tester'], parent_id : 'ceo@foo.com/CTO', email : 'test@foo.com', name : 'Test Baz', titles : ['Tester'], roles : [{ name : 'Tester', titular : true, qualifiable : true, jobDescription : 'QA.', id : 'tester' }] }] }
       // We 'stringify' because the way jest compares the object cares about the classes; doing it this way saves us
       // from having to import and instatiate 'Role' objects... though it's also a bit brittle, so we may want to take
       // that approach at some point.

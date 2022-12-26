@@ -1,13 +1,13 @@
 /* global beforeAll describe expect test */
 
-import { AuditRecords, Account }  from '../'
+import { AuditRecords } from '../'
 
 describe('AuditRecords', () => {
   let auditRecords
   beforeAll(() => {
     auditRecords = new AuditRecords({ fileName : './js/test-data/orgs/audit-records.json', readFromFile : true })
   })
-  
+
   describe('getByAuditId', () => {
     test('will retrieve indexed values', () => {
       const group = auditRecords.getByAuditId('vendors-data-audit')
@@ -17,7 +17,7 @@ describe('AuditRecords', () => {
       }
     })
   })
-  
+
   describe('getByDomain', () => {
     test('will retrieve indexed values', () => {
       const group = auditRecords.getByDomain('vendors')
@@ -27,7 +27,7 @@ describe('AuditRecords', () => {
       }
     })
   })
-  
+
   describe('getByTargetId', () => {
     test('will retrieve indexed values', () => {
       const group = auditRecords.getByTargetId('AWS CloudTrail')

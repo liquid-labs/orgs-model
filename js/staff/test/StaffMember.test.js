@@ -5,7 +5,7 @@ import { StaffMember } from '../StaffMember'
 describe('StaffMember', () => {
   let org
   beforeAll(() => {
-    org = new Organization({ dataPath: './js/test-data' })
+    org = new Organization({ dataPath : './js/test-data' })
   })
 
   test.each`
@@ -23,18 +23,18 @@ describe('StaffMember', () => {
   `('given: $givenName, family: $familyName, options: $options -> $fullName',
     ({ givenName, familyName, options, fullName }) => {
       const data = {
-        email: 'notused@foo.com',
+        email            : 'notused@foo.com',
         givenName,
         familyName,
-        startDate: '2022-01-01',
-        roles: [ { name: 'Developer', manager: 'ceo@foo.com' } ],
-        employmentStatus: 'employee'
+        startDate        : '2022-01-01',
+        roles            : [{ name : 'Developer', manager : 'ceo@foo.com' }],
+        employmentStatus : 'employee'
       }
       const staffMember = new StaffMember(data, { org })
       expect(staffMember.getFullName(options)).toBe(fullName)
     }
   )
-  
+
   test.each`
   givenName | familyName | options | good
   ${'John'} | ${undefined} | ${undefined} | ${true}
@@ -44,15 +44,15 @@ describe('StaffMember', () => {
   `('given: $givenName, family: $familyName, options: $options is good: $good',
     ({ givenName, familyName, options, good }) => {
       const data = {
-        email: 'notused@foo.com',
+        email            : 'notused@foo.com',
         givenName,
         familyName,
-        startDate: '2022-01-01',
-        roles: [ { name: 'Developer', manager: 'ceo@foo.com' } ],
-        employmentStatus: 'employee'
+        startDate        : '2022-01-01',
+        roles            : [{ name : 'Developer', manager : 'ceo@foo.com' }],
+        employmentStatus : 'employee'
       }
       if (!good) {
-        expect(() => new StaffMember(data, { org })).toThrow(new RegExp(`missing.*field.*(givenName|familyName)`))
+        expect(() => new StaffMember(data, { org })).toThrow(/missing.*field.*(?:givenName|familyName)/)
       }
       else {
         expect(() => new StaffMember(data, { org })).not.toThrow()

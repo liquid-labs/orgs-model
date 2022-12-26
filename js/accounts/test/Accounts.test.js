@@ -1,6 +1,6 @@
 /* global beforeAll describe expect test */
 
-import { Accounts, Account }  from '../'
+import { Accounts, Account } from '../'
 
 describe('Accounts', () => {
   let accounts
@@ -30,7 +30,7 @@ describe('Accounts', () => {
     })
 
     test('retrieves all accounts by default', () => expect(acctList.length).toBe(2))
-    
+
     test('retrieves object data by default', () => {
       expect(acctList[0] instanceof Account).toBe(true)
     })
@@ -44,14 +44,14 @@ describe('Accounts', () => {
       expect(names).toEqual(names.sort())
     })
   })
-  
+
   describe('getByDepartment', () => {
-    test.each([['Operations','jim@foo.com'],['DevOps','sue@foo.com']] )('%s department has $s',
-    (department, email) => {
-      const arr = accounts.getByDepartment(department)
-      expect(arr).toHaveLength(1)
-      expect(arr[0].directEmail).toEqual(email)
-    })
+    test.each([['Operations', 'jim@foo.com'], ['DevOps', 'sue@foo.com']])('%s department has $s',
+      (department, email) => {
+        const arr = accounts.getByDepartment(department)
+        expect(arr).toHaveLength(1)
+        expect(arr[0].directEmail).toEqual(email)
+      })
   })
   /*
   describe('checkCondition', () => {

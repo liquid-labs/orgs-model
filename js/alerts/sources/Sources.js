@@ -1,7 +1,6 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
 
 import { Source } from './Source'
-import * as idxType from '../../lib/index-relationships.js'
 import { Resources } from '../../lib/Resources'
 
 /**
@@ -56,6 +55,7 @@ const checkCondition = (condition, acct) => {
     throw new Error(`Unknown sensitivity code: '${sensitivityCode}'.`)
   }
 
+  const zeroRes = []
   const evaluator = new Evaluator({ parameters, zeroRes })
   return evaluator.evalTruth(condition)
 }

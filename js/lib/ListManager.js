@@ -1,4 +1,4 @@
-import * as relationships from './index-relationships.js'
+import * as relationships from './index-relationships'
 import structuredClone from 'core-js-pure/actual/structured-clone'
 
 /**

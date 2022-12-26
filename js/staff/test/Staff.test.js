@@ -1,6 +1,4 @@
 /* globals beforeAll describe expect test */
-import * as fs from 'fs'
-
 import { Staff } from '../Staff'
 import { StaffMember } from '../StaffMember'
 import { Organization } from '../../orgs'
@@ -9,13 +7,13 @@ describe('Staff', () => {
   let testStaff
   let org
   beforeAll(() => {
-    org = new Organization({ dataPath: './js/test-data' })
+    org = new Organization({ dataPath : './js/test-data' })
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.staff
   })
 
   test('detects duplicate emails on init', () =>
-    expect(() => new Staff({ fileName: './js/staff/test/dupe_email_staff.json', org, readFromFile: true }))
+    expect(() => new Staff({ fileName : './js/staff/test/dupe_email_staff.json', org, readFromFile : true }))
       .toThrow(/email.*ceo@foo.com/))
 
   test('filters header+blank lines', () => expect(testStaff.list()).toHaveLength(4))
@@ -37,22 +35,22 @@ describe('Staff', () => {
     expect(dev.getAllRoles()[0].name).toBe('Developer')
     expect(dev.getAllRoles()[0].managerEmail).toBe('ceo@foo.com')
   })
-  
+
   describe('list', () => {
     test('by default provides a list of objects which is safe to manipulate', () => {
       const result = testStaff.list()
       expect(result[0] instanceof StaffMember).toBe(true)
       const origLength = result.length
       result.splice(0, 1)
-      expect(testStaff.list({ rawData: true })).toHaveLength(origLength)
+      expect(testStaff.list({ rawData : true })).toHaveLength(origLength)
     })
-    
+
     test('can provide raw data which is safe to manipulate', () => {
-      const result = testStaff.list({ rawData: true })
+      const result = testStaff.list({ rawData : true })
       expect(result instanceof StaffMember).toBe(false)
       const origLength = result.length
       result.splice(0, 1)
-      expect(testStaff.list({ rawData: true })).toHaveLength(origLength)
+      expect(testStaff.list({ rawData : true })).toHaveLength(origLength)
     })
   })
 

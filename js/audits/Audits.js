@@ -1,6 +1,6 @@
 import { Audit } from './Audit'
-import { Resources } from '../lib/Resources.js'
-import * as idxType from '../lib/index-relationships.js'
+import { Resources } from '../lib/Resources'
+import * as idxType from '../lib/index-relationships'
 
 /**
 * Basic class wrapping technology items. Functionality is split between 'Technology' and 'Technologies' to simplify
