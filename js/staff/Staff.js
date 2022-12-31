@@ -49,11 +49,14 @@ const Staff = class extends Resources {
   }
 
   list(options = {}) {
-    const { ownRolesOnly = false } = options
+    const { excludeLogical=false, ownRolesOnly=false } = options
 
     bindAugmentor({ allRoles : this.allRoles, options, org : this.org, ownRolesOnly })
 
-    return super.list(options)
+    const list = super.list(options)
+    return excludeLogical === true
+      ? list.filter((s) => s.employmentStatus !== 'logical')
+      : list
   }
 
   validate({ required = false } = {}) {
