@@ -27,46 +27,94 @@ const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
 const Organization = class {
   #innerState
   #lastModified
+  #rootJsonPath
+  #components = []
 
   constructor({ dataPath, ...fjsonOptions } = {}) {
-    this.#innerState = loadOrgState({ dataPath, ...fjsonOptions })
+    this.#rootJsonPath = `${dataPath}/orgs/org.json`
+    this.#innerState = loadOrgState({ dataPath, rootJsonPath: this.#rootJsonPath, ...fjsonOptions })
     this.#lastModified = fjson.lastModificationMs(this.#innerState)
-
     this.dataPath = dataPath
+
     this.roles = new Roles({ items : this.#innerState.roles, org : this })
+    this.registerComponent({ path: '.roles' })
+
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
+    this.registerComponent({ path: '.orgStructure' })
+
     this.staff = new Staff({ items : this.#innerState.staff, org : this })
+    this.registerComponent({ 
+      path: '.staff',
+      manager: this.staff
+    })
+
     this.accounts = new Accounts({ items : this.#innerState.auditRecords })
+    this.registerComponent({ path: '.accounts' })
+
     this.auditRecords = new AuditRecords({ items : this.#innerState.auditRecords })
+    this.registerComponent({ path: '.auditRecords' })
+
     this.audits = new Audits({ items : this.#innerState.audits })
+    this.registerComponent({ path: '.audits' })
+
     this.technologies = new Technologies({ items : this.#innerState.technologies })
+    this.registerComponent({ path: '.technologies' })
+
     this.vendors = new Vendors({ items : this.#innerState.vendors })
+    this.registerComponent({ path: '.vendors' })
+
     this.alerts = {
       sources : new Sources({ items : this.#innerState.alerts.sources })
     }
+    this.registerComponent({ path: '.alerts.sources' })
 
     this.validate()
-    this.staff.validate({ required : true })
   }
 
-  validate() {
+  registerComponent(spec /* { path, manager } */) {
+    this.#components.push(spec)
+    this.#components.sort((a, b) => { 
+      // Using length to sort gives us a 'parent first' walk because any sub-path must necessarily be longer that the 
+      // parent path.
+      const aLength = a.length; const bLength = b.length
+      if (a.length > b.length) return 1
+      else if (a.length === b.length) return 0
+      else return -1 
+    })
+  }
+
+  validate({ noThrow=false } = {}) {
+    const errMsgs = []
+
     const settings = this.#innerState[SETTINGS_KEY]
     if (settings === undefined) {
-      throw new Error("No 'settings' were found on the organization. Are you missing the 'settings.yaml' file?")
+      errMsgs.push("No <code>settings<rst> were found on the organization. Are you missing the <code>settings.yaml<rst> file?")
     }
 
     if (settings[ORG_ID] === undefined) {
-      throw new Error("Did not find expected 'ORG_ID' setting.")
+      errMsgs.push("Did not find expected <code>ORG_ID<rst> setting.")
     }
 
     const playground = `${process.env.HOME}/.liq/playground`
     const stats = statSync(playground, { throwIfNoEntry : false })
     if (stats === undefined) {
-      throw new Error(`Did not find expected playgroudn location at '${playground}'.`)
+      errMsgs.push(`Did not find expected playground location at <code>${playground}<rst>.`)
     }
     else if (!stats.isDirectory()) {
-      throw new Error(`Playground '${playground}' is not a directory as expected.`)
+      errMsgs.push(`Playground <code>${playground}<rst> is not a directory as expected.`)
     }
+
+    for (const { path, manager, listOptions } of this.#components) {
+      if (manager?.validate) {
+        const data = resolveValueFromPath({ path, saveData: this.#innerState })
+        for (const item of manager.list(listOptions)) manager.validate({ data, errors: errMsgs, org: this })
+      }
+    }
+
+    if (noThrow === true) {
+      return errors.length === 0 ? null : errMsgs
+    }
+    else if (errMsgs.length > 0) throw new Error(errMsgs.join('\n'))
   }
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
@@ -396,6 +444,57 @@ const Organization = class {
     }
     else throw new Error(`Org chart style '${style}' is not supported.`)
   }
+
+  cleanedDataCopy() {
+    const saveData = structuredClone(this.#innerState)
+
+    for (const { manager, path, } of this.#components) {
+      if (manager?.cleanedData) {
+        setValueFromPath({ data: manager.cleanedData(), path, saveData })
+      }
+    }
+
+    return saveData
+  }
+
+  save({ noValidate=false } = {}) {
+    if (noValidate === false) this.validate()
+
+    const saveData = this.cleanedDataCopy()
+
+    saveData.audits = []
+    saveData.settings = null
+
+    fjson.write({ data: saveData, file: this.#rootJsonPath })
+  }
+}
+
+const commonManagers = {
+  static: (value) => value
+}
+
+const resolveValueFromPath = ({ path, saveData }) => {
+  if (path === '.') return saveData
+  // else
+  const pathBits = path.split('.')
+  pathBits.shift() // path always starts with a '.', so we remove the initial '' entry.
+  let data = saveData
+  for (const pathBit in pathBits) data = data[pathBit]
+
+  return data
+}
+
+const setValueFromPath = ({ data, path, saveData }) => {
+  if (path === '.') throw new Error("Cannot write self-path '.'")
+  // else
+  const pathBits = path.split('.')
+  pathBits.shift() // path always starts with a '.', so we remove the initial '' entry.
+  let walkData = saveData
+  for (const pathBit in pathBits.slice(0, -1)) walkData = walkData[pathBit]
+
+  const terminalKey = pathBits.slice(-1)[0]
+  
+  walkData[terminalKey] = data
 }
 
 export { Organization }
