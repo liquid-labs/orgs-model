@@ -21,6 +21,13 @@ const Staff = class extends Resources {
     this.checkCondition = checkCondition
   }
 
+  cleanedData() {
+    // return this.list({ rawData: true }).map(StaffMember.itemConfig.dataCleaner)
+    return this.list({ rawData: true }).map((s) => {
+      return StaffMember.itemConfig.dataCleaner(s)
+    })
+  }
+
   get(id, options = {}) {
     const { ownRolesOnly } = options
 
