@@ -37,16 +37,13 @@ const Organization = class {
     this.dataPath = dataPath
 
     this.roles = new Roles({ items : this.#innerState.roles, org : this })
-    this.registerComponent({ path: '.roles' })
+    this.registerComponent({ path: '.roles', manager: this.roles })
 
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.registerComponent({ path: '.orgStructure' })
 
     this.staff = new Staff({ items : this.#innerState.staff, org : this })
-    this.registerComponent({ 
-      path: '.staff',
-      manager: this.staff
-    })
+    this.registerComponent({ path: '.staff', manager: this.staff })
 
     this.accounts = new Accounts({ items : this.#innerState.auditRecords })
     this.registerComponent({ path: '.accounts' })
@@ -58,10 +55,10 @@ const Organization = class {
     this.registerComponent({ path: '.audits' })
 
     this.technologies = new Technologies({ items : this.#innerState.technologies })
-    this.registerComponent({ path: '.technologies' })
+    this.registerComponent({ path: '.technologies', manager: this.technologies })
 
     this.vendors = new Vendors({ items : this.#innerState.vendors })
-    this.registerComponent({ path: '.vendors' })
+    this.registerComponent({ path: '.vendors', manager: this.vendors })
 
     this.alerts = {
       sources : new Sources({ items : this.#innerState.alerts.sources })

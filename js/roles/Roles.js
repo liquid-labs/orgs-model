@@ -22,6 +22,13 @@ const Roles = class extends Resources {
     this.checkCondition = checkCondition
   }
 
+  cleanedData() {
+    // return this.list({ rawData: true }).map(StaffMember.itemConfig.dataCleaner)
+    return this.list({ all: true, rawData: true }).map((s) => {
+      return Role.itemConfig.dataCleaner(s)
+    })
+  }
+
   get(name, { fuzzy = false, ...options } = {}) {
     const superOptions = fuzzy === true
       // then we need to generate matching options but with required guaranteed false because if there's not an exact
