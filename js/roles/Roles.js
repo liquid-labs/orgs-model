@@ -24,7 +24,7 @@ const Roles = class extends Resources {
 
   cleanedData() {
     // return this.list({ rawData: true }).map(StaffMember.itemConfig.dataCleaner)
-    return this.list({ all: true, rawData: true }).map((s) => {
+    return this.list({ all : true, rawData : true }).map((s) => {
       return Role.itemConfig.dataCleaner(s)
     })
   }

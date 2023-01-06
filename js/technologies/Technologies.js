@@ -20,7 +20,7 @@ const Technologies = class extends Resources {
 
   cleanedData() {
     // return this.list({ rawData: true }).map(StaffMember.itemConfig.dataCleaner)
-    return this.list({ rawData: true }).map((s) => {
+    return this.list({ rawData : true }).map((s) => {
       return Technology.itemConfig.dataCleaner(s)
     })
   }

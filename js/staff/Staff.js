@@ -23,7 +23,7 @@ const Staff = class extends Resources {
 
   cleanedData() {
     // return this.list({ rawData: true }).map(StaffMember.itemConfig.dataCleaner)
-    return this.list({ rawData: true }).map((s) => {
+    return this.list({ rawData : true }).map((s) => {
       return StaffMember.itemConfig.dataCleaner(s)
     })
   }
@@ -56,7 +56,7 @@ const Staff = class extends Resources {
   }
 
   list(options = {}) {
-    const { excludeLogical=false, ownRolesOnly=false } = options
+    const { excludeLogical = false, ownRolesOnly = false } = options
 
     bindAugmentor({ allRoles : this.allRoles, options, org : this.org, ownRolesOnly })
 
@@ -66,11 +66,10 @@ const Staff = class extends Resources {
       : list
   }
 
-  validate({ required = false } = {}) {
-    const errors = []
-    const list = this.list({ rawData : true })
-    for (const data of list) {
-      StaffMember.validateData({ data, errors, org : this.org })
+  validate({ data, errors = [], required = false } = {}) {
+    const list = data || this.list({ rawData : true })
+    for (const datum of list) {
+      StaffMember.validateData({ data : datum, errors, org : this.org })
     }
 
     if (errors.length > 0 && required) { throw new Error(`Error${errors.length > 1 ? 's' : ''}: ${errors.join(' ')}`) }
