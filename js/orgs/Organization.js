@@ -169,7 +169,11 @@ const Organization = class {
 
   get legalName() { return this.getSetting('LEGAL_NAME') }
 
+  get settings() { return structuredClone(this.#innerState[SETTINGS_KEY]) }
+
   getSetting(keyPath) {
+    if (keyPath.startsWith('.')) keyPath = keyPath.slice(1)
+
     let value = process.env[keyPath]
     if (value !== undefined) {
       return value
