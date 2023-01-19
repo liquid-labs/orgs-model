@@ -17,11 +17,6 @@ const loadOrgState = ({ dataPath, rootJsonPath, ...fjsonOptions }) => {
   fjsonOptions = Object.assign({}, fjsonOptions, { rememberSource : true })
   const orgState = fjson.read(rootJsonPath, fjsonOptions)
 
-  // TODO: this is a workaround; in future, we can just point fjson at the settings.yaml (once it supports yaml)
-  const orgSettingsPath = `${dataPath}/orgs/settings.yaml`
-  const globalSettings = yaml.load(fs.readFileSync(orgSettingsPath, { encoding : 'utf8' }))
-  orgState.settings = globalSettings
-
   return orgState
 }
 

@@ -27,12 +27,12 @@ const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
 const Organization = class {
   #innerState
   #lastModified
-  #rootJsonPath
+  #rootDataPath
   #components = []
 
   constructor({ dataPath, ...fjsonOptions } = {}) {
-    this.#rootJsonPath = `${dataPath}/orgs/org.json`
-    this.#innerState = loadOrgState({ dataPath, rootJsonPath : this.#rootJsonPath, ...fjsonOptions })
+    this.#rootDataPath = `${dataPath}/orgs/org.json`
+    this.#innerState = loadOrgState({ dataPath, rootJsonPath : this.#rootDataPath, ...fjsonOptions })
     this.#lastModified = fjson.lastModificationMs(this.#innerState)
     this.dataPath = dataPath
 
@@ -116,16 +116,17 @@ const Organization = class {
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
     const orgData = {
-      auditRecords       : './audits/auditRecords.json',
-      dutyDescriptions   : './roles/duty-descriptions.json',
-      roles              : './roles/roles.json',
-      rolesAccess        : './roles/access.json',
-      roleDuties         : './roles/duties.json',
-      rolePolicies       : './roles/role-policies.json',
-      staff              : './staff.json',
-      technologies       : './technologies.json',
-      thirdPartyAccounts : './third-party-accounts.json',
-      vendors            : './vendors.json'
+      auditRecords       : './audits/auditRecords.yaml',
+      dutyDescriptions   : './roles/duty-descriptions.yaml',
+      roles              : './roles/roles.yaml',
+      rolesAccess        : './roles/access.yaml',
+      roleDuties         : './roles/duties.yaml',
+      rolePolicies       : './roles/role-policies.yaml',
+      staff              : './staff.yaml',
+      technologies       : './technologies.yaml',
+      thirdPartyAccounts : './third-party-accounts.yaml',
+      vendors            : './vendors.yaml',
+      settings           : './settings.yaml'
     }
     for (const [key, file] of Object.entries(orgData)) {
       fjson.addMountPoint({ data : orgData, path : '.' + key, file })
@@ -148,14 +149,13 @@ const Organization = class {
         LEGAL_NAME  : legalName
       }
     }
+    orgData.settings = settings
 
     const rootFile = dataPath + '/orgs/org.json'
-    const settingsPath = dataPath + '/orgs/settings.yaml'
     const orgStructurePath = dataPath + '/orgs/org_structure.json'
 
     fjson.write({ data : orgData, file : rootFile })
-    // TODO: both of these should be part of the federated structure (need to support YAML)
-    writeFileSync(settingsPath, yaml.dump(settings))
+    // TODO: this should be part of the federated structure (need to support YAML)
     writeFileSync(orgStructurePath, '[]')
 
     return new Organization({ dataPath })
@@ -169,7 +169,11 @@ const Organization = class {
 
   get legalName() { return this.getSetting('LEGAL_NAME') }
 
-  get settings() { return structuredClone(this.#innerState[SETTINGS_KEY]) }
+  get settings() {
+    const settingsCopy = structuredClone(this.#innerState[SETTINGS_KEY])
+    delete settingsCopy._meta
+    return settingsCopy
+  }
 
   getSetting(keyPath) {
     if (keyPath.startsWith('.')) keyPath = keyPath.slice(1)
@@ -190,10 +194,12 @@ const Organization = class {
   }
 
   updateSetting(keyPath, value) {
-    keyPath.split('.').reduce((workingData, key, i, arr) => {
-      if ((i - 1) === arr.length) {
+    if (keyPath.startsWith('.')) keyPath = keyPath.slice(1)
+
+    return keyPath.split('.').reduce((workingData, key, i, arr) => {
+      if ((i + 1) === arr.length) {
         workingData[key] = value
-        return null
+        return value
       }
       else {
         if (!(key in workingData)) {
@@ -403,17 +409,10 @@ const Organization = class {
                     && node.ids.indexOf(`${node.email}/${impSpec.mergeWith}`) >= 0)
                   .map(i => i.name)
 
-              // const trimRoles = (n) => { const { roles, ...rest } = n; return rest; } // DEBUG
-
-              /* if (sibblingsRoleNamesToMerge) {// DEBUG
-                console.error(`Side merging to ${node.titles[0]}\n`, sibblingsRoleNamesToMerge)
-              } */
               for (const mergeMeName of sibblingsRoleNamesToMerge || []) {
                 const key = `${node.email}/${mergeMeName}`
-                // console.error(`Looking for '${key}' to merge in: `, parent.children.map(trimRoles))// DEBUG
                 const mergeMeNode = parent.children.find(c => c.ids.find(id => id === key))
                 if (mergeMeNode) {
-                  // console.error('Found: ', trimRoles(mergeMeNode)) // DEBUG
                   mergeNodes(node, mergeMeNode)
                   parent.children.splice(parent.children.findIndex((t) => t === mergeMeNode), 1)
                 }
@@ -463,10 +462,9 @@ const Organization = class {
 
     const saveData = this.cleanedDataCopy()
 
-    saveData.audits = []
-    saveData.settings = null
+    saveData.audits = [] // audits are loaded
 
-    fjson.write({ data : saveData, file : this.#rootJsonPath })
+    fjson.write({ data : saveData, file : this.#rootDataPath })
   }
 }
 
