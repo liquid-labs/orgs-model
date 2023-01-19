@@ -186,6 +186,7 @@ const Organization = class {
     if (value === undefined) {
       value = this.#innerState[SETTINGS_KEY].s
       let pathBits = keyPath?.split('.') || []
+      // TODO: This oddness with the 's' was for backward compatibility while moving items off root. I think it makes more sense to always require scoping and put the core items under the 'core' scope
       if (pathBits[0] === 's') pathBits = pathBits.slice(1)
       for (const key of pathBits) {
         value = value?.[key]
