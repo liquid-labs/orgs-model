@@ -87,8 +87,7 @@ const Organization = class {
     if (settings === undefined) {
       errMsgs.push('No <code>settings<rst> were found on the organization. Are you missing the <code>settings.yaml<rst> file?')
     }
-
-    if (settings[ORG_ID] === undefined) {
+    else if (settings[ORG_ID] === undefined) {
       errMsgs.push('Did not find expected <code>ORG_ID<rst> setting.')
     }
 
@@ -186,7 +185,9 @@ const Organization = class {
     value = this.#innerState[SETTINGS_KEY][keyPath]
     if (value === undefined) {
       value = this.#innerState[SETTINGS_KEY].s
-      for (const key of keyPath?.split('.') || []) {
+      let pathBits = keyPath?.split('.') || []
+      if (pathBits[0] === 's') pathBits = pathBits.slice(1)
+      for (const key of pathBits) {
         value = value?.[key]
       }
     }
