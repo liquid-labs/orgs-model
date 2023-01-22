@@ -1,7 +1,6 @@
 import { statSync, writeFileSync } from 'node:fs'
 
 import structuredClone from 'core-js-pure/actual/structured-clone'
-import * as yaml from 'js-yaml'
 
 import * as fjson from '@liquid-labs/federated-json'
 
@@ -179,7 +178,7 @@ const Organization = class {
 
     // check for process override
     let value = process.env[keyPath]
-    if (value !== undefined)  return structuredClone(value)
+    if (value !== undefined) return structuredClone(value)
     // else, follow the path
 
     value = this.#innerState[SETTINGS_KEY]
@@ -188,7 +187,7 @@ const Organization = class {
     for (const key of pathBits) {
       value = value?.[key]
     }
-    if (value !== undefined) return  structuredClone(value)
+    if (value !== undefined) return structuredClone(value)
     // else look for special case '.s'
     // TODO: is this necessary anymore?
     value = this.#innerState[SETTINGS_KEY].s

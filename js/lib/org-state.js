@@ -1,7 +1,3 @@
-import * as fs from 'fs'
-
-import * as yaml from 'js-yaml'
-
 import * as fjson from '@liquid-labs/federated-json'
 
 const loadOrgState = ({ dataPath, rootJsonPath, ...fjsonOptions }) => {
