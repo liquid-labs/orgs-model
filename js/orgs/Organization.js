@@ -177,21 +177,28 @@ const Organization = class {
   getSetting(keyPath) {
     if (keyPath.startsWith('.')) keyPath = keyPath.slice(1)
 
+    // check for process override
     let value = process.env[keyPath]
-    if (value !== undefined) {
-      return value
+    if (value !== undefined)  return structuredClone(value)
+    // else, follow the path
+
+    value = this.#innerState[SETTINGS_KEY]
+    let pathBits = keyPath?.split('.') || []
+
+    for (const key of pathBits) {
+      value = value?.[key]
     }
-    // else
-    value = this.#innerState[SETTINGS_KEY][keyPath]
-    if (value === undefined) {
-      value = this.#innerState[SETTINGS_KEY].s
-      let pathBits = keyPath?.split('.') || []
-      // TODO: This oddness with the 's' was for backward compatibility while moving items off root. I think it makes more sense to always require scoping and put the core items under the 'core' scope
-      if (pathBits[0] === 's') pathBits = pathBits.slice(1)
-      for (const key of pathBits) {
-        value = value?.[key]
-      }
+    if (value !== undefined) return  structuredClone(value)
+    // else look for special case '.s'
+    // TODO: is this necessary anymore?
+    value = this.#innerState[SETTINGS_KEY].s
+    pathBits = keyPath?.split('.') || []
+    // TODO: This oddness with the 's' was for backward compatibility while moving items off root. I think it makes more sense to always require scoping and put the core items under the 'core' scope
+    if (pathBits[0] === 's') pathBits = pathBits.slice(1)
+    for (const key of pathBits) {
+      value = value?.[key]
     }
+
     return structuredClone(value)
   }
 
