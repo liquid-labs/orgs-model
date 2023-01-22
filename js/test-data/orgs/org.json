@@ -29,6 +29,10 @@
         {
           "path": ".technologies",
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/technologies.json"
+        },
+        {
+          "path": ".settings",
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/settings.yaml"
         }
       ]
     }
@@ -41,5 +45,6 @@
   "roles": null,
   "staff": null,
   "thirdPartyAccounts": null,
-  "technologies": null
+  "technologies": null,
+  "settings": null
 }
