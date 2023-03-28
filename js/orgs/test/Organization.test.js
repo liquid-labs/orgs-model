@@ -29,7 +29,6 @@ describe('Organization', () => {
 
   test('successfully initializes with good data', () => expect(org).not.toBe(undefined))
 
-  const expectedPlayground = `${process.env.HOME}/.liq/playground`
   test
     .each([
       ['id', 'test-org'],
