@@ -4,3 +4,5 @@
 /coverage
 /test-staging
 /dist
+/last-test.txt
+/last-lint.txt
