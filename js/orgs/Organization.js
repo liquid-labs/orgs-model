@@ -1,4 +1,4 @@
-import { statSync, writeFileSync } from 'node:fs'
+import { writeFileSync } from 'node:fs'
 
 import structuredClone from 'core-js-pure/actual/structured-clone'
 
@@ -88,15 +88,6 @@ const Organization = class {
     }
     else if (settings[ORG_ID] === undefined) {
       errMsgs.push('Did not find expected <code>ORG_ID<rst> setting.')
-    }
-
-    const playground = `${process.env.HOME}/.liq/playground`
-    const stats = statSync(playground, { throwIfNoEntry : false })
-    if (stats === undefined) {
-      errMsgs.push(`Did not find expected playground location at <code>${playground}<rst>.`)
-    }
-    else if (!stats.isDirectory()) {
-      errMsgs.push(`Playground <code>${playground}<rst> is not a directory as expected.`)
     }
 
     for (const { path, manager } of this.#components) {
