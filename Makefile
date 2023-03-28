@@ -8,7 +8,7 @@ ORGS_MODEL_SRC:=js
 ORGS_MODEL:=$(DIST)/orgs-model.js
 
 ORGS_MODEL_FILES:=$(shell find $(ORGS_MODEL_SRC) -type f -not -path "*/test/*")
-ALL_SRC_FILES:=$(shell find $(ORGS_MODEL_SRC) -name "*.js" -o "*.mjs")
+ALL_SRC_FILES:=$(shell find $(ORGS_MODEL_SRC) -name "*.js" -o -name "*.mjs")
 ALL_SRC_BUILT_FILES:=$(patsubst $(ORGS_MODEL_SRC)/%, $(TEST_STAGING)/%, $(ALL_SRC_FILES))
 
 
