@@ -36,11 +36,8 @@ describe('Organization', () => {
       ['key', 'test-org'],
       ['commonName', 'Test Org'],
       ['legalName', 'Test Org LLC'],
-      ['playground', expectedPlayground],
       ['policyDataRepo', 'acme/policy-data'],
-      ['policyDataRepoPath', `${expectedPlayground}/acme/policy-data`],
-      ['policyRepo', 'acme/policy'],
-      ['policyRepoPath', `${expectedPlayground}/acme/policy`]])(
+      ['policyRepo', 'acme/policy']])(
       "attribute '%s' is '%s'", (key, value) => expect(org[key]).toBe(value)
     )
   test('loads basic staff data', () => {

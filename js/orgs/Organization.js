@@ -245,26 +245,14 @@ const Organization = class {
     return this.#innerState[SETTINGS_KEY][ORG_ID]
   }
 
-  get playground() { // TODO: could be static... static gets?
-    return `${process.env.HOME}/.liq/playground` // this is a validated as an existing directory
-  }
-
   get policyDataRepo() {
     const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_DATA_REPO] // this is validated (exists) value
     return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 
-  get policyDataRepoPath() {
-    return this.playground + '/' + this.policyDataRepo
-  }
-
   get policyRepo() {
     const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_REPO] // this is a validated (exists) value
     return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
-  }
-
-  get policyRepoPath() {
-    return this.playground + '/' + this.policyRepo
   }
 
   generateOrgChartData(style = 'debang/OrgChart') {
