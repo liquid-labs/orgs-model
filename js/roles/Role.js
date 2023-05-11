@@ -50,7 +50,7 @@ const Role = class extends Item {
   // TODO: once we've got plugins done, this logic should move to 'liq-roles'
   getAccess() {
     const allAccess = {}
-    for (const { role : accessRole, access } of this.#org.innerState.rolesAccess.accessRules) {
+    for (const { role : accessRole, access } of this.#org.innerState?.rolesAccess?.accessRules || []) {
       if (access === undefined || access.length === 0) continue
 
       if (this.impliesRole(accessRole)) {
@@ -108,14 +108,15 @@ const Role = class extends Item {
 
       // we're trusting 'allDuties'
       for (const myDomain in allMyDuties) { // eslint-disable-line guard-for-in
-        const dutySpec = this.#org.innerState.roleDuties.find((d) => d.domain === myDomain)
-        if (dutySpec === undefined) {
-          throw new Error(`Did not find expected duty domain spec '${myDomain}' in 'roleDuties'.`)
-        }
-        const { domain, duties } = dutySpec
+        const dutySpec = this.#org.innerState.roleDuties?.find((d) => d.domain === myDomain)
+        if (dutySpec !== undefined) {
+          const { domain, duties } = dutySpec
 
-        const myDutySpec = this.#dutiesByDomain[domain] || {}
-        this.#dutiesByDomain[domain] = merge(myDutySpec, duties)
+          const myDutySpec = this.#dutiesByDomain[domain] || {}
+          this.#dutiesByDomain[domain] = merge(myDutySpec, duties)
+        }
+        // TODO: this would be a warning or audit result
+        // else throw new Error(`Did not find expected duty domain spec '${myDomain}' in 'roleDuties'.`)
       }
     }
 
