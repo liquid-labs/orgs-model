@@ -183,10 +183,10 @@ const Roles = class extends Resources {
   get fullyIndexedGlobalDuties() {
     if (this.#dutiesByDomain === undefined) {
       this.#dutiesByDomain = {}
-      const allDomains = this.#org.innerState.roleDuties.reduce((domainNames, { domain }) => {
+      const allDomains = this.#org.innerState.roleDuties?.reduce((domainNames, { domain }) => {
         domainNames.push(domain)
         return domainNames
-      }, [])
+      }, []) || []
 
       for (const domain of allDomains) {
         const dutySpec = this.#org.innerState.roleDuties.find((d) => d.domain === domain)
