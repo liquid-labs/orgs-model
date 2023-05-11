@@ -106,7 +106,6 @@ const Organization = class {
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
     const orgData = {
       auditRecords       : './audits/auditRecords.yaml',
-      dutyDescriptions   : './roles/duty-descriptions.yaml',
       roles              : './roles/roles.yaml',
       rolesAccess        : './roles/access.yaml',
       roleDuties         : './roles/duties.yaml',
