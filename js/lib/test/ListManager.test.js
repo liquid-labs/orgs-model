@@ -324,9 +324,15 @@ describe('ListManager', () => {
       test('truncation removes all item from the list',
         () => expect(listManager.getItems({ noClone : true })).toHaveLength(0))
 
-      test('clears the ID index', () => expect(oneToOne[1]).toBe(undefined))
+      test('clears the ID index', () => {
+        expect(oneToOne[1]).toBe(undefined)
+        expect(Object.keys(oneToOne)).toHaveLength(0)
+      })
 
-      test('clears secondary index', () => expect(oneToMany.foo).toBe(undefined))
+      test('clears secondary index', () => {
+        expect(oneToMany.foo).toBe(undefined)
+        expect(Object.keys(oneToMany)).toHaveLength(0)
+      })
     })
   })
 })
