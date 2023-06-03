@@ -188,6 +188,10 @@ const Resources = class {
     return resultItems
   }
 
+  truncate() {
+    this.listManager.truncate()
+  }
+
   write({ fileName = this.#fileName } = {}) {
     if (!fileName) { throw new Error(`Cannot write '${this.resourceName}' database no file name specified. Ideally, the file name is captured when the DB is initialized. Alternatively, it can be passed to this function as an option.`) }
 

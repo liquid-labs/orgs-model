@@ -223,6 +223,14 @@ const ListManager = class {
     })
   }
 
+  /**
+   * Deletes all items from the list. This clears both the list and rebuilds all indexes.
+   */
+  truncate() {
+    this.#items = []
+    this.rebuildAll()
+  }
+
   updateItem(item) {
     // this.getItem(item[this.#idIndex])
     // check that this is a valid update
