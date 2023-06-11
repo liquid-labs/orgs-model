@@ -1,4 +1,4 @@
-import { Item, bindCreationConfig } from '../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
 
 const Technology = class extends Item { }
 
@@ -32,7 +32,7 @@ const allFields = [
 
 const defaultFields = ['name', 'purpose', 'usageStatus']
 
-bindCreationConfig({
+Item.bindCreationConfig({
   allFields,
   dataCleaner   : (data) => { delete data.id; return data },
   dataFlattener : (data) => {
@@ -49,7 +49,7 @@ bindCreationConfig({
   itemClass    : Technology,
   itemName     : 'technology',
   keyField     : 'name',
-  resourceName : 'technologies'
+  itemsName    : 'technologies'
 })
 
 export { Technology }

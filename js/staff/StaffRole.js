@@ -1,4 +1,5 @@
-import { bindCreationConfig } from '../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
+
 import { Role } from '../roles'
 
 const StaffRole = class extends Role {
@@ -106,7 +107,7 @@ const StaffRole = class extends Role {
 const validationMsg = ({ memberEmail, name, reason }) =>
   `Staff role ${name} ${reason}${memberEmail ? ` for member '${memberEmail}'` : ''}.`
 
-bindCreationConfig(Object.assign(
+Item.bindCreationConfig(Object.assign(
   {},
   Role.itemConfig,
   {

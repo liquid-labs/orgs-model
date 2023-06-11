@@ -1,12 +1,12 @@
-import { Item, bindCreationConfig } from '../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
 
 const Audit = class extends Item { }
 
-bindCreationConfig({
+Item.bindCreationConfig({
   itemClass    : Audit,
   itemName     : 'audit',
   keyField     : 'name',
-  resourceName : 'audits'
+  itemsName    : 'audits'
 })
 
 export { Audit }

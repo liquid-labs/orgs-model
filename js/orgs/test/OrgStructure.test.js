@@ -1,14 +1,20 @@
 /* globals beforeAll describe expect test */
-import * as fs from 'fs'
-import { Roles } from '../../roles'
+import * as fs from 'node:fs'
+import * as fsPath from 'node:path'
+
+import { Roles } from '../../roles/Roles'
 import { OrgStructure } from '../OrgStructure'
+
+const orgsPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs')
+const rolesDataPath = fsPath.join(orgsPath, 'roles', 'roles.json')
+const orgStructureDataPath = fsPath.join(orgsPath, 'org_structure.json')
 
 describe('OrgStructure', () => {
   let roles
   let orgStructure
   beforeAll(() => {
-    roles = new Roles({ items : JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json')), org : {} })
-    orgStructure = new OrgStructure('./js/test-data/orgs/org_structure.json', roles)
+    roles = new Roles({ items : JSON.parse(fs.readFileSync(rolesDataPath)), org : {} })
+    orgStructure = new OrgStructure(orgStructureDataPath, roles)
   })
 
   test('successfull loads test file', () => {
@@ -25,12 +31,12 @@ describe('OrgStructure', () => {
   })
 
   test('detects duplicate roles in structure', () => {
-    expect(() => new OrgStructure('./js/test-data/orgs/org_structure-dupe.json', roles))
+    expect(() => new OrgStructure(fsPath.join(orgsPath, 'org_structure-dupe.json'), roles))
       .toThrow(/non-unique.*CEO/)
   })
 
   test('detects bad manager-role reference', () => {
-    expect(() => new OrgStructure('./js/test-data/orgs/org_structure-bad-manager.json', roles))
+    expect(() => new OrgStructure(fsPath.join(orgsPath, 'org_structure-bad-manager.json'), roles))
       .toThrow(/Invalid.*Bad Manager/)
   })
 

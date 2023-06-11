@@ -1,11 +1,11 @@
 import merge from 'lodash.merge'
 
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { ItemManager } from '@liquid-labs/resource-model'
 
-import { Resources } from '../lib/Resources'
 import { Role } from './Role'
 
-const Roles = class extends Resources {
+const Roles = class extends ItemManager {
   #org
   #dutiesByDomain
 

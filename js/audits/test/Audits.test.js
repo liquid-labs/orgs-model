@@ -1,11 +1,15 @@
 /* globals beforeAll describe expect test */
+import * as fsPath from 'node:path'
+
 import { Audits } from '../Audits'
+
+const auditsDataPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs', 'audits.json')
 
 describe('Audits', () => {
   let audits = null
 
   beforeAll(() => {
-    audits = new Audits({ fileName : './js/test-data/orgs/audits.json', readFromFile : true })
+    audits = new Audits({ fileName : auditsDataPath, readFromFile : true })
   })
 
   describe('getByTarget', () => {

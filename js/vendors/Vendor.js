@@ -1,13 +1,13 @@
-import { Item, bindCreationConfig } from '../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
 
 const Vendor = class extends Item { }
 
-bindCreationConfig({
+Item.bindCreationConfig({
   dataCleaner  : (data) => { delete data.id; return data },
   itemClass    : Vendor,
   itemName     : 'vendor',
   keyField     : 'legalName',
-  resourceName : 'vendors'
+  itemsName    : 'vendors'
 })
 
 export { Vendor }

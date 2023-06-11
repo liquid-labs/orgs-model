@@ -20,7 +20,7 @@
         },
         {
           "path": ".staff",
-          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/staff/test/staff.json"
+          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/staff/test/data/staff.json"
         },
         {
           "path": ".technologies",

@@ -1,5 +1,5 @@
-import { Item, bindCreationConfig } from '../lib/Item'
-import structuredClone from 'core-js-pure/actual/structured-clone'
+import { Item } from '@liquid-labs/resource-model'
+
 import { StaffRole } from './StaffRole'
 
 const StaffMember = class extends Item {
@@ -302,7 +302,7 @@ const defaultFields = [
   'employmentStatus'
 ]
 
-bindCreationConfig({
+Item.bindCreationConfig({
   allowSet    : ['familyName', 'givenName', 'roles'],
   dataCleaner : (data) => {
     delete data._sourceFileName
@@ -330,7 +330,7 @@ bindCreationConfig({
   itemClass    : StaffMember,
   itemName     : 'staff member',
   keyField     : 'email',
-  resourceName : 'staff'
+  itemsName    : 'staff'
 })
 
 const hasOwn = (obj, fieldName) => Object.getOwnPropertyNames(obj).some((n) => n === fieldName)

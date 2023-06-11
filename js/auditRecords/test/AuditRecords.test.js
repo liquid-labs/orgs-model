@@ -1,11 +1,14 @@
 /* global beforeAll describe expect test */
+import * as fsPath from 'node:path'
 
-import { AuditRecords } from '../'
+import { AuditRecords } from '../AuditRecords'
+
+const auditRecordsaDataPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs', 'audit-records.json')
 
 describe('AuditRecords', () => {
   let auditRecords
   beforeAll(() => {
-    auditRecords = new AuditRecords({ fileName : './js/test-data/orgs/audit-records.json', readFromFile : true })
+    auditRecords = new AuditRecords({ fileName : auditRecordsaDataPath, readFromFile : true })
   })
 
   describe('getByAuditId', () => {

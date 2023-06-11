@@ -1,10 +1,9 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { idxType, ItemManager } from '@liquid-labs/resource-model'
 
-import * as idxType from '../lib/index-relationships'
-import { Resources } from '../lib/Resources'
 import { StaffMember } from './StaffMember'
 
-const Staff = class extends Resources {
+const Staff = class extends ItemManager {
   constructor({ org, additionalItemCreationOptions, ...rest }) {
     super(Object.assign(
       {},

@@ -1,13 +1,13 @@
-import { Item, bindCreationConfig } from '../../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
 
 const Source = class extends Item { }
 
-bindCreationConfig({
+Item.bindCreationConfig({
   dataCleaner  : (data) => { delete data.id; return data },
   itemClass    : Source,
   itemName     : 'external alert source',
   keyField     : 'entityLegalName',
-  resourceName : 'external alert sources'
+  itemsName    : 'external alert sources'
 })
 
 export { Source }

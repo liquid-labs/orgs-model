@@ -1,13 +1,13 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { ItemManager } from '@liquid-labs/resource-model'
 
 import { Source } from './Source'
-import { Resources } from '../../lib/Resources'
 
 /**
 * Public API for managing third-party account records. Uses the `Sources` library, which actually implements the
 * functions. The library is split like this to make testing easier.
 */
-const Sources = class extends Resources {
+const Sources = class extends ItemManager {
   constructor(options) {
     super(Object.assign(
       {},

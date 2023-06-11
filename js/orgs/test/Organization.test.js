@@ -1,18 +1,22 @@
 /* globals beforeAll describe expect test */
-import { Organization } from '../'
+import * as fsPath from 'node:path'
+
+import { Organization } from '../Organization'
+
+const orgDataPath = fsPath.join(__dirname, '..', '..', 'test-data')
 
 describe('Organization', () => {
   let org
   beforeAll(() => {
-    org = new Organization({ dataPath : './js/test-data' })
+    org = new Organization({ dataPath : orgDataPath })
   })
 
   test('detects staff with invalid roles', () => {
     expect(() =>
       new Organization({
-        dataPath  : './js/test-data',
+        dataPath  : orgDataPath,
         // this is relative to the root FJSON file
-        overrides : { '.staff' : 'file:../../staff/test/bad_role_staff.json' }
+        overrides : { '.staff' : 'file:../../staff/test/data/bad_role_staff.json' }
       }))
       .toThrow(/Bad Role.*badrole@foo\.com/)
   })
@@ -20,9 +24,9 @@ describe('Organization', () => {
   test('detects staff with invalid manaagers', () => {
     expect(() =>
       new Organization({
-        dataPath  : './js/test-data',
+        dataPath  : orgDataPath,
         // this is relative to the root FJSON file
-        overrides : { '.staff' : 'file:../../staff/test/bad_manager_staff.json' }
+        overrides : { '.staff' : 'file:../../staff/test/data/bad_manager_staff.json' }
       }))
       .toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
   })

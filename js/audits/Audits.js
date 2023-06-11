@@ -1,12 +1,12 @@
+import { idxType, ItemManager } from '@liquid-labs/resource-model'
+
 import { Audit } from './Audit'
-import { Resources } from '../lib/Resources'
-import * as idxType from '../lib/index-relationships'
 
 /**
 * Basic class wrapping technology items. Functionality is split between 'Technology' and 'Technologies' to simplify
 * testing.
 */
-const Audits = class extends Resources {
+const Audits = class extends ItemManager {
   constructor(options) {
     super(Object.assign(
       {},
