@@ -21,13 +21,16 @@ describe('StaffRole', () => {
   })
 
   describe('qualifiers', () => {
-    test('are detected when invalid', () => {
-      expect(() => new Organization({
+    test('are detected when invalid', async() => {
+      const org = new Organization({
         dataPath  : orgDataPath,
         // this is relative to the root FJSON file
         overrides : { '.staff' : 'file:../../staff/test/data/invalid_qualifier_staff.json' }
-      }))
-        .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
+      })
+      const { errors, warnings } = await org.validate()
+      expect(errors).toHaveLength(1)
+      expect(warnings).toHaveLength(0)
+      expect(errors[0]).toMatch(/CTO.*not qualifiable.*ceo@foo\.com/)
     })
 
     test.each`

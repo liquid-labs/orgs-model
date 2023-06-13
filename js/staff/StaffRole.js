@@ -56,7 +56,7 @@ const StaffRole = class extends Role {
 
   get isActing() { return this.rawData.acting }
 
-  static validateData({ data, errors = [], memberEmail, org }) {
+  static validateData({ data, errors = [], warnings = [], memberEmail, org }) {
     if (!data.name) {
       errors.push(validationMsg({
         name   : data.name,

@@ -65,10 +65,10 @@ const Staff = class extends ItemManager {
       : list
   }
 
-  validate({ errors, warnings = [] } = {}) {
+  validate({ errors = [], warnings = [] } = {}) {
     const list = this.list({ rawData : true })
     for (const datum of list) {
-      StaffMember.validateData({ data : datum, errors, org : this.org, warnings })
+      StaffMember.validateData({ data : datum, errors, warnings, org : this.org, warnings })
     }
 
     return { errors, warnings }

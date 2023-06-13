@@ -10,7 +10,7 @@ const StaffMember = class extends Item {
 
   constructor(data, { org, ...rest }) {
     super(data, rest)
-    const errors = StaffMember.validateData({ data, org })
+    const { errors } = StaffMember.validateData({ data, org })
     if (errors.length > 0) {
       throw new Error(`Invalid data while creating 'staff member'; ${errors.join(' ')}`)
     }
@@ -173,7 +173,7 @@ const StaffMember = class extends Item {
     }, [])
   }
 
-  static validateData({ data, errors = [], org }) {
+  static validateData({ data, errors = [], warnings = [], org }) {
     if (!data) {
       errors.push('Data provided to \'staff member\' is not truthy.')
       return
@@ -216,12 +216,10 @@ const StaffMember = class extends Item {
     }
 
     for (const roleData of roles || []) {
-      StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
+      StaffRole.validateData({ data : roleData, errors, warnings, memberEmail : data.email, org })
     }
 
-    if (errors.length > 0) console.log(errors) // DEBUG
-
-    return errors
+    return { errors, warnings }
   } // end static validateData
 } // end class StaffMember
 
