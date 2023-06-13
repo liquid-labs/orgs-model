@@ -1,12 +1,12 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { ItemManager } from '@liquid-labs/resource-model'
 
-import { Resources } from '../lib/Resources'
 import { Technology } from './Technology'
 
 /**
 * Basic class wrapping technology items.
 */
-const Technologies = class extends Resources {
+const Technologies = class extends ItemManager {
   // add (and override) basic 'tehnology' item configurations
   constructor(options) {
     super(Object.assign(

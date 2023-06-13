@@ -1,5 +1,5 @@
-import { Item, bindCreationConfig } from '../lib/Item'
-import structuredClone from 'core-js-pure/actual/structured-clone'
+import { Item } from '@liquid-labs/resource-model'
+
 import { StaffRole } from './StaffRole'
 
 const StaffMember = class extends Item {
@@ -176,7 +176,7 @@ const StaffMember = class extends Item {
   static validateData({ data, errors = [], org }) {
     if (!data) {
       errors.push('Data provided to \'staff member\' is not truthy.')
-      return errors
+      return
     }
 
     const requireFields = (fields, errMsgFunc) => {
@@ -191,8 +191,6 @@ const StaffMember = class extends Item {
         }
         return acc
       }, errors)
-
-      return errors // TODO: I don't think this is necessary
     }
 
     requireFields(
@@ -220,6 +218,8 @@ const StaffMember = class extends Item {
     for (const roleData of roles || []) {
       StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
     }
+
+    if (errors.length > 0) console.log(errors) // DEBUG
 
     return errors
   } // end static validateData
@@ -302,7 +302,7 @@ const defaultFields = [
   'employmentStatus'
 ]
 
-bindCreationConfig({
+Item.bindCreationConfig({
   allowSet    : ['familyName', 'givenName', 'roles'],
   dataCleaner : (data) => {
     delete data._sourceFileName
@@ -327,10 +327,10 @@ bindCreationConfig({
     return data
   },
   defaultFields,
-  itemClass    : StaffMember,
-  itemName     : 'staff member',
-  keyField     : 'email',
-  resourceName : 'staff'
+  itemClass : StaffMember,
+  itemName  : 'staff member',
+  keyField  : 'email',
+  itemsName : 'staff'
 })
 
 const hasOwn = (obj, fieldName) => Object.getOwnPropertyNames(obj).some((n) => n === fieldName)

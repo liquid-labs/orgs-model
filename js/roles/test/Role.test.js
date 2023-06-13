@@ -1,7 +1,10 @@
 /* globals beforeAll describe expect test */
-import * as fs from 'fs'
+import * as fs from 'node:fs'
+import * as fsPath from 'node:path'
 
-import { Roles } from '..'
+import { Roles } from '../Roles'
+
+const rolesDataPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs', 'roles', 'roles.json')
 
 const mockOrg = {
   roles : null // we'll actually set it up after creating 'roles'
@@ -10,7 +13,7 @@ const mockOrg = {
 describe('Role', () => {
   let roles
   beforeAll(() => {
-    roles = new Roles({ items : JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json')), org : mockOrg })
+    roles = new Roles({ items : JSON.parse(fs.readFileSync(rolesDataPath)), org : mockOrg })
     mockOrg.roles = roles
   })
 

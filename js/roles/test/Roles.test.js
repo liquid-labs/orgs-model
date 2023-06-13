@@ -1,9 +1,11 @@
 /* globals beforeAll describe expect test */
-import * as fs from 'fs'
+import * as fs from 'node:fs'
+import * as fsPath from 'node:path'
 
-import { Roles } from '..'
+import { Roles } from '../Roles'
 
-const rolesData = JSON.parse(fs.readFileSync('./js/test-data/orgs/roles/roles.json'))
+const rolesDataPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs', 'roles', 'roles.json')
+const rolesData = JSON.parse(fs.readFileSync(rolesDataPath))
 
 const /* mock */org = {
   orgStructure : {

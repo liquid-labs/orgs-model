@@ -1,10 +1,9 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { idxType, ItemManager } from '@liquid-labs/resource-model'
 
-import * as idxType from '../lib/index-relationships'
-import { Resources } from '../lib/Resources'
 import { StaffMember } from './StaffMember'
 
-const Staff = class extends Resources {
+const Staff = class extends ItemManager {
   constructor({ org, additionalItemCreationOptions, ...rest }) {
     super(Object.assign(
       {},
@@ -66,15 +65,13 @@ const Staff = class extends Resources {
       : list
   }
 
-  validate({ data, errors = [], required = false } = {}) {
-    const list = data || this.list({ rawData : true })
+  validate({ errors, warnings = [] } = {}) {
+    const list = this.list({ rawData : true })
     for (const datum of list) {
-      StaffMember.validateData({ data : datum, errors, org : this.org })
+      StaffMember.validateData({ data : datum, errors, org : this.org, warnings })
     }
 
-    if (errors.length > 0 && required) { throw new Error(`Error${errors.length > 1 ? 's' : ''}: ${errors.join(' ')}`) }
-
-    return errors.length === 0 ? true : errors
+    return { errors, warnings }
   }
 }
 

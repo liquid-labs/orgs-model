@@ -1,13 +1,12 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { idxType, ItemManager } from '@liquid-labs/resource-model'
 
 import { AuditRecord } from './AuditRecord'
-import { Resources } from '../lib/Resources'
-import * as idxType from '../lib/index-relationships'
 
 /**
 * Basic class for accessing the audit record data.
 */
-const AuditRecords = class extends Resources {
+const AuditRecords = class extends ItemManager {
   constructor(options) {
     super(Object.assign(
       {},

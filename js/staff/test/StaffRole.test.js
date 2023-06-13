@@ -1,11 +1,16 @@
 /* globals beforeAll describe expect test */
+import * as fsPath from 'node:path'
+
 import { Organization } from '../../orgs'
 
 const ceoEmail = 'ceo@foo.com'
 
+const orgDataPath = fsPath.join(__dirname, '..', '..', 'test-data')
+const impliedOrgDataPath = fsPath.join(orgDataPath, 'implied')
+
 describe('StaffRole', () => {
   let org
-  beforeAll(() => { org = new Organization({ dataPath : './js/test-data' }) })
+  beforeAll(() => { org = new Organization({ dataPath : orgDataPath }) })
 
   test.each`
   email | roleName
@@ -18,9 +23,9 @@ describe('StaffRole', () => {
   describe('qualifiers', () => {
     test('are detected when invalid', () => {
       expect(() => new Organization({
-        dataPath  : './js/test-data',
+        dataPath  : orgDataPath,
         // this is relative to the root FJSON file
-        overrides : { '.staff' : 'file:../../staff/test/invalid_qualifier_staff.json' }
+        overrides : { '.staff' : 'file:../../staff/test/data/invalid_qualifier_staff.json' }
       }))
         .toThrow(/CTO.*not qualifiable.*ceo@foo\.com/)
     })
@@ -47,7 +52,7 @@ describe('StaffRole', () => {
     let impliedOrg
     let ceo
     beforeAll(() => {
-      impliedOrg = new Organization({ dataPath : './js/test-data/implied' })
+      impliedOrg = new Organization({ dataPath : impliedOrgDataPath })
       ceo = impliedOrg.staff.get(ceoEmail)
     })
 

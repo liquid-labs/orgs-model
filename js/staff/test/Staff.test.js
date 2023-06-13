@@ -1,19 +1,24 @@
 /* globals beforeAll describe expect test */
+import * as fsPath from 'node:path'
+
 import { Staff } from '../Staff'
 import { StaffMember } from '../StaffMember'
 import { Organization } from '../../orgs'
+
+const dataPath = fsPath.join(__dirname, '..', '..', 'test-data')
+const staffDataPath = fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'dupe_email_staff.json')
 
 describe('Staff', () => {
   let testStaff
   let org
   beforeAll(() => {
-    org = new Organization({ dataPath : './js/test-data' })
+    org = new Organization({ dataPath })
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.staff
   })
 
   test('detects duplicate emails on init', () =>
-    expect(() => new Staff({ fileName : './js/staff/test/dupe_email_staff.json', org, readFromFile : true }))
+    expect(() => new Staff({ fileName : staffDataPath, org, readFromFile : true }))
       .toThrow(/email.*ceo@foo.com/))
 
   test('filters header+blank lines', () => expect(testStaff.list()).toHaveLength(4))

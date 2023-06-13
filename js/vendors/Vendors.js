@@ -1,13 +1,12 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { idxType, ItemManager } from '@liquid-labs/resource-model'
 
-import { Resources } from '../lib/Resources'
-import * as idxType from '../lib/index-relationships'
 import { Vendor } from './Vendor'
 
 /**
 * Basic class wrapping vendor items. Functionality is split between 'Vendors' and 'Vendors' to simplify testing.
 */
-const Vendors = class extends Resources {
+const Vendors = class extends ItemManager {
   #indexByCommonName
 
   constructor(options) {
