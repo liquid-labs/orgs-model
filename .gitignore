@@ -1,8 +1,6 @@
-/.yalc
-/yalc.lock
+/qa
 /node_modules
-/coverage
-/test-staging
+/yalc.lock
+/.yalc
 /dist
-/last-test.txt
-/last-lint.txt
+/test-staging
