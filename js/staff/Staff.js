@@ -65,15 +65,13 @@ const Staff = class extends ItemManager {
       : list
   }
 
-  validate({ data, errors = [], required = false } = {}) {
-    const list = data || this.list({ rawData : true })
+  validate({ errors, warnings = [] } = {}) {
+    const list = this.list({ rawData : true })
     for (const datum of list) {
-      StaffMember.validateData({ data : datum, errors, org : this.org })
+      StaffMember.validateData({ data : datum, errors, org : this.org, warnings })
     }
 
-    if (errors.length > 0 && required) { throw new Error(`Error${errors.length > 1 ? 's' : ''}: ${errors.join(' ')}`) }
-
-    return errors.length === 0 ? true : errors
+    return { errors, warnings }
   }
 }
 

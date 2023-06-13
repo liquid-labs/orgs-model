@@ -46,10 +46,10 @@ Item.bindCreationConfig({
     return data
   },
   defaultFields,
-  itemClass    : Technology,
-  itemName     : 'technology',
-  keyField     : 'name',
-  itemsName    : 'technologies'
+  itemClass : Technology,
+  itemName  : 'technology',
+  keyField  : 'name',
+  itemsName : 'technologies'
 })
 
 export { Technology }

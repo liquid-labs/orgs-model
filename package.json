@@ -31,10 +31,9 @@
   },
   "homepage": "https://github.com/Liquid-Labs/orgs-model#readme",
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts-node-project": "file:.yalc/@liquid-labs/catalyst-scripts-node-project",
+    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.16",
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.31",
-    "core-js-pure": "^3.21.1",
     "dotenv": "^16.0.0",
     "lodash.merge": "^4.6.2"
   },
@@ -56,7 +55,6 @@
     }
   },
   "dependencies": {
-    "@liquid-labs/orgs-model": "file:.yalc/@liquid-labs/orgs-model",
     "@liquid-labs/resource-model": "file:.yalc/@liquid-labs/resource-model",
     "js-yaml": "^4.1.0"
   }

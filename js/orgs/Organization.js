@@ -1,8 +1,7 @@
 import { writeFileSync } from 'node:fs'
 
-import structuredClone from 'core-js-pure/actual/structured-clone'
-
 import * as fjson from '@liquid-labs/federated-json'
+import { Model } from '@liquid-labs/resource-model'
 
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
@@ -23,25 +22,29 @@ const ORG_ID = 'ORG_ID'
 const ORG_POLICY_DATA_REPO = 'ORG_POLICY_DATA_REPO'
 const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
 
-const Organization = class {
+const Organization = class extends Model {
   #innerState
   #lastModified
   #rootDataPath
   #components = []
 
   constructor({ dataPath, ...fjsonOptions } = {}) {
+    super({ validators : [settingsValidator] })
+
     this.#rootDataPath = `${dataPath}/orgs/org.json`
     this.#innerState = loadOrgState({ dataPath, rootJsonPath : this.#rootDataPath, ...fjsonOptions })
     this.#lastModified = fjson.lastModificationMs(this.#innerState)
     this.dataPath = dataPath
 
-    this.roles = new Roles({ items : this.#innerState.roles, org : this })
+    const roles = new Roles({ items : this.#innerState.roles, org : this })
+    this.bindRootItemManager(roles)
     this.registerComponent({ path : '.roles', manager : this.roles })
 
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
     this.registerComponent({ path : '.orgStructure' })
 
-    this.staff = new Staff({ items : this.#innerState.staff, org : this })
+    const staff = new Staff({ items : this.#innerState.staff, org : this })
+    this.bindRootItemManager(staff)
     this.registerComponent({ path : '.staff', manager : this.staff })
 
     this.accounts = new Accounts({ items : this.#innerState.auditRecords })
@@ -63,8 +66,6 @@ const Organization = class {
       sources : new Sources({ items : this.#innerState.alerts.sources })
     }
     this.registerComponent({ path : '.alerts.sources' })
-
-    this.validate()
   }
 
   registerComponent(spec /* { path, manager } */) {
@@ -77,30 +78,6 @@ const Organization = class {
       else if (aLength === bLength) return 0
       else return -1
     })
-  }
-
-  validate({ noThrow = false } = {}) {
-    const errMsgs = []
-
-    const settings = this.#innerState[SETTINGS_KEY]
-    if (settings === undefined) {
-      errMsgs.push('No <code>settings<rst> were found on the organization. Are you missing the <code>settings.yaml<rst> file?')
-    }
-    else if (settings[ORG_ID] === undefined) {
-      errMsgs.push('Did not find expected <code>ORG_ID<rst> setting.')
-    }
-
-    for (const { path, manager } of this.#components) {
-      if (manager?.validate) {
-        const data = resolveValueFromPath({ path, saveData : this.#innerState })
-        manager.validate({ data, errors : errMsgs, org : this })
-      }
-    }
-
-    if (noThrow === true) {
-      return errMsgs.length === 0 ? null : errMsgs
-    }
-    else if (errMsgs.length > 0) throw new Error(errMsgs.join('\n'))
   }
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
@@ -309,7 +286,7 @@ const Organization = class {
             id        : row[0],
             ids       : [row[0]],
             parent_id : row[1], // manager key like "bob@acme.com/CTO"
-            email     : email,
+            email,
             name      : staffMember.getFullName(),
             titles    : [title],
             roles     : [role]
@@ -430,39 +407,6 @@ const Organization = class {
     }
     else throw new Error(`Org chart style '${style}' is not supported.`)
   }
-
-  cleanedDataCopy() {
-    const saveData = structuredClone(this.#innerState)
-
-    for (const { manager, path } of this.#components) {
-      if (manager?.cleanedData) {
-        setValueFromPath({ data : manager.cleanedData(), path, saveData })
-      }
-    }
-
-    return saveData
-  }
-
-  save({ noValidate = false } = {}) {
-    if (noValidate === false) this.validate()
-
-    const saveData = this.cleanedDataCopy()
-
-    saveData.audits = [] // audits are loaded
-
-    fjson.write({ data : saveData, file : this.#rootDataPath })
-  }
-}
-
-const resolveValueFromPath = ({ path, saveData }) => {
-  if (path === '.') return saveData
-  // else
-  const pathBits = path.split('.')
-  pathBits.shift() // path always starts with a '.', so we remove the initial '' entry.
-  let data = saveData
-  for (const pathBit of pathBits) data = data[pathBit]
-
-  return data
 }
 
 const setValueFromPath = ({ data, path, saveData }) => {
@@ -476,6 +420,14 @@ const setValueFromPath = ({ data, path, saveData }) => {
   const terminalKey = pathBits.slice(-1)[0]
 
   walkData[terminalKey] = data
+}
+
+const settingsValidator = {
+  validate : ({ model: org, errors, warnings }) => {
+    if (org.getSetting(ORG_ID) === undefined) {
+      errors.push('Did not find expected <code>ORG_ID<rst> setting.')
+    }
+  }
 }
 
 export { Organization }

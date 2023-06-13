@@ -11,10 +11,10 @@ const AuditRecord = class extends Item { }
 */
 
 Item.bindCreationConfig({
-  itemClass    : AuditRecord,
-  itemName     : 'audit record',
-  keyField     : 'id',
-  itemsName    : 'audit records'
+  itemClass : AuditRecord,
+  itemName  : 'audit record',
+  keyField  : 'id',
+  itemsName : 'audit records'
 })
 
 export { AuditRecord }

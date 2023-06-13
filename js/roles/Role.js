@@ -282,10 +282,10 @@ Item.bindCreationConfig({
     }
     return data
   },
-  itemClass    : Role,
-  itemName     : 'role',
-  keyField     : 'name',
-  itemsName    : 'roles'
+  itemClass : Role,
+  itemName  : 'role',
+  keyField  : 'name',
+  itemsName : 'roles'
 })
 
 export { Role }
