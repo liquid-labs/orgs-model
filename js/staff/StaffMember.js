@@ -1,5 +1,5 @@
-import { Item, bindCreationConfig } from '../lib/Item'
-import structuredClone from 'core-js-pure/actual/structured-clone'
+import { Item } from '@liquid-labs/resource-model'
+
 import { StaffRole } from './StaffRole'
 
 const StaffMember = class extends Item {
@@ -10,7 +10,7 @@ const StaffMember = class extends Item {
 
   constructor(data, { org, ...rest }) {
     super(data, rest)
-    const errors = StaffMember.validateData({ data, org })
+    const { errors } = StaffMember.validateData({ data, org })
     if (errors.length > 0) {
       throw new Error(`Invalid data while creating 'staff member'; ${errors.join(' ')}`)
     }
@@ -173,10 +173,10 @@ const StaffMember = class extends Item {
     }, [])
   }
 
-  static validateData({ data, errors = [], org }) {
+  static validateData({ data, errors = [], warnings = [], org }) {
     if (!data) {
       errors.push('Data provided to \'staff member\' is not truthy.')
-      return errors
+      return
     }
 
     const requireFields = (fields, errMsgFunc) => {
@@ -191,8 +191,6 @@ const StaffMember = class extends Item {
         }
         return acc
       }, errors)
-
-      return errors // TODO: I don't think this is necessary
     }
 
     requireFields(
@@ -218,10 +216,10 @@ const StaffMember = class extends Item {
     }
 
     for (const roleData of roles || []) {
-      StaffRole.validateData({ data : roleData, errors, memberEmail : data.email, org })
+      StaffRole.validateData({ data : roleData, errors, warnings, memberEmail : data.email, org })
     }
 
-    return errors
+    return { errors, warnings }
   } // end static validateData
 } // end class StaffMember
 
@@ -302,7 +300,7 @@ const defaultFields = [
   'employmentStatus'
 ]
 
-bindCreationConfig({
+Item.bindCreationConfig({
   allowSet    : ['familyName', 'givenName', 'roles'],
   dataCleaner : (data) => {
     delete data._sourceFileName
@@ -327,10 +325,10 @@ bindCreationConfig({
     return data
   },
   defaultFields,
-  itemClass    : StaffMember,
-  itemName     : 'staff member',
-  keyField     : 'email',
-  resourceName : 'staff'
+  itemClass : StaffMember,
+  itemName  : 'staff member',
+  keyField  : 'email',
+  itemsName : 'staff'
 })
 
 const hasOwn = (obj, fieldName) => Object.getOwnPropertyNames(obj).some((n) => n === fieldName)

@@ -1,30 +1,38 @@
 /* globals beforeAll describe expect test */
-import { Organization } from '../'
+import * as fsPath from 'node:path'
+
+import { Organization } from '../Organization'
+
+const orgDataPath = fsPath.join(__dirname, '..', '..', 'test-data')
 
 describe('Organization', () => {
   let org
   beforeAll(() => {
-    org = new Organization({ dataPath : './js/test-data' })
+    org = new Organization({ dataPath : orgDataPath })
   })
 
-  test('detects staff with invalid roles', () => {
-    expect(() =>
-      new Organization({
-        dataPath  : './js/test-data',
-        // this is relative to the root FJSON file
-        overrides : { '.staff' : 'file:../../staff/test/bad_role_staff.json' }
-      }))
-      .toThrow(/Bad Role.*badrole@foo\.com/)
+  test('detects staff with invalid roles', async() => {
+    const org = new Organization({
+      dataPath  : orgDataPath,
+      // this is relative to the root FJSON file
+      overrides : { '.staff' : 'file:../../staff/test/data/bad_role_staff.json' }
+    })
+    const { errors, warnings } = await org.validate()
+    expect(errors).toHaveLength(1)
+    expect(warnings).toHaveLength(0)
+    expect(errors[0]).toMatch(/Bad Role.*badrole@foo\.com/)
   })
 
-  test('detects staff with invalid manaagers', () => {
-    expect(() =>
-      new Organization({
-        dataPath  : './js/test-data',
-        // this is relative to the root FJSON file
-        overrides : { '.staff' : 'file:../../staff/test/bad_manager_staff.json' }
-      }))
-      .toThrow(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
+  test('detects staff with invalid manaagers', async() => {
+    const org = new Organization({
+      dataPath  : orgDataPath,
+      // this is relative to the root FJSON file
+      overrides : { '.staff' : 'file:../../staff/test/data/bad_manager_staff.json' }
+    })
+    const { errors, warnings } = await org.validate()
+    expect(errors).toHaveLength(1)
+    expect(warnings).toHaveLength(0)
+    expect(errors[0]).toMatch(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
   })
 
   test('successfully initializes with good data', () => expect(org).not.toBe(undefined))

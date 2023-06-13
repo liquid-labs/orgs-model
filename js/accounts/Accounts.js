@@ -1,14 +1,13 @@
 import { Evaluator } from '@liquid-labs/condition-eval'
+import { idxType, ItemManager } from '@liquid-labs/resource-model'
 
 import { Account } from './Account'
-import * as idxType from '../lib/index-relationships'
-import { Resources } from '../lib/Resources'
 
 /**
 * Public API for managing third-party account records. Uses the `Accounts` library, which actually implements the
 * functions. The library is split like this to make testing easier.
 */
-const Accounts = class extends Resources {
+const Accounts = class extends ItemManager {
   constructor(options) {
     super(Object.assign(
       {},

@@ -7,6 +7,9 @@
     "bin/",
     "dist/"
   ],
+  "engines": {
+    "node": ">=17.0.0"
+  },
   "scripts": {
     "build": "make",
     "build:clean": "make clean build",
@@ -21,9 +24,6 @@
     "type": "git",
     "url": "git+ssh://git@github.com/Liquid-Labs/orgs-model.git"
   },
-  "engines": {
-    "node": ">=17.0.0"
-  },
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
   "license": "ISC",
   "bugs": {
@@ -31,10 +31,9 @@
   },
   "homepage": "https://github.com/Liquid-Labs/orgs-model#readme",
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.57",
+    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.16",
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.31",
-    "core-js-pure": "^3.21.1",
     "dotenv": "^16.0.0",
     "lodash.merge": "^4.6.2"
   },
@@ -56,6 +55,7 @@
     }
   },
   "dependencies": {
+    "@liquid-labs/resource-model": "^1.0.0-alpha.2",
     "js-yaml": "^4.1.0"
   }
 }

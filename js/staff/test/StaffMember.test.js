@@ -1,11 +1,15 @@
 /* globals beforeAll describe expect test */
-import { Organization } from '../../orgs'
+import * as fsPath from 'node:path'
+
+import { Organization } from '../../orgs/Organization'
 import { StaffMember } from '../StaffMember'
+
+const dataPath = fsPath.join(__dirname, '..', '..', 'test-data')
 
 describe('StaffMember', () => {
   let org
   beforeAll(() => {
-    org = new Organization({ dataPath : './js/test-data' })
+    org = new Organization({ dataPath })
   })
 
   test.each`

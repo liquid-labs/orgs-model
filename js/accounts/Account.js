@@ -1,13 +1,13 @@
-import { Item, bindCreationConfig } from '../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
 
 const Account = class extends Item { }
 
-bindCreationConfig({
-  dataCleaner  : (data) => { delete data.id; return data },
-  itemClass    : Account,
-  itemName     : 'third-party account',
-  keyField     : 'directEmail',
-  resourceName : 'third-party accounts'
+Item.bindCreationConfig({
+  dataCleaner : (data) => { delete data.id; return data },
+  itemClass   : Account,
+  itemName    : 'third-party account',
+  keyField    : 'directEmail',
+  itemsName   : 'third-party accounts'
 })
 
 export { Account }

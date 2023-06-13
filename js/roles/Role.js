@@ -1,6 +1,6 @@
 import merge from 'lodash.merge'
 
-import { Item, bindCreationConfig } from '../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
 
 const impliesCache = {}
 const nameMapper = (i) => i.name
@@ -266,7 +266,7 @@ const combineAccess = ({ currTypes, type }) => {
   return currTypes
 }
 
-bindCreationConfig({
+Item.bindCreationConfig({
   dataCleaner   : (data) => { delete data.id; return data },
   dataFlattener : (data) => {
     const { implies, aliases, duties, matcher } = data
@@ -282,10 +282,10 @@ bindCreationConfig({
     }
     return data
   },
-  itemClass    : Role,
-  itemName     : 'role',
-  keyField     : 'name',
-  resourceName : 'roles'
+  itemClass : Role,
+  itemName  : 'role',
+  keyField  : 'name',
+  itemsName : 'roles'
 })
 
 export { Role }

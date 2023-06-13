@@ -1,4 +1,5 @@
-import { bindCreationConfig } from '../lib/Item'
+import { Item } from '@liquid-labs/resource-model'
+
 import { Role } from '../roles'
 
 const StaffRole = class extends Role {
@@ -55,7 +56,7 @@ const StaffRole = class extends Role {
 
   get isActing() { return this.rawData.acting }
 
-  static validateData({ data, errors = [], memberEmail, org }) {
+  static validateData({ data, errors = [], warnings = [], memberEmail, org }) {
     if (!data.name) {
       errors.push(validationMsg({
         name   : data.name,
@@ -106,7 +107,7 @@ const StaffRole = class extends Role {
 const validationMsg = ({ memberEmail, name, reason }) =>
   `Staff role ${name} ${reason}${memberEmail ? ` for member '${memberEmail}'` : ''}.`
 
-bindCreationConfig(Object.assign(
+Item.bindCreationConfig(Object.assign(
   {},
   Role.itemConfig,
   {

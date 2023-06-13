@@ -1,11 +1,15 @@
 /* global beforeAll describe expect test */
+import * as fsPath from 'node:path'
 
-import { Accounts, Account } from '../'
+import { Account } from '../Account'
+import { Accounts } from '../Accounts'
+
+const thirdPartyAccountsDataPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs', 'third-party-accounts.json')
 
 describe('Accounts', () => {
   let accounts
   beforeAll(() => {
-    accounts = new Accounts({ fileName : './js/test-data/orgs/third-party-accounts.json', readFromFile : true })
+    accounts = new Accounts({ fileName : thirdPartyAccountsDataPath, readFromFile : true })
   })
 
   describe('get', () => {
