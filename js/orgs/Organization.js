@@ -409,19 +409,6 @@ const Organization = class extends Model {
   }
 }
 
-const setValueFromPath = ({ data, path, saveData }) => {
-  if (path === '.') throw new Error("Cannot write self-path '.'")
-  // else
-  const pathBits = path.split('.')
-  pathBits.shift() // path always starts with a '.', so we remove the initial '' entry.
-  let walkData = saveData
-  for (const pathBit of pathBits.slice(0, -1)) walkData = walkData[pathBit]
-
-  const terminalKey = pathBits.slice(-1)[0]
-
-  walkData[terminalKey] = data
-}
-
 const settingsValidator = {
   validate : ({ model: org, errors, warnings }) => {
     if (org.getSetting(ORG_ID) === undefined) {
