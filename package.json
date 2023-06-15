@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/Liquid-Labs/orgs-model#readme",
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.16",
+    "@liquid-labs/catalyst-scripts-node-project": "^1.0.0-alpha.17",
     "@liquid-labs/condition-eval": "^1.0.0-alpha.11",
     "@liquid-labs/federated-json": "^1.0.0-alpha.31",
     "dotenv": "^16.0.0",
