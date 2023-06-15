@@ -38,46 +38,32 @@ const Organization = class extends Model {
 
     const roles = new Roles({ items : this.#innerState.roles, org : this })
     this.bindRootItemManager(roles)
-    this.registerComponent({ path : '.roles', manager : this.roles })
 
     this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
-    this.registerComponent({ path : '.orgStructure' })
 
     const staff = new Staff({ items : this.#innerState.staff, org : this })
     this.bindRootItemManager(staff)
-    this.registerComponent({ path : '.staff', manager : this.staff })
 
-    this.accounts = new Accounts({ items : this.#innerState.auditRecords })
-    this.registerComponent({ path : '.accounts' })
+    const accounts = new Accounts({ items : this.#innerState.auditRecords })
+    this.bindRootItemManager(accounts)
 
-    this.auditRecords = new AuditRecords({ items : this.#innerState.auditRecords })
-    this.registerComponent({ path : '.auditRecords' })
+    const auditRecords = new AuditRecords({ items : this.#innerState.auditRecords })
+    this.bindRootItemManager(auditRecords)
 
-    this.audits = new Audits({ items : this.#innerState.audits })
-    this.registerComponent({ path : '.audits' })
+    const audits = new Audits({ items : this.#innerState.audits })
+    this.bindRootItemManager(audits)
 
-    this.technologies = new Technologies({ items : this.#innerState.technologies })
-    this.registerComponent({ path : '.technologies', manager : this.technologies })
+    const technologies = new Technologies({ items : this.#innerState.technologies })
+    this.bindRootItemManager(technologies)
 
-    this.vendors = new Vendors({ items : this.#innerState.vendors })
-    this.registerComponent({ path : '.vendors', manager : this.vendors })
+    const vendors = new Vendors({ items : this.#innerState.vendors })
+    this.bindRootItemManager(vendors)
 
-    this.alerts = {
-      sources : new Sources({ items : this.#innerState.alerts.sources })
-    }
-    this.registerComponent({ path : '.alerts.sources' })
-  }
+    const alerts = new Model()
+    this.bindSubModel('alerts', alerts)
 
-  registerComponent(spec /* { path, manager } */) {
-    this.#components.push(spec)
-    this.#components.sort((a, b) => {
-      // Using length to sort gives us a 'parent first' walk because any sub-path must necessarily be longer that the
-      // parent path.
-      const aLength = a.length; const bLength = b.length
-      if (aLength > bLength) return 1
-      else if (aLength === bLength) return 0
-      else return -1
-    })
+    const sources = new Sources({ items : this.#innerState.alerts.sources })
+    alerts.bindRootItemManager(sources)
   }
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
