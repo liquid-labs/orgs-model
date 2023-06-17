@@ -108,7 +108,7 @@ const Role = class extends Item {
 
       // we're trusting 'allDuties'
       for (const myDomain in allMyDuties) { // eslint-disable-line guard-for-in
-        const dutySpec = this.#org.innerState.roleDuties?.find((d) => d.domain === myDomain)
+        const dutySpec = this.#org.innerState?.roleDuties?.find((d) => d.domain === myDomain)
         if (dutySpec !== undefined) {
           const { domain, duties } = dutySpec
 

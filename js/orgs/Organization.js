@@ -15,26 +15,21 @@ import { Sources } from '../alerts/sources'
 import { Staff } from '../staff'
 import { Technologies } from '../technologies'
 import { Vendors } from '../vendors'
-import { loadOrgState } from '../lib/org-state'
 
-// TODO: pull these (or at least 'SETTINGS_KEY' -> 'SETTINGS') out and use in loadOrgState
 const SETTINGS_KEY = 'settings' // to avoid basic mis-typing errors
 const ORG_ID = 'ORG_ID'
 const ORG_POLICY_DATA_REPO = 'ORG_POLICY_DATA_REPO'
 const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
 
 const Organization = class extends Model {
-  #innerState
-  #lastModified
   #rootDataPath
   #components = []
+  #settings
 
   constructor({ dataPath, ...fjsonOptions } = {}) {
     super({ validators : [settingsValidator] })
 
     this.#rootDataPath = `${dataPath}/orgs/org.json`
-    this.#innerState = loadOrgState({ dataPath, rootJsonPath : this.#rootDataPath, ...fjsonOptions })
-    this.#lastModified = fjson.lastModificationMs(this.#innerState)
     this.dataPath = dataPath
 
     const rolesPath = process.env.LIQ_ROLES_PATH || fsPath.join(dataPath, 'orgs', 'roles', 'roles.json')
@@ -73,13 +68,19 @@ const Organization = class extends Model {
     const sources = new Sources({ allowNoFile: true, fileName: sourcesPath, readFromFile: true })
     alerts.bindRootItemManager(sources)
 
-    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
+    this.#loadNonItems()
   }
 
   load(args) {
     super.load(args)
 
-    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
+    this.#loadNonItems()
+  }
+
+  #loadNonItems() {
+    this.orgStructure = new OrgStructure(fsPath.join(this.dataPath, 'orgs', 'org_structure.json'), this.roles)
+    const settingsPath = fsPath.join(this.dataPath, 'orgs', 'settings.yaml')
+    this.#settings = readFJSON(settingsPath)
   }
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
@@ -132,12 +133,10 @@ const Organization = class extends Model {
 
   get commonName() { return this.getSetting('COMMON_NAME') }
 
-  get lastModified() { return this.#lastModified }
-
   get legalName() { return this.getSetting('LEGAL_NAME') }
 
   get settings() {
-    const settingsCopy = structuredClone(this.#innerState[SETTINGS_KEY])
+    const settingsCopy = structuredClone(this.#settings)
     delete settingsCopy._meta
     return settingsCopy
   }
@@ -150,7 +149,7 @@ const Organization = class extends Model {
     if (value !== undefined) return structuredClone(value)
     // else, follow the path
 
-    value = this.#innerState[SETTINGS_KEY]
+    value = this.#settings
     let pathBits = keyPath?.split('.') || []
 
     for (const key of pathBits) {
@@ -159,7 +158,7 @@ const Organization = class extends Model {
     if (value !== undefined) return structuredClone(value)
     // else look for special case '.s'
     // TODO: is this necessary anymore?
-    value = this.#innerState[SETTINGS_KEY].s
+    value = this.#settings.s
     pathBits = keyPath?.split('.') || []
     // TODO: This oddness with the 's' was for backward compatibility while moving items off root. I think it makes more sense to always require scoping and put the core items under the 'core' scope
     if (pathBits[0] === 's') pathBits = pathBits.slice(1)
@@ -184,7 +183,7 @@ const Organization = class extends Model {
         }
         return workingData[key]
       }
-    }, this.#innerState[SETTINGS_KEY])
+    }, this.#settings)
   }
 
   requireSetting(key) {
@@ -192,15 +191,6 @@ const Organization = class extends Model {
     if (value === undefined) { throw new Error(`No such company setting '${key}'.`) }
     return value
   }
-
-  // TODO: some external code relies on access to inner state; remove this once that's fixed; if it's 'read-only', then keep this, but return a structuredClone?
-  get innerState() { return this.#innerState }
-
-  // TODO: deprecated; just use 'org.roles'
-  getRoles() { return this.roles }
-
-  // TODO: deprecated; just use 'org.staff'
-  getStaff() { return this.staff }
 
   hasStaffInRole(email, roleName, options) {
     return this.staff.getByRoleName(roleName, options).some(s => s.email === email)
@@ -211,16 +201,16 @@ const Organization = class extends Model {
   }
 
   get id() {
-    return this.#innerState[SETTINGS_KEY][ORG_ID]
+    return this.#settings[ORG_ID]
   }
 
   get policyDataRepo() {
-    const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_DATA_REPO] // this is validated (exists) value
+    const policyRepo = this.#settings[ORG_POLICY_DATA_REPO] // this is validated (exists) value
     return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 
   get policyRepo() {
-    const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_REPO] // this is a validated (exists) value
+    const policyRepo = this.#settings[ORG_POLICY_REPO] // this is a validated (exists) value
     return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 
