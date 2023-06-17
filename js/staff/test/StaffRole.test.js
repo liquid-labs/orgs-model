@@ -1,4 +1,4 @@
-/* globals beforeAll describe expect test */
+/* globals afterAll beforeAll describe expect test */
 import * as fsPath from 'node:path'
 
 import { Organization } from '../../orgs'
@@ -10,7 +10,12 @@ const impliedOrgDataPath = fsPath.join(orgDataPath, 'implied')
 
 describe('StaffRole', () => {
   let org
-  beforeAll(() => { org = new Organization({ dataPath : orgDataPath }) })
+  beforeAll(() => { 
+    process.env.LIQ_STAFF_PATH = fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'staff.json')
+    org = new Organization({ dataPath : orgDataPath }) 
+  })
+
+  afterAll(() => delete process.env.LIQ_STAFF_PATH)
 
   test.each`
   email | roleName
@@ -22,11 +27,9 @@ describe('StaffRole', () => {
 
   describe('qualifiers', () => {
     test('are detected when invalid', async() => {
-      const org = new Organization({
-        dataPath  : orgDataPath,
-        // this is relative to the root FJSON file
-        overrides : { '.staff' : 'file:../../staff/test/data/invalid_qualifier_staff.json' }
-      })
+      process.env.LIQ_STAFF_PATH =
+        fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'invalid_qualifier_staff.json')
+      const org = new Organization({ dataPath  : orgDataPath })
       const { errors, warnings } = await org.validate()
       expect(errors).toHaveLength(1)
       expect(warnings).toHaveLength(0)
@@ -55,6 +58,7 @@ describe('StaffRole', () => {
     let impliedOrg
     let ceo
     beforeAll(() => {
+      process.env.LIQ_STAFF_PATH = fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'staff.json')
       impliedOrg = new Organization({ dataPath : impliedOrgDataPath })
       ceo = impliedOrg.staff.get(ceoEmail)
     })
