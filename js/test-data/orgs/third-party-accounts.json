@@ -1,0 +1,35 @@
+[
+  {
+    "directEmail" : "jim@foo.com",
+    "department": "Operations",
+    "access" : [
+      { "to": "ZenDesk support", "login": "support82@test-company.com", "sensitivity": "HIGH" },
+      { "to": "Acme Co administration", "login": "Acme Admin", "sensivity": "STANDARD" },
+      { "to": "FaxCo.co", "login": "faxcoadmin@test-company.com", "sensitivity": "LOW" }
+    ],
+    "companyEmails": [
+      { "puprose": "company managed vendor account", "email": "zenadmin@test-company.com", "type": "user" }
+    ],
+    "groups": [ "customersupport@test-company.com" ],
+    "parameters": {
+      "REVIEW_PERIOD": 90,
+      "NETWORKING": 1
+    }
+  },
+  {
+    "directEmail": "sue@foo.com",
+    "department": "DevOps",
+    "access": [
+      { "to": "AWS", "login": "sue@test-company.com", "sesnitivity": "CRITICAL" }
+    ],
+    "companyEmails" : [
+      { "purpose": "main", "email": "sue@test-company.com", "type": "user" },
+      { "purpose": "company managed vendor account", "email": "faxcoadmin@test-company.com", "type": "alias" }
+    ],
+    "groups": [ "awsadmin@test-company.com" ],
+    "parameters": {
+      "REVIEW_PERIOD": 360,
+      "BUSINESS": 1
+    }
+  }
+]
