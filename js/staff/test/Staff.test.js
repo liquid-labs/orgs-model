@@ -1,4 +1,4 @@
-/* globals beforeAll describe expect test */
+/* globals afterAll beforeAll describe expect test */
 import * as fsPath from 'node:path'
 
 import { Staff } from '../Staff'
@@ -12,14 +12,17 @@ describe('Staff', () => {
   let testStaff
   let org
   beforeAll(() => {
+    process.env.LIQ_STAFF_PATH = fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'staff.json')
     org = new Organization({ dataPath })
     // TODO: the way we end up hydrating kinda breaks unit test isolation?
     testStaff = org.staff
   })
 
+  afterAll(() => delete process.env.LIQ_STAFF_PATH)
+
   test('detects duplicate emails on init', () =>
     expect(() => new Staff({ fileName : staffDataPath, org, readFromFile : true }))
-      .toThrow(/email.*ceo@foo.com/))
+      .toThrow(/existing.*ceo@foo.com/))
 
   test('filters header+blank lines', () => expect(testStaff.list()).toHaveLength(4))
 

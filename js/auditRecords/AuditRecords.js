@@ -11,7 +11,6 @@ const AuditRecords = class extends ItemManager {
     super(Object.assign(
       {},
       options,
-      AuditRecord.itemConfig,
       {
         indexes : [
           { indexField : 'auditId', relationship : idxType.ONE_TO_MANY },

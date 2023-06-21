@@ -1,4 +1,5 @@
 import { writeFileSync } from 'node:fs'
+import * as fsPath from 'node:path'
 
 import * as fjson from '@liquid-labs/federated-json'
 import { Model } from '@liquid-labs/resource-model'
@@ -6,64 +7,93 @@ import { Model } from '@liquid-labs/resource-model'
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
-import { Accounts } from '../accounts'
+// import { Accounts } from '../accounts'
 import { AuditRecords } from '../auditRecords'
 import { Audits } from '../audits'
 import { Roles } from '../roles'
-import { Sources } from '../alerts/sources'
+// import { Sources } from '../alerts/sources'
 import { Staff } from '../staff'
 import { Technologies } from '../technologies'
 import { Vendors } from '../vendors'
-import { loadOrgState } from '../lib/org-state'
 
-// TODO: pull these (or at least 'SETTINGS_KEY' -> 'SETTINGS') out and use in loadOrgState
-const SETTINGS_KEY = 'settings' // to avoid basic mis-typing errors
 const ORG_ID = 'ORG_ID'
 const ORG_POLICY_DATA_REPO = 'ORG_POLICY_DATA_REPO'
 const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
 
 const Organization = class extends Model {
-  #innerState
-  #lastModified
   #rootDataPath
   #components = []
+  #settings
 
   constructor({ dataPath, ...fjsonOptions } = {}) {
     super({ validators : [settingsValidator] })
 
     this.#rootDataPath = `${dataPath}/orgs/org.json`
-    this.#innerState = loadOrgState({ dataPath, rootJsonPath : this.#rootDataPath, ...fjsonOptions })
-    this.#lastModified = fjson.lastModificationMs(this.#innerState)
     this.dataPath = dataPath
 
-    const roles = new Roles({ items : this.#innerState.roles, org : this })
+    const rolesPath = process.env.LIQ_ROLES_PATH || fsPath.join(dataPath, 'orgs', 'roles', 'roles.json')
+    const roles = new Roles({ allowNoFile : true, fileName : rolesPath, org : this, readFromFile : true })
     this.bindRootItemManager(roles)
 
-    this.orgStructure = new OrgStructure(`${dataPath}/orgs/org_structure.json`, this.roles)
-
-    const staff = new Staff({ items : this.#innerState.staff, org : this })
+    const staffPath = process.env.LIQ_STAFF_PATH || fsPath.join(dataPath, 'orgs', 'staff.json')
+    const staff = new Staff({ allowNoFile : true, fileName : staffPath, org : this, readFromFile : true })
     this.bindRootItemManager(staff)
 
-    const accounts = new Accounts({ items : this.#innerState.auditRecords })
-    this.bindRootItemManager(accounts)
+    /* Third party accounts were never made true items, and are encoded as an Object, so don't work anymore...
+    const accountsPath = process.env.LIQ_ACCOUNTS_PATH || fsPath.join(dataPath, 'orgs', 'third-party-accounts.json')
+    const accounts = new Accounts({ allowNoFile: true, fileName: accountsPath, readFromFile: true })
+    this.bindRootItemManager(accounts) */
 
-    const auditRecords = new AuditRecords({ items : this.#innerState.auditRecords })
+    const auditRecordsPath = process.env.LIQ_AUDIT_RECORDS_PATH
+      || fsPath.join(dataPath, 'orgs', 'audits', 'audit-records.json')
+    const auditRecords = new AuditRecords({ allowNoFile : true, fileName : auditRecordsPath, readFromFile : true })
     this.bindRootItemManager(auditRecords)
 
-    const audits = new Audits({ items : this.#innerState.audits })
+    const auditsPath = process.env.LIQ_AUDITS_PATH || fsPath.join(dataPath, 'orgs', 'audits', 'audits.json')
+    const audits = new Audits({ allowNoFile : true, fileName : auditsPath, readFromFile : true })
     this.bindRootItemManager(audits)
 
-    const technologies = new Technologies({ items : this.#innerState.technologies })
+    const technologiesPath = process.env.LIQ_TECHNOLOGIES_PATH || fsPath.join(dataPath, 'orgs', 'technologies.json')
+    const technologies = new Technologies({ allowNoFile : true, fileName : technologiesPath, readFromFile : true })
     this.bindRootItemManager(technologies)
 
-    const vendors = new Vendors({ items : this.#innerState.vendors })
+    const vendorsPath = process.env.LIQ_VENDORS_PATH || fsPath.join(dataPath, 'orgs', 'vendors.json')
+    const vendors = new Vendors({ allowNoFile : true, fileName : vendorsPath, readFromFile : true })
     this.bindRootItemManager(vendors)
 
     const alerts = new Model()
     this.bindSubModel('alerts', alerts)
 
-    const sources = new Sources({ items : this.#innerState.alerts.sources })
-    alerts.bindRootItemManager(sources)
+    /* We're getting errors here that aren't worth tracking down.
+    const sourcesPath = process.env.LIQ_ALERT_SOURCES_PATH || fsPath.join(dataPath, 'orgs', 'alerts', 'sources.json')
+    const sources = new Sources({ allowNoFile: true, fileName: sourcesPath, readFromFile: true })
+    alerts.bindRootItemManager(sources) */
+
+    this.#loadNonItems()
+  }
+
+  load(args) {
+    super.load(args)
+
+    this.#loadNonItems()
+  }
+
+  #loadNonItems() {
+    this.orgStructure = new OrgStructure(fsPath.join(this.dataPath, 'orgs', 'org_structure.json'), this.roles)
+
+    const settingsPath = fsPath.join(this.dataPath, 'orgs', 'settings.yaml')
+    this.#settings = fjson.readFJSON(settingsPath)
+
+    try {
+      const controlsMapPath = fsPath.join(this.dataPath, 'orgs', 'controls', 'controlsMap.json')
+      this.controlsMap = fjson.readFJSON(controlsMapPath)
+    }
+    catch (e) {
+      if (e.code !== 'ENOENT') {
+        throw e
+      }
+      // else, that's fine
+    }
   }
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
@@ -116,12 +146,10 @@ const Organization = class extends Model {
 
   get commonName() { return this.getSetting('COMMON_NAME') }
 
-  get lastModified() { return this.#lastModified }
-
   get legalName() { return this.getSetting('LEGAL_NAME') }
 
   get settings() {
-    const settingsCopy = structuredClone(this.#innerState[SETTINGS_KEY])
+    const settingsCopy = structuredClone(this.#settings)
     delete settingsCopy._meta
     return settingsCopy
   }
@@ -134,7 +162,7 @@ const Organization = class extends Model {
     if (value !== undefined) return structuredClone(value)
     // else, follow the path
 
-    value = this.#innerState[SETTINGS_KEY]
+    value = this.#settings
     let pathBits = keyPath?.split('.') || []
 
     for (const key of pathBits) {
@@ -143,7 +171,7 @@ const Organization = class extends Model {
     if (value !== undefined) return structuredClone(value)
     // else look for special case '.s'
     // TODO: is this necessary anymore?
-    value = this.#innerState[SETTINGS_KEY].s
+    value = this.#settings.s
     pathBits = keyPath?.split('.') || []
     // TODO: This oddness with the 's' was for backward compatibility while moving items off root. I think it makes more sense to always require scoping and put the core items under the 'core' scope
     if (pathBits[0] === 's') pathBits = pathBits.slice(1)
@@ -168,7 +196,7 @@ const Organization = class extends Model {
         }
         return workingData[key]
       }
-    }, this.#innerState[SETTINGS_KEY])
+    }, this.#settings)
   }
 
   requireSetting(key) {
@@ -176,15 +204,6 @@ const Organization = class extends Model {
     if (value === undefined) { throw new Error(`No such company setting '${key}'.`) }
     return value
   }
-
-  // TODO: some external code relies on access to inner state; remove this once that's fixed; if it's 'read-only', then keep this, but return a structuredClone?
-  get innerState() { return this.#innerState }
-
-  // TODO: deprecated; just use 'org.roles'
-  getRoles() { return this.roles }
-
-  // TODO: deprecated; just use 'org.staff'
-  getStaff() { return this.staff }
 
   hasStaffInRole(email, roleName, options) {
     return this.staff.getByRoleName(roleName, options).some(s => s.email === email)
@@ -195,16 +214,16 @@ const Organization = class extends Model {
   }
 
   get id() {
-    return this.#innerState[SETTINGS_KEY][ORG_ID]
+    return this.#settings[ORG_ID]
   }
 
   get policyDataRepo() {
-    const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_DATA_REPO] // this is validated (exists) value
+    const policyRepo = this.#settings[ORG_POLICY_DATA_REPO] // this is validated (exists) value
     return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 
   get policyRepo() {
-    const policyRepo = this.#innerState[SETTINGS_KEY][ORG_POLICY_REPO] // this is a validated (exists) value
+    const policyRepo = this.#settings[ORG_POLICY_REPO] // this is a validated (exists) value
     return policyRepo?.startsWith('@') ? policyRepo.slice(1) : policyRepo
   }
 

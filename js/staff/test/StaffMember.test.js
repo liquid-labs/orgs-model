@@ -1,4 +1,4 @@
-/* globals beforeAll describe expect test */
+/* globals afterAll beforeAll describe expect test */
 import * as fsPath from 'node:path'
 
 import { Organization } from '../../orgs/Organization'
@@ -9,8 +9,11 @@ const dataPath = fsPath.join(__dirname, '..', '..', 'test-data')
 describe('StaffMember', () => {
   let org
   beforeAll(() => {
+    process.env.LIQ_STAFF_PATH = fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'staff.json')
     org = new Organization({ dataPath })
   })
+
+  afterAll(() => delete process.env.LIQ_STAFF_PATH)
 
   test.each`
   email | roleName | isActing

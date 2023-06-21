@@ -3,7 +3,7 @@ import * as fsPath from 'node:path'
 
 import { Audits } from '../Audits'
 
-const auditsDataPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs', 'audits.json')
+const auditsDataPath = fsPath.join(__dirname, '..', '..', 'test-data', 'orgs', 'audits', 'audits.json')
 
 describe('Audits', () => {
   let audits = null

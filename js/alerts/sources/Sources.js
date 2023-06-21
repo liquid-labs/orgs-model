@@ -9,11 +9,7 @@ import { Source } from './Source'
 */
 const Sources = class extends ItemManager {
   constructor(options) {
-    super(Object.assign(
-      {},
-      options,
-      Source.itemConfig
-    ))
+    super(options)
     this.checkCondition = Sources.checkCondition
   }
 }
