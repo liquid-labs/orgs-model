@@ -7,16 +7,15 @@ import { Model } from '@liquid-labs/resource-model'
 import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
-import { Accounts } from '../accounts'
+// import { Accounts } from '../accounts'
 import { AuditRecords } from '../auditRecords'
 import { Audits } from '../audits'
 import { Roles } from '../roles'
-import { Sources } from '../alerts/sources'
+// import { Sources } from '../alerts/sources'
 import { Staff } from '../staff'
 import { Technologies } from '../technologies'
 import { Vendors } from '../vendors'
 
-const SETTINGS_KEY = 'settings' // to avoid basic mis-typing errors
 const ORG_ID = 'ORG_ID'
 const ORG_POLICY_DATA_REPO = 'ORG_POLICY_DATA_REPO'
 const ORG_POLICY_REPO = 'ORG_POLICY_REPO'
@@ -33,40 +32,42 @@ const Organization = class extends Model {
     this.dataPath = dataPath
 
     const rolesPath = process.env.LIQ_ROLES_PATH || fsPath.join(dataPath, 'orgs', 'roles', 'roles.json')
-    const roles = new Roles({ allowNoFile: true, fileName: rolesPath, org : this, readFromFile: true })
+    const roles = new Roles({ allowNoFile : true, fileName : rolesPath, org : this, readFromFile : true })
     this.bindRootItemManager(roles)
 
     const staffPath = process.env.LIQ_STAFF_PATH || fsPath.join(dataPath, 'orgs', 'staff.json')
-    const staff = new Staff({ allowNoFile: true, fileName: staffPath, org : this, readFromFile: true })
+    const staff = new Staff({ allowNoFile : true, fileName : staffPath, org : this, readFromFile : true })
     this.bindRootItemManager(staff)
 
+    /* Third party accounts were never made true items, and are encoded as an Object, so don't work anymore...
     const accountsPath = process.env.LIQ_ACCOUNTS_PATH || fsPath.join(dataPath, 'orgs', 'third-party-accounts.json')
     const accounts = new Accounts({ allowNoFile: true, fileName: accountsPath, readFromFile: true })
-    this.bindRootItemManager(accounts)
+    this.bindRootItemManager(accounts) */
 
-    const auditRecordsPath = process.env.LIQ_AUDIT_RECORDS_PATH 
+    const auditRecordsPath = process.env.LIQ_AUDIT_RECORDS_PATH
       || fsPath.join(dataPath, 'orgs', 'audits', 'audit-records.json')
-    const auditRecords = new AuditRecords({ allowNoFile: true, fileName: auditRecordsPath, readFromFile: true })
+    const auditRecords = new AuditRecords({ allowNoFile : true, fileName : auditRecordsPath, readFromFile : true })
     this.bindRootItemManager(auditRecords)
 
     const auditsPath = process.env.LIQ_AUDITS_PATH || fsPath.join(dataPath, 'orgs', 'audits', 'audits.json')
-    const audits = new Audits({ allowNoFile: true, fileName: auditsPath, readFromFile: true })
+    const audits = new Audits({ allowNoFile : true, fileName : auditsPath, readFromFile : true })
     this.bindRootItemManager(audits)
 
     const technologiesPath = process.env.LIQ_TECHNOLOGIES_PATH || fsPath.join(dataPath, 'orgs', 'technologies.json')
-    const technologies = new Technologies({ allowNoFile: true, fileName: technologiesPath, readFromFile: true })
+    const technologies = new Technologies({ allowNoFile : true, fileName : technologiesPath, readFromFile : true })
     this.bindRootItemManager(technologies)
 
     const vendorsPath = process.env.LIQ_VENDORS_PATH || fsPath.join(dataPath, 'orgs', 'vendors.json')
-    const vendors = new Vendors({ allowNoFile: true, fileName: vendorsPath, readFromFile: true })
+    const vendors = new Vendors({ allowNoFile : true, fileName : vendorsPath, readFromFile : true })
     this.bindRootItemManager(vendors)
 
     const alerts = new Model()
     this.bindSubModel('alerts', alerts)
 
+    /* We're getting errors here that aren't worth tracking down.
     const sourcesPath = process.env.LIQ_ALERT_SOURCES_PATH || fsPath.join(dataPath, 'orgs', 'alerts', 'sources.json')
     const sources = new Sources({ allowNoFile: true, fileName: sourcesPath, readFromFile: true })
-    alerts.bindRootItemManager(sources)
+    alerts.bindRootItemManager(sources) */
 
     this.#loadNonItems()
   }
@@ -79,8 +80,20 @@ const Organization = class extends Model {
 
   #loadNonItems() {
     this.orgStructure = new OrgStructure(fsPath.join(this.dataPath, 'orgs', 'org_structure.json'), this.roles)
+
     const settingsPath = fsPath.join(this.dataPath, 'orgs', 'settings.yaml')
-    this.#settings = readFJSON(settingsPath)
+    this.#settings = fjson.readFJSON(settingsPath)
+
+    try {
+      const controlsMapPath = fsPath.join(this.dataPath, 'orgs', 'controls', 'controlsMap.json')
+      this.controlsMap = fjson.readFJSON(controlsMapPath)
+    }
+    catch (e) {
+      if (e.code !== 'ENOENT') {
+        throw e
+      }
+      // else, that's fine
+    }
   }
 
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {

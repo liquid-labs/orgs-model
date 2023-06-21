@@ -10,9 +10,9 @@ const impliedOrgDataPath = fsPath.join(orgDataPath, 'implied')
 
 describe('StaffRole', () => {
   let org
-  beforeAll(() => { 
+  beforeAll(() => {
     process.env.LIQ_STAFF_PATH = fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'staff.json')
-    org = new Organization({ dataPath : orgDataPath }) 
+    org = new Organization({ dataPath : orgDataPath })
   })
 
   afterAll(() => delete process.env.LIQ_STAFF_PATH)
@@ -29,7 +29,7 @@ describe('StaffRole', () => {
     test('are detected when invalid', async() => {
       process.env.LIQ_STAFF_PATH =
         fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'invalid_qualifier_staff.json')
-      const org = new Organization({ dataPath  : orgDataPath })
+      const org = new Organization({ dataPath : orgDataPath })
       const { errors, warnings } = await org.validate()
       expect(errors).toHaveLength(1)
       expect(warnings).toHaveLength(0)
