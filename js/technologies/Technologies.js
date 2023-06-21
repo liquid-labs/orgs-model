@@ -9,11 +9,7 @@ import { Technology } from './Technology'
 const Technologies = class extends ItemManager {
   // add (and override) basic 'tehnology' item configurations
   constructor(options) {
-    super(Object.assign(
-      {},
-      options,
-      Technology.itemConfig
-    ))
+    super(options)
 
     this.checkCondition = checkCondition
   }

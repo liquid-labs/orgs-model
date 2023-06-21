@@ -14,7 +14,6 @@ const Vendors = class extends ItemManager {
     super(Object.assign(
       {},
       options,
-      Vendor.itemConfig,
       { indexes : [{ indexField : 'commonName', relationship : idxType.ONE_TO_MANY }] }
     ))
 
