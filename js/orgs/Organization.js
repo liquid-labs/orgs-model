@@ -214,7 +214,8 @@ const Organization = class extends Model {
   }
 
   get id() {
-    return this.#settings[ORG_ID]
+    // TODO: second is older, deprecated
+    return this.getSetting('org.KEY') || this.getSetting(ORG_ID)
   }
 
   get policyDataRepo() {
