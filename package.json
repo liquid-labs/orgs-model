@@ -55,7 +55,7 @@
     }
   },
   "dependencies": {
-    "@liquid-labs/resource-model": "^1.0.0-alpha.7",
+    "@liquid-labs/resource-model": "^1.0.0-alpha.8",
     "js-yaml": "^4.1.0"
   }
 }
