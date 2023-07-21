@@ -142,11 +142,11 @@ const Organization = class extends Model {
     return new Organization({ dataPath })
   }
 
-  get key() { return this.getSetting('KEY') }
+  get key() { return this.getSetting('org.KEY') }
 
-  get commonName() { return this.getSetting('COMMON_NAME') }
+  get commonName() { return this.getSetting('org.COMMON_NAME') }
 
-  get legalName() { return this.getSetting('LEGAL_NAME') }
+  get legalName() { return this.getSetting('org.LEGAL_NAME') }
 
   get settings() {
     const settingsCopy = structuredClone(this.#settings)

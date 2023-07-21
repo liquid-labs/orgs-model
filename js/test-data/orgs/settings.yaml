@@ -1,4 +1,4 @@
-s:
+org:
   KEY: test-org
   COMMON_NAME: 'Test Org'
   LEGAL_NAME: 'Test Org LLC'
