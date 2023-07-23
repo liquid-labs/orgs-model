@@ -1,0 +1,40 @@
+Test git rev: c489150a7d4f1aec5c08527b17345935dd585f2a
+PASS orgs/test/Organization.test.js
+PASS accounts/test/Accounts.test.js
+PASS audits/test/Audits.test.js
+PASS auditRecords/test/AuditRecords.test.js
+PASS test-data/test.js
+------------------|---------|----------|---------|---------|----------------------------------------------
+File              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                            
+------------------|---------|----------|---------|---------|----------------------------------------------
+All files         |   30.76 |    22.51 |    25.3 |   31.93 |                                              
+ accounts         |   42.42 |        0 |   33.33 |      50 |                                              
+  Account.js      |   66.66 |      100 |       0 |      75 | 6                                            
+  Accounts.js     |   37.03 |        0 |      50 |   45.45 | 26-62                                        
+ auditRecords     |      80 |    66.66 |      75 |      80 |                                              
+  AuditRecord.js  |     100 |      100 |     100 |     100 |                                              
+  AuditRecords.js |   71.42 |      100 |      50 |   71.42 | 31-47                                        
+  index.js        |     100 |    66.66 |     100 |     100 | 1-2                                          
+ audits           |     100 |    66.66 |     100 |     100 |                                              
+  Audit.js        |     100 |      100 |     100 |     100 |                                              
+  Audits.js       |     100 |      100 |     100 |     100 |                                              
+  index.js        |     100 |    66.66 |     100 |     100 | 1-2                                          
+ orgs             |   30.72 |    31.31 |   27.02 |   32.36 |                                              
+  Organization.js |   30.72 |    31.31 |   27.02 |   32.36 | 63-65,78-119,129-131,151-190,216-391,397-398 
+ orgs/lib         |    2.54 |        0 |       0 |    2.58 |                                              
+  JSONLoop.js     |    2.54 |        0 |       0 |    2.58 | 7-211                                        
+ technologies     |    37.2 |    10.52 |      25 |   41.66 |                                              
+  Technologies.js |   32.14 |        0 |      25 |   39.13 | 19-20,30-67                                  
+  Technology.js   |   42.85 |        0 |       0 |   41.66 | 37-46                                        
+  index.js        |     100 |    66.66 |     100 |     100 | 1                                            
+ vendors          |   66.66 |    66.66 |   33.33 |   68.18 |                                              
+  Vendor.js       |   66.66 |      100 |       0 |      75 | 6                                            
+  Vendors.js      |    64.7 |      100 |      25 |    64.7 | 27-28,38-57                                  
+  index.js        |     100 |    66.66 |     100 |     100 | 1                                            
+------------------|---------|----------|---------|---------|----------------------------------------------
+
+Test Suites: 5 passed, 5 total
+Tests:       21 passed, 21 total
+Snapshots:   0 total
+Time:        0.881 s, estimated 1 s
+Ran all test suites.
