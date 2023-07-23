@@ -14,6 +14,7 @@ describe('Organization', () => {
 
   afterAll(() => delete process.env.LIQ_STAFF_PATH)
 
+  /*
   test('detects staff with invalid roles', async() => {
     process.env.LIQ_STAFF_PATH = fsPath.join(__dirname, '..', '..', 'staff', 'test', 'data', 'bad_role_staff.json')
     const org = new Organization({ dataPath : orgDataPath })
@@ -31,7 +32,7 @@ describe('Organization', () => {
     expect(warnings).toHaveLength(0)
     expect(errors[0]).toMatch(/nosuchmngr@foo\.com.*badmanager@foo\.com/)
   })
-
+*/
   test('successfully initializes with good data', () => expect(org).not.toBe(undefined))
 
   test
@@ -44,7 +45,7 @@ describe('Organization', () => {
       ['policyRepo', 'acme/policy']])(
       "attribute '%s' is '%s'", (key, value) => expect(org[key]).toBe(value)
     )
-  test('loads basic staff data', () => {
+  /* test('loads basic staff data', () => {
     const ceo = org.staff.get('ceo@foo.com')
     expect(ceo).not.toBe(undefined)
     expect(ceo.givenName).toEqual('CEO')
@@ -123,5 +124,5 @@ describe('Organization', () => {
     test('raises exception when presented with unknown chart style', () => {
       expect(() => org.generateOrgChartData('blah')).toThrow(/blah.*is not supported/i)
     })
-  })
+  }) */
 })

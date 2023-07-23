@@ -11,14 +11,6 @@
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/alerts/sources.json"
         },
         {
-          "path": ".roles",
-          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/roles/roles.json"
-        },
-        {
-          "path": ".staff",
-          "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/staff/test/data/staff.json"
-        },
-        {
           "path": ".settings",
           "file": "${LIQ_PLAYGROUND}/liquid-labs/orgs-model/js/test-data/orgs/settings.yaml"
         }
@@ -29,7 +21,5 @@
     "reviews": null,
     "sources": null
   },
-  "roles": null,
-  "staff": null,
   "settings": null
 }

@@ -1,18 +1,13 @@
-import { writeFileSync } from 'node:fs'
 import * as fsPath from 'node:path'
 
 import * as fjson from '@liquid-labs/federated-json'
 import { Model } from '@liquid-labs/resource-model'
 
-import { OrgStructure } from './OrgStructure'
 import { JSONLoop } from './lib/JSONLoop'
 
 // import { Accounts } from '../accounts'
 import { AuditRecords } from '../auditRecords'
 import { Audits } from '../audits'
-import { Roles } from '../roles'
-// import { Sources } from '../alerts/sources'
-import { Staff } from '../staff'
 import { Technologies } from '../technologies'
 import { Vendors } from '../vendors'
 
@@ -30,14 +25,6 @@ const Organization = class extends Model {
 
     this.#rootDataPath = `${dataPath}/orgs/org.json`
     this.dataPath = dataPath
-
-    const rolesPath = process.env.LIQ_ROLES_PATH || fsPath.join(dataPath, 'orgs', 'roles', 'roles.json')
-    const roles = new Roles({ allowNoFile : true, fileName : rolesPath, org : this, readFromFile : true })
-    this.bindRootItemManager(roles)
-
-    const staffPath = process.env.LIQ_STAFF_PATH || fsPath.join(dataPath, 'orgs', 'staff.json')
-    const staff = new Staff({ allowNoFile : true, fileName : staffPath, org : this, readFromFile : true })
-    this.bindRootItemManager(staff)
 
     /* Third party accounts were never made true items, and are encoded as an Object, so don't work anymore...
     const accountsPath = process.env.LIQ_ACCOUNTS_PATH || fsPath.join(dataPath, 'orgs', 'third-party-accounts.json')
@@ -79,8 +66,6 @@ const Organization = class extends Model {
   }
 
   #loadNonItems() {
-    this.orgStructure = new OrgStructure(fsPath.join(this.dataPath, 'orgs', 'org_structure.json'), this.roles)
-
     const settingsPath = fsPath.join(this.dataPath, 'orgs', 'settings.yaml')
     this.#settings = fjson.readFJSON(settingsPath)
 
@@ -99,11 +84,6 @@ const Organization = class extends Model {
   static initializeOrganization({ commonName, dataPath, legalName, orgKey }) {
     const orgData = {
       auditRecords       : './audits/auditRecords.yaml',
-      roles              : './roles/roles.yaml',
-      rolesAccess        : './roles/access.yaml',
-      roleDuties         : './roles/duties.yaml',
-      rolePolicies       : './roles/role-policies.yaml',
-      staff              : './staff.yaml',
       technologies       : './technologies.yaml',
       thirdPartyAccounts : './third-party-accounts.yaml',
       vendors            : './vendors.yaml',
@@ -133,11 +113,8 @@ const Organization = class extends Model {
     orgData.settings = settings
 
     const rootFile = dataPath + '/orgs/org.json'
-    const orgStructurePath = dataPath + '/orgs/org_structure.json'
 
     fjson.write({ data : orgData, file : rootFile })
-    // TODO: this should be part of the federated structure (need to support YAML)
-    writeFileSync(orgStructurePath, '[]')
 
     return new Organization({ dataPath })
   }
@@ -210,7 +187,7 @@ const Organization = class extends Model {
   }
 
   getManagingRolesByManagedRoleName(roleName) {
-    return this.orgStructure.getNodeByRoleName(roleName).getPossibleManagerNodes()
+    throw new Error('needs to be reimplemented')
   }
 
   get id() {
