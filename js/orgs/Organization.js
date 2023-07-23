@@ -1,4 +1,3 @@
-import { writeFileSync } from 'node:fs'
 import * as fsPath from 'node:path'
 
 import * as fjson from '@liquid-labs/federated-json'
