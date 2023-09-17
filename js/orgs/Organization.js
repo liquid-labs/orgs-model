@@ -70,7 +70,7 @@ const Organization = class extends Model {
 
   #loadNonItems() {
     const settingsPath = fsPath.join(this.dataPath, 'orgs', 'settings.yaml')
-    this.#settings = yaml.load(readFileSync(settingsPath, { encoding: 'utf8' })) // fjson.readFJSON(settingsPath)
+    this.#settings = yaml.load(readFileSync(settingsPath, { encoding : 'utf8' })) // fjson.readFJSON(settingsPath)
     console.log('settingPath:', settingsPath, 'this.#settings:', this.#settings)
 
     try {
