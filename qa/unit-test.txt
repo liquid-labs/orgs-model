@@ -1,0 +1,68 @@
+Test git rev: ff1034ea3817bb8ccfacfdead325da65ae3c7fca
+PASS orgs/test/Organization.test.js
+  ● Console
+
+    console.log
+      settingPath: /Users/zane/.liq/playground/liquid-labs/orgs-model/test-staging/test-data/orgs/settings.yaml this.#settings: {
+        org: {
+          KEY: 'test-org',
+          COMMON_NAME: 'Test Org',
+          LEGAL_NAME: 'Test Org LLC'
+        },
+        ORG_ID: 'test-org',
+        ORG_POLICY_REPO: 'acme/policy',
+        ORG_POLICY_DATA_REPO: 'acme/policy-data'
+      }
+
+      at Organization.log (../js/orgs/Organization.js:74:13)
+
+PASS accounts/test/Accounts.test.js
+PASS auditRecords/test/AuditRecords.test.js
+PASS audits/test/Audits.test.js
+PASS test-data/test.js
+-------------------|---------|----------|---------|---------|----------------------------------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                            
+-------------------|---------|----------|---------|---------|----------------------------------------------
+All files          |    27.8 |    18.22 |   21.42 |   29.07 |                                              
+ js                |       0 |        0 |       0 |       0 |                                              
+  index.js         |       0 |        0 |       0 |       0 | 1-4                                          
+ js/accounts       |      40 |        0 |      20 |   46.42 |                                              
+  Account.js       |   66.66 |      100 |       0 |      75 | 6                                            
+  Accounts.js      |   37.03 |        0 |      50 |   45.45 | 26-62                                        
+  index.js         |       0 |        0 |       0 |       0 | 1-2                                          
+ js/alerts         |       0 |        0 |       0 |       0 |                                              
+  index.js         |       0 |        0 |       0 |       0 | 1                                            
+ js/alerts/sources |       0 |        0 |       0 |       0 |                                              
+  Source.js        |       0 |      100 |       0 |       0 | 1-6                                          
+  Sources.js       |       0 |        0 |       0 |       0 | 1-66                                         
+  index.js         |       0 |        0 |       0 |       0 | 1-2                                          
+ js/auditRecords   |      80 |    66.66 |      75 |      80 |                                              
+  AuditRecord.js   |     100 |      100 |     100 |     100 |                                              
+  AuditRecords.js  |   71.42 |      100 |      50 |   71.42 | 31-47                                        
+  index.js         |     100 |    66.66 |     100 |     100 | 1-2                                          
+ js/audits         |     100 |    66.66 |     100 |     100 |                                              
+  Audit.js         |     100 |      100 |     100 |     100 |                                              
+  Audits.js        |     100 |      100 |     100 |     100 |                                              
+  index.js         |     100 |    66.66 |     100 |     100 | 1-2                                          
+ js/lib            |       0 |        0 |       0 |       0 |                                              
+  org-state.js     |       0 |        0 |       0 |       0 | 1-17                                         
+ js/orgs           |   31.63 |    30.39 |   26.31 |   33.33 |                                              
+  Organization.js  |   31.79 |    31.31 |   27.02 |   33.52 | 66-68,82-123,133-135,155-194,220-395,401-402 
+  index.js         |       0 |        0 |       0 |       0 | 1                                            
+ js/orgs/lib       |    2.54 |        0 |       0 |    2.58 |                                              
+  JSONLoop.js      |    2.54 |        0 |       0 |    2.58 | 7-211                                        
+ js/technologies   |    37.2 |    10.52 |      25 |   41.66 |                                              
+  Technologies.js  |   32.14 |        0 |      25 |   39.13 | 19-20,30-67                                  
+  Technology.js    |   42.85 |        0 |       0 |   41.66 | 37-46                                        
+  index.js         |     100 |    66.66 |     100 |     100 | 1                                            
+ js/vendors        |   66.66 |    66.66 |   33.33 |   68.18 |                                              
+  Vendor.js        |   66.66 |      100 |       0 |      75 | 6                                            
+  Vendors.js       |    64.7 |      100 |      25 |    64.7 | 27-28,38-57                                  
+  index.js         |     100 |    66.66 |     100 |     100 | 1                                            
+-------------------|---------|----------|---------|---------|----------------------------------------------
+
+Test Suites: 5 passed, 5 total
+Tests:       21 passed, 21 total
+Snapshots:   0 total
+Time:        0.698 s, estimated 1 s
+Ran all test suites.
