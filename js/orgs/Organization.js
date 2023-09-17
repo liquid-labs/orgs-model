@@ -1,4 +1,7 @@
 import * as fsPath from 'node:path'
+import { readFileSync } from 'node:fs'
+
+import yaml from 'js-yaml'
 
 import * as fjson from '@liquid-labs/federated-json'
 import { Model } from '@liquid-labs/resource-model'
@@ -20,7 +23,7 @@ const Organization = class extends Model {
   #components = []
   #settings
 
-  constructor({ dataPath, ...fjsonOptions } = {}) {
+  constructor({ dataPath } = {}) {
     super({ validators : [settingsValidator] })
 
     this.#rootDataPath = `${dataPath}/orgs/org.json`
@@ -67,7 +70,8 @@ const Organization = class extends Model {
 
   #loadNonItems() {
     const settingsPath = fsPath.join(this.dataPath, 'orgs', 'settings.yaml')
-    this.#settings = fjson.readFJSON(settingsPath)
+    this.#settings = yaml.load(readFileSync(settingsPath, { encoding: 'utf8' })) // fjson.readFJSON(settingsPath)
+    console.log('settingPath:', settingsPath, 'this.#settings:', this.#settings)
 
     try {
       const controlsMapPath = fsPath.join(this.dataPath, 'orgs', 'controls', 'controlsMap.json')
